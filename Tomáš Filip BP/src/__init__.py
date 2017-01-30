@@ -17,3 +17,4 @@ uvod = uvodneNastavenia.UvodneNastavenia()
 uvod.run()
 
 print()
+print()
