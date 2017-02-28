@@ -6,12 +6,23 @@ import math
 user32 = ctypes.windll.user32
 
 
+
+BORDER = ["BorderLess", "Border"]
+borderIndex = 0 # nacitat
+WINDOW = ["Full screen","Windowed"]
+windowIndex = 1 #nacitat
+
+DEBUG = False
 FONT_28_DAYS_LATER = 0
+FONT_28_DAYS_LATER_10 =0
+
 
 
 SCREEN_SIZE_X = user32.GetSystemMetrics(0)
 SCREEN_SIZE_Y = user32.GetSystemMetrics(1)
 
+MAP_SIZE_X = 15
+MAP_SIZE_Y = 10
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,9 +35,12 @@ BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
 
 
-ROZLISENIA_X = [720, 1280, 1920]
-ROZLISENIA_Y = [480, 720, 1080]
-vybrateRozlisenie = 2
+SEED = 123456
+
+
+ROZLISENIA_X = [1152, 1280, 1600, 1920, 2560, 3200]
+ROZLISENIA_Y = [648, 720, 900, 1080, 1440, 1800]
+vybrateRozlisenie = 1
 
 UVODNE_NASTAVENIA_VYSKA = 400
 UVODNE_NASTAVENIA_SIRKA = 400

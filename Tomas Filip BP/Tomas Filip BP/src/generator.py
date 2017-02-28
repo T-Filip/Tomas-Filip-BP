@@ -7,6 +7,15 @@ import nastavenia
 from random import seed
 
 
+class Generator:
+    def __init__(self, seed):
+        self.simplexNoise = SimplexNoise(300,0.4,seed)
+        
+    def noise(self,x,y):
+        return (self.simplexNoise.getNoise(x, y)/2)+0.5
+        
+
+
 class SimplexNoise:
     def __init__ (self, najHod, stal, seed):
         self.seed = seed
