@@ -57,25 +57,25 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
         
         
-        '''
+        
         if self.noise < 0.5:
-            self.celPolObj = celoPolObj.CeloPolObjPoz(self,19) 
+            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
             return
 
-        a = self.suradnice
-        if a[0] == 22 and a[1]== -27:
-            self.celPolObj = celoPolObj.CeloPolObjPoz(self,19)
+        #a = self.suradnice
+        #if a[0] == 22 and a[1]== -27:
+            #self.celPolObj = celoPolObj.CeloPolObjPoz(self,19)
 
         else:
             r = rand.randint(0, 99)
             if r < 6:
                 objMapa.ObjMapaAktivPrek(self,0,(-20,20))
             elif r < 10:
-                objMapa.ObjMapaAktivPrek(self,18,(-20,20))
+                objMapa.ObjMapaAktivPrek(self,100,(-20,20))
             #nemozno vytvorit celo pol uz v stage 1 ved nemame okolie
             # najprv rozhodnut ci tam nejake ma byt alebo nie a az tak ho vytvorit
             
-        '''
+        
             
         #!!! pri kazdom novom objekte cekovat ci sa nepretoto
         # najprv vygenerovat celopolickove dristy

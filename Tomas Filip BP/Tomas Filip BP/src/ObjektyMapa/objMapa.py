@@ -95,6 +95,9 @@ class ObjMapa(pygame.sprite.Sprite):
         pygame.sprite.Sprite.kill(self)
 
 
+
+
+
 #tento objek si neberie rect objektu (nie textury) z informacii o id objektu pretoze kazdy potrebuje mat vlastny
 class ObjMapaVlastInf(ObjMapa):
     def __init__(self, policko, id, pixSurPolicko,inf):
