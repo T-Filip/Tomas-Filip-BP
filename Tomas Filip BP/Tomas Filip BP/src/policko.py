@@ -55,6 +55,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         rand = random.Random(self.noise)
         r = rand.randint(0, 99)
         
+        #dddddd
         
         
         
