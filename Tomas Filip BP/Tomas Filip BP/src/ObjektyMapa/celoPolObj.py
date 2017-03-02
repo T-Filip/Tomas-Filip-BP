@@ -148,44 +148,44 @@ class CeloPolObj():
             if self.zoznamPolicok[5].dajIdCeloPol() == self.id:
                 indexyTvaru[0][0]=-1
             else:
-                indexyTvaru[0][0]=3
+                indexyTvaru[0][0]=11
             if self.zoznamPolicok[3].dajIdCeloPol() == self.id:
                 indexyTvaru[0][3]=-1
             else:
-                indexyTvaru[0][3]=1
+                indexyTvaru[0][3]=9
         if self.zoznamPolicok[2].dajIdCeloPol() != self.id:
             indexyTvaru[0][3]=7
             indexyTvaru[3][3]=7
             if self.zoznamPolicok[5].dajIdCeloPol() == self.id:
                 indexyTvaru[0][0]=-1
             else:
-                indexyTvaru[0][0]=3
+                indexyTvaru[0][0]=11
             if self.zoznamPolicok[7].dajIdCeloPol() == self.id:
                 indexyTvaru[3][0]=-1
             else:
-                indexyTvaru[3][0]=2
+                indexyTvaru[3][0]=9
         if self.zoznamPolicok[4].dajIdCeloPol() != self.id:
             indexyTvaru[0][0]=5
             indexyTvaru[0][3]=5
             if self.zoznamPolicok[7].dajIdCeloPol() == self.id:
                 indexyTvaru[3][0]=-1
             else:
-                indexyTvaru[3][0]=2
+                indexyTvaru[3][0]=9
             if self.zoznamPolicok[1].dajIdCeloPol() == self.id:
                 indexyTvaru[3][3]=-1
             else:
-                indexyTvaru[3][3]=0
+                indexyTvaru[3][3]=8
         if self.zoznamPolicok[6].dajIdCeloPol() != self.id:
             indexyTvaru[0][0]=4
             indexyTvaru[0][3]=4
             if self.zoznamPolicok[1].dajIdCeloPol() == self.id:
                 indexyTvaru[3][3]=-1
             else:
-                indexyTvaru[3][3]=0
+                indexyTvaru[3][3]=8
             if self.zoznamPolicok[3].dajIdCeloPol() == self.id:
                 indexyTvaru[0][3]=-1
             else:
-                indexyTvaru[0][3]=1
+                indexyTvaru[0][3]=9
         return indexyTvaru
     def h4(self):
         indexyTvaru = self.h1()

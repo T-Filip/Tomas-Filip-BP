@@ -20,15 +20,22 @@ from ObjektyMapa.infObjekty import InfObj
 
 
 class ObjMapa(pygame.sprite.Sprite):
-    def __init__(self,policko,id,pixSurPolicko):
+    def __init__(self,policko,id,pixSurPolickoCenter,suToSuradniceCenter = False):
         self.id = id
         
         
         
         self.policka = [policko]
         self.initInf()
-        self.pixSurMapa = (pixSurPolicko[0]+policko.rectTextOblastMapa.x,pixSurPolicko[1]+policko.rectTextOblastMapa.y)
-        self.pixSurPolicko = pixSurPolicko
+        if suToSuradniceCenter:
+            centX = self.inf.rectObjOblastMapa.width / 2
+            centY = self.inf.rectObjOblastMapa.height / 2
+        else:
+            centX = 0
+            centY = 0
+            
+        self.pixSurMapa = (pixSurPolickoCenter[0]+policko.rectTextOblastMapa.x-centX,pixSurPolickoCenter[1]+policko.rectTextOblastMapa.y-centY)
+        self.pixSurPolicko = [pixSurPolickoCenter[0]-centX,pixSurPolickoCenter[1]-centY]
         
         self.initTextOblast()
         self.topLeftScaleMap = [self.rectTextOblastMapa.x,self.rectTextOblastMapa.y]
@@ -40,12 +47,14 @@ class ObjMapa(pygame.sprite.Sprite):
         if not isinstance(self.inf, infObjekty.InfObj):
             i = 5
         
+    def dajKoeficienRychlosti(self):
+        return self.inf.rychlostPrechodu
         
     def vlozDo(self,grupa):  
         self.add(grupa)
         
     def initSprite(self):
-        pygame.sprite.Sprite.__init__(self,self.policka[0].objMapaBlit,self.policka[0].objMapaVlastne)
+        pygame.sprite.Sprite.__init__(self,self.policka[0].objMapaBlit)#,self.policka[0].objMapaVlastne
         self.initImage()
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(self.pixSurPolicko) #centruje na vlastne policko
@@ -100,23 +109,23 @@ class ObjMapa(pygame.sprite.Sprite):
 
 #tento objek si neberie rect objektu (nie textury) z informacii o id objektu pretoze kazdy potrebuje mat vlastny
 class ObjMapaVlastInf(ObjMapa):
-    def __init__(self, policko, id, pixSurPolicko,inf):
+    def __init__(self, policko, id, pixSurPolicko,inf,suToSurCent = False):
         self.inf = inf
-        ObjMapa.__init__(self, policko, id, pixSurPolicko)
+        ObjMapa.__init__(self, policko, id, pixSurPolicko, suToSurCent)
         
     def initInf(self):
         pass
         
         
 class ObjMapaVlastInfPozadie(ObjMapaVlastInf):
-    def __init__(self, policko, id, pixSurPolicko,inf,pozadiePolicka,rectPoz=None):
+    def __init__(self, policko, id, pixSurPolicko,inf,pozadiePolicka,rectPoz=None,suToSurCent = False):
         if rectPoz == None:
             self.rectPozadia = [inf.img.get_rect()]
         else:
             self.rectPozadia = rectPoz
             
         self.pozadiePolicka = pozadiePolicka
-        super().__init__(policko, id, pixSurPolicko, inf)
+        super().__init__(policko, id, pixSurPolicko, inf,suToSurCent)
         
     def initImage(self):
         img = self.inf.img
@@ -139,15 +148,15 @@ class ObjMapaVlastInfPozadie(ObjMapaVlastInf):
     
 #vykresluje sa aktivne v kazdom frame aby za to hrac mohol "zajst"
 class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
-    def __init__(self,policko,id,pixSurPolicko):
-        super().__init__(policko,id,pixSurPolicko)
+    def __init__(self,policko,id,pixSurPolicko, suToSurCent = False):
+        super().__init__(policko,id,pixSurPolicko,suToSurCent)
         #pygame.sprite.Sprite.add(self.inf.ulozSprite(self))
         #infObjekty.objMapaScalovanie.add(self)
         self.scale(mapa.SINGLETON_MAPA.dajNas())
 
         
     def initSprite(self):
-        pygame.sprite.Sprite.__init__(self,self.policka[0].objMapaVlastne,self.inf.sprites,infObjekty.objMapaScalovanie)
+        pygame.sprite.Sprite.__init__(self,self.inf.sprites,infObjekty.objMapaScalovanie)#,self.policka[0].objMapaVlastne
         self.inf.aktualizujData()
         self.image = self.inf.img
         self.rect = self.image.get_rect()
@@ -161,7 +170,6 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
         pass
         
     def kill(self):
-
         ObjMapa.kill(self)
         
     def newRefImg (self):

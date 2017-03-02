@@ -33,7 +33,7 @@ class Mapa:
         self.initKamera()
         self.Test = pygame.image.load('img\\Test32.png').convert()
         
-        self.generator = generator.Generator(1234)
+        #self.generator = generator.Generator(1234)
         self.inicializaciaGeneratorov()
         infObjekty.nacitajTexturyObjMapa()
         self.nacitajMapu()
@@ -46,7 +46,7 @@ class Mapa:
         self.generatorBiom = [0 for x in range (0,6)]
         for b in range (0,6):
             self.generatorBiom[b] = generator.Generator(self.random.random())#*9223372036854775807
-        self.noiseGen = generator.Generator(self.random.random())
+        self.noiseGen = generator.GeneratorRozsireny(self.random.random(),800,0.4)
         
     def dajZoom(self):
         return self.zoom
@@ -306,7 +306,8 @@ class Mapa:
     def najdiIndexNajvacsieho(self, list):
         index = 0
         hodnotaMax=list[0]
-        for i in (1,len(list)-1): 
+        a=len(list)
+        for i in range (0,a): 
             if hodnotaMax<list[i]:
                 hodnotaMax = list[i]
                 index = i

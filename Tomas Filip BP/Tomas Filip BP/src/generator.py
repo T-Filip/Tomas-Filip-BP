@@ -13,6 +13,10 @@ class Generator:
         
     def noise(self,x,y):
         return (self.simplexNoise.getNoise(x, y)/2)+0.5
+    
+class GeneratorRozsireny (Generator):
+    def __init__(self, seed, a, b):
+        self.simplexNoise = SimplexNoise(a,b,seed)
         
 
 

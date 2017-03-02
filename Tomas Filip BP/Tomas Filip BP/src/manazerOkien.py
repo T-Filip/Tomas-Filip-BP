@@ -30,8 +30,9 @@ class ManazerOkien:
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
         pygame.init()
-        nastavenia.FONT_28_DAYS_LATER = pygame.font.Font("font\\28DaysLater.ttf",18)
-        nastavenia.FONT_28_DAYS_LATER_10 = pygame.font.Font("font\\28DaysLater.ttf",10)
+        nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
+        nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
+        nastavenia.FONT_1_10 = pygame.font.Font("font\\armalite.ttf",10)
         self.klavesy = pygame.key.get_pressed()
         self.predKlavesy  = pygame.key.get_pressed()
         mode = pygame.DOUBLEBUF 
@@ -45,12 +46,12 @@ class ManazerOkien:
                                               mode )
         texturyPolicka.initTextury()
 
-        print("sim st")
+
         pole = [[0 for i in range (1000)]  for i in range (1000)]
         for i in range (1000):
             for j in range (1000):
                 pole[i][j] = 9
-        print("sim done")
+
 
 
 
@@ -76,7 +77,7 @@ class ManazerOkien:
 
         
         self.timeUP = time.time()
-        self.TPS = 0
+        
         print("manazer Init done")
         
     
@@ -118,12 +119,6 @@ class ManazerOkien:
         pygame.event.pump()
         
     def update(self):
-        self.TPS += 1
-        if self.timeUP < time.time():
-            self.timeUP = time.time()+1
-            print ("TPS: " + str(self.TPS))
-            self.TPS = 0
-            
         
         self.events()
         self.hra.update()

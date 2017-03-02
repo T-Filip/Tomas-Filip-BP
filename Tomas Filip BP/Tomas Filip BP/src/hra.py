@@ -21,7 +21,12 @@ class Hra:
         #nacitat mapu a tak
         b=4
         self.timeUP = time.time()+1
+        
         self.pocetFPS = 0
+        self.fpsCount = 0
+        
+        self.pocetTPS = 0
+        self.tpsCount = 0
         
     
 
@@ -29,8 +34,9 @@ class Hra:
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
-        self.hrac = postavy.Hrac(self,[1500,-1500])
+        self.hrac = postavy.Hrac(self,[2200,-2400],pygame.Rect(16,48,16,16))
         self.mapa = mapa.Mapa(self)
+        self.hrac.initMapu()
         self.hrac.update()
 
         
@@ -63,7 +69,7 @@ class Hra:
 
             
         self.initTime = time.time()
-        self.pocetFPS = 0
+
         
         
         
@@ -77,16 +83,14 @@ class Hra:
     def vykresliHru(self):
         #self.screen.fill(nastavenia.BLACK)
         
-        self.pocetFPS = self.pocetFPS + 1
+        self.fpsCount +=  1
         
         for policko in self.polickaSprites:
             policko.updatePozicie(self.mapa)
         
-        if time.time() > self.timeUP:
-            self.timeUP = time.time()+3
-            cas = time.time()
+        
 
-            print ("priemerne FPS: " + str(self.pocetFPS/(cas-self.initTime)))
+
 
         if self.mapa.menilSaZoom:
             #print(self.mapa.zoom)
@@ -127,10 +131,20 @@ class Hra:
         self.polickaSprites.draw(self.screen)
         self.aktivBlitObjMapa.draw(self.screen)
         
-        font = nastavenia.FONT_28_DAYS_LATER
-        textSuradnice = str(self.hrac.suradnice[0]) + " " + str(self.hrac.suradnice[1])
-        textSurf = font.render(textSuradnice, 10, (255,255,0))#ERROR zero width? rychle spustenie do prava
-        self.screen.blit(textSurf, (20, 20))
+        font = nastavenia.FONT_1_16
+        
+        text = str("x: " + str(self.hrac.suradnice[0]) + "   y: " + str(self.hrac.suradnice[1]))
+        textSurf = font.render(text, 10, (255,255,0))#ERROR zero width? rychle spustenie do prava
+        self.screen.blit(textSurf, (10, 10))
+        
+        text = "FPS: " + str(self.pocetFPS)
+        textSurf = font.render(text, 10, (255,255,0))
+        self.screen.blit(textSurf, (10, 30))
+        
+        text = "TPS: " + str(self.pocetTPS)
+        textSurf = font.render(text, 10, (255,255,0))
+        self.screen.blit(textSurf, (10, 50))
+        
 
 
            
@@ -142,6 +156,16 @@ class Hra:
         
         
     def update(self):
+        
+        self.tpsCount += 1
+        
+        if time.time() > self.timeUP:
+            self.timeUP = time.time()+1
+            self.pocetFPS = self.fpsCount
+            self.pocetTPS = self.tpsCount
+            self.tpsCount = 0
+            self.fpsCount = 0
+        
         #pos = pygame.mouse.get_pos()
         #sprites_pod_myskou = [s for s in self.layeredSprites if s.rect.collidepoint(pos)]
         #print(len(sprites_pod_myskou))

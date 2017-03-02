@@ -37,7 +37,7 @@ def znizRozlisenie(self):
    
         
 def zmenTextRozlisenia(self):
-        self.text = str(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie])+ 'x' + str(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie])
+        self.text = str(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie])+ ' x ' + str(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie])
         self.updateText()
         self.prekresli()
         
@@ -80,7 +80,41 @@ def ukonciUvodneNastavenia(self):
     
 def tlacidloStart(self):
     self.menu.jeNeukonceny = False;
+    
+def zmenTextSirkyMapy(self):
+    self.text = "Sirka " + str(nastavenia.MAP_SIZE_X)
+    self.updateText()
+    self.prekresli()
+    
+def zmenTextVyskyMapy(self):
+    self.text = "Vyska " + str(nastavenia.MAP_SIZE_Y)
+    self.updateText()
+    self.prekresli()
 
+def zvysSirkuMapy(self):
+    nastavenia.MAP_SIZE_X += 1
+    if nastavenia.MAP_SIZE_X > 40:
+        nastavenia.MAP_SIZE_X = 40
+    zmenTextSirkyMapy(self.menu.tlacidloSirkaMapy)
+        
+def znizSirkuMapy(self):
+    nastavenia.MAP_SIZE_X -= 1
+    if nastavenia.MAP_SIZE_X < 8:
+        nastavenia.MAP_SIZE_X = 8
+    zmenTextSirkyMapy(self.menu.tlacidloSirkaMapy)
+        
+def zvysVyskuMapy(self):
+    nastavenia.MAP_SIZE_Y += 1
+    if nastavenia.MAP_SIZE_Y > 40:
+        nastavenia.MAP_SIZE_Y = 40
+    zmenTextVyskyMapy(self.menu.tlacidloVyskaMapy)
+        
+def znizVyskuMapy(self):
+    nastavenia.MAP_SIZE_Y -= 1
+    if nastavenia.MAP_SIZE_Y < 8:
+        nastavenia.MAP_SIZE_Y = 8
+    zmenTextVyskyMapy(self.menu.tlacidloVyskaMapy)
+        
 
 
 class UvodneNastavenia:
@@ -94,7 +128,8 @@ class UvodneNastavenia:
         #for mode in pygame.display.list_modes():
         #    print(mode)
         
-        nastavenia.FONT_28_DAYS_LATER = pygame.font.Font("font\\28DaysLater.ttf",18)
+        nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
+        nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
         self.screen = pygame.display.set_mode((nastavenia.UVODNE_NASTAVENIA_SIRKA,nastavenia.UVODNE_NASTAVENIA_VYSKA ),pygame.NOFRAME)
        
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
@@ -118,34 +153,49 @@ class UvodneNastavenia:
         
         '''
         #tlacidlo1 = TlacidloUNRozlisenie(self, 85, 260)
-        self.tlacidloRozlisenie = TUNVseobecne(self,self.TUN1center,"",nastavenia.FONT_28_DAYS_LATER,zmenTextRozlisenia,140, 270, None)
+        self.tlacidloRozlisenie = TUNVseobecne(self,self.TUN1center,"",nastavenia.FONT_1_16,zmenTextRozlisenia,140, 270, None)
         self.tlacidloRozlisenie.clickMethod(self.tlacidloRozlisenie)
-        TUNVseobecne(self,self.TUN1left,"",nastavenia.FONT_28_DAYS_LATER,znizRozlisenie,85, 270, self.TUN1leftOznacene)
-        TUNVseobecne(self,self.TUN1right,"",nastavenia.FONT_28_DAYS_LATER,zvysRozlisenie,275, 270, self.TUN1rightOznacene)
-        TUNVseobecne(self,self.TUN2,"CLOSE",nastavenia.FONT_28_DAYS_LATER,ukonci,215, 320, self.TUN2Oznacene)
-        TUNVseobecne(self,self.TUN2,"START",nastavenia.FONT_28_DAYS_LATER,ukonci,85, 320, self.TUN2Oznacene)
-        TUNVseobecne(self,self.TUN2,"Full screen",nastavenia.FONT_28_DAYS_LATER,krizikNegujKrizik,85, 220, self.TUN2Oznacene,160,40)
+        TUNVseobecne(self,self.TUN1left,"",nastavenia.FONT_1_16,znizRozlisenie,85, 270, self.TUN1leftOznacene)
+        TUNVseobecne(self,self.TUN1right,"",nastavenia.FONT_1_16,zvysRozlisenie,275, 270, self.TUN1rightOznacene)
+        TUNVseobecne(self,self.TUN2,"CLOSE",nastavenia.FONT_1_16,ukonci,215, 320, self.TUN2Oznacene)
+        TUNVseobecne(self,self.TUN2,"START",nastavenia.FONT_1_16,ukonci,85, 320, self.TUN2Oznacene)
+        TUNVseobecne(self,self.TUN2,"Full screen",nastavenia.FONT_1_16,krizikNegujKrizik,85, 220, self.TUN2Oznacene,160,40)
         self.krizikFullScreen = [False,True]
-        TUNVKrizik(self,self.TUN3,"",nastavenia.FONT_28_DAYS_LATER,krizikNeguj,275, 220,self.krizikFullScreen ,self.TUN3Krizik)
+        TUNVKrizik(self,self.TUN3,"",nastavenia.FONT_1_16,krizikNeguj,275, 220,self.krizikFullScreen ,self.TUN3Krizik)
         '''
-        Tlacidlo(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_28_DAYS_LATER,50,50)
-        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"CLOSE",nastavenia.FONT_28_DAYS_LATER,215,320,ukonci)
-        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"START",nastavenia.FONT_28_DAYS_LATER,85,320,tlacidloStart)
-        self.tlacidloRozlisenie = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_28_DAYS_LATER,140,270,zmenTextRozlisenia)
+        #Tlacidlo(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
+        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"CLOSE",nastavenia.FONT_1_16,215,320,ukonci)
+        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"START",nastavenia.FONT_1_16,85,320,tlacidloStart)
+        self.tlacidloRozlisenie = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,270,zmenTextRozlisenia)
         self.tlacidloRozlisenie.click()
-        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_28_DAYS_LATER,85,270,znizRozlisenie)
-        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_28_DAYS_LATER,275,270,zvysRozlisenie)
-        tlacidloWindow = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"",nastavenia.FONT_28_DAYS_LATER,85,220,zmenTextFullScreen)
+        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,270,znizRozlisenie)
+        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,270,zvysRozlisenie)
+        
+        #fullscreen border
+        tlacidloWindow = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"",nastavenia.FONT_1_13,85,220,zmenTextFullScreen)
         tlacidloWindow.text = nastavenia.WINDOW[nastavenia.windowIndex]
         tlacidloWindow.updateText()
         tlacidloWindow.prekresli()
-        self.tlacidloBorder = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene,self.TUN2Oznacene2],"",nastavenia.FONT_28_DAYS_LATER,215,220,zmenTextBorder)
+        self.tlacidloBorder = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene,self.TUN2Oznacene2],"",nastavenia.FONT_1_13,215,220,zmenTextBorder)
         self.tlacidloBorder.text = nastavenia.BORDER[nastavenia.borderIndex]
         if nastavenia.windowIndex == 0:
             self.tlacidloBorder.setLock(True)
             #self.tlacidloBorder.nastalaZmena()
         self.tlacidloBorder.updateText()
         self.tlacidloBorder.prekresli()
+        
+        #tlacidla sirka mapy
+        self.tlacidloSirkaMapy = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,170,zmenTextSirkyMapy)
+        self.tlacidloSirkaMapy.click()
+        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,170,znizSirkuMapy)
+        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,170,zvysSirkuMapy)
+        
+        #tlacidla vyska mapy
+        self.tlacidloVyskaMapy = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,120,zmenTextVyskyMapy)
+        self.tlacidloVyskaMapy.click()
+        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,120,znizVyskuMapy)
+        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,120,zvysVyskuMapy)
+
         
     def run(self):
         #cyklus pre nacitavacie menu

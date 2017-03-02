@@ -45,6 +45,8 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         self.rectTextOblastMapa = pygame.Rect(self.suradnice[0]*64,self.suradnice[1] * 64,64,64)
         self.vytvorObjMapa()
         
+    def dajVlastneObjekty(self):
+        return self.objMapaVlastne
         
     def dajTextOblastMapa(self):
         return self.rectTextOblastMapa
@@ -57,36 +59,230 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
         #dddddd
         
+        #print(self.noise)
         
-        
-        if self.noise < 0.5:
+        if self.noise < 0.40:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
-            return
-
-        #a = self.suradnice
-        #if a[0] == 22 and a[1]== -27:
-            #self.celPolObj = celoPolObj.CeloPolObjPoz(self,19)
-
+        elif self.noise < 0.41:
+            pass
+        elif self.noise < 0.445:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.465:
+            self.vytvorLes(rand, 0.445, 0.465)
+        elif self.noise < 0.475:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.48:
+            self.vytvorLes(rand, 0.48, 0.482)
+        elif self.noise < 0.482:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.49:
+            self.vytvorKamenolom(rand, 0.482, 0.49,0)
+        elif self.noise < 0.5:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.505:
+            pass
+        elif self.noise < 0.53:
+            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
+        elif self.noise < 0.533:
+            pass
+        elif self.noise < 0.55:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.6:
+            self.vytvorLes(rand, 0.55, 0.6)
+        elif self.noise < 0.63:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.64:
+            pass
+        elif self.noise < 0.65:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.66:
+            self.vytvorKamenolom(rand, 0.65, 0.66,1)
+        elif self.noise < 0.69:
+            self.vytvorFiller(rand)
+        elif self.noise < 0.7:
+            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
+        elif self.noise < 0.73:
+            self.vytvorFiller(rand)
         else:
-            r = rand.randint(0, 99)
-            if r < 6:
-                objMapa.ObjMapaAktivPrek(self,0,(-20,20))
-            elif r < 10:
-                objMapa.ObjMapaAktivPrek(self,100,(-20,20))
-            #nemozno vytvorit celo pol uz v stage 1 ved nemame okolie
-            # najprv rozhodnut ci tam nejake ma byt alebo nie a az tak ho vytvorit
+            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
+        
+
+            
+    def vlozObj(self,obj):    
+        col = pygame.sprite.spritecollideany(obj, self.objMapaVlastne,collideObjOblastMapa)
+        if col == None:
+            obj.vlozDo(self.objMapaVlastne)
+        else:
+            obj.kill()
+            
+    def vytvorKamenolom (self,rand,lavaH,pravaH,typ=None):
+        #Noise sa nachadza medzi hodnotami lavaH a pravaH
+        if typ == None:
+            typ = rand.randint(0,1)
+        bodNoise = self.noise - lavaH
+        bodA = 0
+        bodB = pravaH - lavaH
+        stred = bodB/2
+        
+        if bodNoise> stred:
+            bodNoise -= stred
+            
+        bodNoise = int(bodNoise*(100/stred))
+        if bodNoise < 1:
+            bodNoise = 2
+        
+
+        nah = rand.randint(1,bodNoise)
+        if nah > 60:
+            self.vytvorVelkyKamen(rand,typ)
+        nah = rand.randint(1,bodNoise)
+        if nah > 30:
+            self.vytvorStrednykamen(rand,typ)
+        nah = rand.randint(1,bodNoise)
+        if nah > 85:
+            self.vytvorMaliKamen(rand,typ)
+        nah = rand.randint(1,bodNoise)
+        if nah > 50:
+            self.vytvorMaliKamen(rand,typ)
+        nah = rand.randint(1,bodNoise)
+        if nah > 20:
+            self.vytvorMaliKamen(rand,typ)
+        nah = rand.randint(1,bodNoise)
+        if nah > 5:
+            self.vytvorMaliKamen(rand,typ)
             
         
             
-        #!!! pri kazdom novom objekte cekovat ci sa nepretoto
-        # najprv vygenerovat celopolickove dristy
-        r = rand.randint(0, 99)
-        #if r < 10:
-            #objMapa.ObjMapaAktivPrek(self,0,(-20,20))
-        #elif r < 15:
-            #objMapa.ObjMapaAktivPrek(self,18,(-20,20))
+    def vytvorLes(self,rand,lavaH,pravaH):
+        #Noise sa nachadza medzi hodnotami lavaH a pravaH
+        bodNoise = self.noise - lavaH
+        bodA = 0
+        bodB = pravaH - lavaH
+        stred = bodB/2
+        
+        if bodNoise> stred:
+            bodNoise -= stred
             
-            #objMapa.ObjMapa(self,0,(-20,20))
+        bodNoise = int(bodNoise*(100/stred))
+        if bodNoise < 1:
+            bodNoise = 2 
+        
+        nah = rand.randint(1,bodNoise)
+        if nah > 10:
+            id = rand.randint(self.biom*3,self.biom*3+2)
+            self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+        nah = rand.randint(1,bodNoise)
+        if nah > 25:
+            id = rand.randint(self.biom*3,self.biom*3+2)
+            self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+        nah = rand.randint(1,bodNoise)
+        if nah > 50:
+            id = rand.randint(self.biom*3,self.biom*3+2)
+            self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+        if nah > 75:
+            id = rand.randint(self.biom*3,self.biom*3+2)
+            self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+        
+            
+        
+    def vytvorFiller(self,rand):
+        
+        #-----------STROMY-------
+        nah = rand.randint(0,99)
+        if nah<5:
+            nah = rand.randint(0,99)
+            if nah<35:
+                id = rand.randint(self.biom*3,self.biom*3+2)
+                self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+                
+            if nah<10:
+                id = rand.randint(self.biom*3,self.biom*3+2)
+                self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            if nah<5:
+                id = rand.randint(self.biom*3,self.biom*3+2)
+                self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+            id = rand.randint(self.biom*3,self.biom*3+2)
+            self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True)  )
+            
+ 
+            
+            
+         #---------------KVIETKY---------   
+        nah = rand.randint(0,99)
+        if nah<60:
+            koef = 0
+            if self.biom == 1:
+                koef -= 25
+            elif self.biom ==3:
+                koef +=50
+            elif self.biom ==4:
+                koef +=100
+            elif self.biom ==4:
+                koef +=25
+                
+            nah = rand.randint(0,99)
+            id = 50 + self.biom
+            
+            if nah<50:
+                self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            if nah<25:
+                self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+                
+            if nah<5:
+                self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+            if nah<2:
+                self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+            
+            
+
+        
+        #-------SUTRE----------
+        nah = rand.randint(0,99)
+        if nah<3:
+            typ = rand.randint(0,1)
+            nah = rand.randint(0,99)
+            
+            if nah<10:
+                self.vytvorVelkyKamen(rand,typ)
+           
+            nah = rand.randint(0,100) 
+            if nah<25:
+                self.vytvorStrednykamen(rand,typ)
+                
+            nah = int(rand.triangular(0,2,10)) 
+            for i in range (nah):
+                self.vytvorMaliKamen(rand,typ)
+            
+            
+    def vytvorVelkyKamen(self,rand,typ=None):
+        if typ == None:
+            typ = rand.randint(0,1)
+            
+        id = rand.randint(0,2)#012
+        id += 100 + typ*13
+        self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+        
+    def vytvorStrednykamen(self,rand,typ=None):
+        if typ == None:
+            typ = rand.randint(0,1)
+        id = rand.randint(0,1)
+        id += 103 + typ*13
+        self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+        
+    def vytvorMaliKamen(self,rand,typ=None):
+        if typ == None:
+            typ = rand.randint(0,1)
+        id = rand.randint(0,7)
+        id += 105 + typ*13
+        self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+        
+        
+        
         
     def dajIdCeloPol(self):
         if self.celPolObj != None:
@@ -124,9 +320,8 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
     def initStage2 (self):
         if not self.jeStage2:
             self.jeStage2 = True
-            a = self.suradnice
-            if a[0] == 27 and a[1]== -29:
-                i =5
+
+
             
             
             self.okolie = self.mapa.dajOkolie(self.suradnice)
@@ -175,7 +370,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             pygame.draw.line(self.image,nastavenia.RED,(0,0),(63,0))
             pygame.draw.line(self.image,nastavenia.RED,(63,0),(63,63))
             pygame.draw.line(self.image,nastavenia.RED,(0,63),(63,63))
-            font = nastavenia.FONT_28_DAYS_LATER_10
+            font = nastavenia.FONT_1_10
             #font = pygame.font.SysFont("monospace", 13)
             textSuradnice = str(self.suradnice[0]) + " " + str(self.suradnice[1])
             if self.celPolObj != None:
