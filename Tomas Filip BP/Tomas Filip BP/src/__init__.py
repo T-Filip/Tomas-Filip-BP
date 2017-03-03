@@ -6,7 +6,7 @@ import manazerOkien
 from generator import SimplexNoiseOctava
 import time 
 import itertools
-
+import logging
 
 '''
 gen = generator.SimplexNoise(300,0.4,123)
@@ -35,11 +35,24 @@ except IndexError:
      
 ''' 
 
+#log = open("log.txt", "w")
+  
 
-  
-  
+
+
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='log.txt',
+                    filemode='w')
+
+ 
+logging.info("--- Uvodne menu ---")
+
 uvodneNastavenia.UvodneNastavenia().run()
-manazer = manazerOkien.ManazerOkien().run()
+logging.info("--- Hra ---")
+manazer = manazerOkien.ManazerOkien()
+manazer.run()
 
 
 

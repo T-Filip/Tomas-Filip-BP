@@ -10,6 +10,7 @@ import random
 import ObjektyMapa.objMapa as objMapa
 import ObjektyMapa.scale as scale
 import ObjektyMapa.celoPolObj as celoPolObj
+import logging
 
 
 
@@ -24,6 +25,7 @@ def collideObjOblastMapa(sprite1,sprite2):
 class Policko(pygame.sprite.Sprite,scale.ObjScale):
     def __init__(self,mapa,sur,noise,biom):
         
+        self.okolie = None
         self.noise = noise
         self.biom = biom
         self.suradnice = sur
@@ -45,6 +47,14 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         self.rectTextOblastMapa = pygame.Rect(self.suradnice[0]*64,self.suradnice[1] * 64,64,64)
         self.vytvorObjMapa()
         
+        if self.celPolObj != None:
+            self.maCelopolObj = True
+            self.idCelopolObj = self.celPolObj.id
+        else:
+            self.maCelopolObj = False
+            self.idCelopolObj = 0
+            
+        
     def dajVlastneObjekty(self):
         return self.objMapaVlastne
         
@@ -60,10 +70,12 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         #dddddd
         
         #print(self.noise)
-        
+
+    
         if self.noise < 0.40:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
-        elif self.noise < 0.41:
+            pass
+        elif self.noise < 0.43:
             pass
         elif self.noise < 0.445:
             self.vytvorFiller(rand)
@@ -71,25 +83,23 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.vytvorLes(rand, 0.445, 0.465)
         elif self.noise < 0.475:
             self.vytvorFiller(rand)
-        elif self.noise < 0.48:
-            self.vytvorLes(rand, 0.48, 0.482)
-        elif self.noise < 0.482:
-            self.vytvorFiller(rand)
+        elif self.noise < 0.489:
+            pass
         elif self.noise < 0.49:
             self.vytvorKamenolom(rand, 0.482, 0.49,0)
-        elif self.noise < 0.5:
-            self.vytvorFiller(rand)
-        elif self.noise < 0.505:
+        elif self.noise < 0.527:
             pass
         elif self.noise < 0.53:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
-        elif self.noise < 0.533:
+        elif self.noise < 0.545:
             pass
         elif self.noise < 0.55:
             self.vytvorFiller(rand)
+        elif self.noise < 0.59:
+            self.vytvorFiller(rand)
         elif self.noise < 0.6:
             self.vytvorLes(rand, 0.55, 0.6)
-        elif self.noise < 0.63:
+        elif self.noise < 0.61:
             self.vytvorFiller(rand)
         elif self.noise < 0.64:
             pass
@@ -97,14 +107,16 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.vytvorFiller(rand)
         elif self.noise < 0.66:
             self.vytvorKamenolom(rand, 0.65, 0.66,1)
-        elif self.noise < 0.69:
-            self.vytvorFiller(rand)
+        elif self.noise < 0.695:
+            pass
         elif self.noise < 0.7:
-            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
+            self.vytvorFiller(rand)
+            pass
         elif self.noise < 0.73:
             self.vytvorFiller(rand)
         else:
-            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
+            self.celPolObj = celoPolObj.CeloPolObjPoz(self,200)
+            pass 
         
 
             
@@ -283,21 +295,16 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
         
         
-        
+    '''  
     def dajIdCeloPol(self):
         if self.celPolObj != None:
             return self.celPolObj.dajId()
         else:
             return -1
-        
+    '''
         
     def preriedObjMapa(self):
-        #print("Policko preriedObjMapa() - doimplementovat")
-        
-        if self.suradnice[0]==0 and self.suradnice[1]==-20:
-            i=1
-        
-        
+       
         for policko in self.okolie:
             if self.noise > policko.noise:
                 continue # ma prioritu nemusi sa nicoho vzdat
@@ -307,28 +314,43 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                 
     
     def polinkujObjekty(self):
-        
+        #hrac = self.mapa.hra.hrac
+        #suradnice = hrac.suradnice
+        #if suradnice[0] == 64 and suradnice [1] == -34:
+        #    i = 5
         for policko in self.okolie:
             p1 = pygame.sprite.spritecollide(self, policko.objMapaBlit, False, collideTextOblastMapa)
-            p2 = pygame.sprite.spritecollide(self, policko.objektyMapaPrekryvajuce, False, collideTextOblastMapa)
+            #p2 = pygame.sprite.spritecollide(self, policko.objektyMapaPrekryvajuce, False, collideTextOblastMapa)
             
             for obj in p1:
                 obj.linkPolicko(self)
-            for obj in p2:
-                obj.linkPolicko(self)
+            #for obj in p2:
+            #    obj.linkPolicko(self)
     
     def initStage2 (self):
+
+        
+        
+        
         if not self.jeStage2:
+            logging.info("-Stage2Policko") 
             self.jeStage2 = True
 
 
+            '''
+            logging.info("Stage2policko- daj okolie") 
+            self.okolie = self.dajOkolie()
             
             
-            self.okolie = self.mapa.dajOkolie(self.suradnice)
+            logging.info("Stage2policko- riedenie") 
             self.preriedObjMapa()
+            
+            logging.info("Stage2policko- linkovanie") 
             self.polinkujObjekty()
+            '''
+            logging.info("Stage2policko- img init") 
             self.initImg()
-            pygame.sprite.Sprite.__init__(self,self.mapa.hra.polickaSprites)
+            pygame.sprite.Sprite.__init__(self,self.mapa.hra.polickaSprites,self.mapa.hra.allSprites)
             
             self.rect = self.image.get_rect()
             #self.rectTextOblastMapa = self.image.get_rect()
@@ -339,15 +361,44 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.topLeftScaleMap = [self.rectTextOblastMapa.x,self.rectTextOblastMapa.y]
             
             
-            for policko in self.objMapaVlastne:
+            
+            
+            for obj in self.objMapaVlastne:
                 try:
-                    policko.initStage2()
-                except:
+                    obj.initStage2()
+                except Exception as e:
+                    print("ObjMapa exception stage 2") 
                     pass
             
             
-            
+            logging.info("Stage2policko- scale") 
             self.scale(self.mapa.scaleNasobitel)
+            
+            
+            
+            if self.celPolObj != None:
+                #print(len(self.objMapaVlastne))
+                self.celPolObj = None
+                for obj in self.objMapaVlastne:
+                    obj.kill()
+                #print(len(self.objMapaBlit))
+                for obj in self.objMapaBlit:
+                    obj.kill()
+                #print(len(self.objMapaBlit))
+                #print(len(self.objMapaVlastne))
+                    
+            
+
+            
+            
+    def dajIdCeloPol(self):
+        if self.maCelopolObj:
+            return self.idCelopolObj
+            
+    def dajOkolie(self):
+        if self.okolie == None:
+            self.okolie = self.mapa.dajOkolie(self.suradnice)
+        return self.okolie
 
     def initImg(self):
         self.imageZaloha = pygame.Surface((64,64))
@@ -356,7 +407,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
         
         if self.celPolObj != None:
-            self.celPolObj.stage2(self.okolie)
+            self.celPolObj.stage2(self.dajOkolie())
         for obj in self.objMapaBlit:
             obj.centrujDoRect(self.rectTextOblastMapa)
         self.objMapaBlit.draw(self.imageZaloha)
@@ -387,11 +438,21 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         mapa.updatniPoziciu(self.topLeftScaleMap,self.rect)
         
     def uloz(self):
+
+        #i = 0
+        for obj in self.objMapaVlastne:
+            #i += 1
+            obj.kill()
+        for obj in self.objMapaBlit:
+            obj.kill()
+            #i += 1
+        for obj in self.objektyMapaCudzie:
+            obj.kill()
+            #i += 1
         if self.jeStage2:
             self.kill()
-        for obj in self.objMapaVlastne:
-            obj.kill()
             
+        #print ("vymL " + str(i))
         
         # treba dorobit 
         # ulozi resp urobi co treba pred tym ako sa tato instancia vymaze 

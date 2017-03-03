@@ -10,8 +10,27 @@ import pygame
 import random
 import ObjektyMapa.infObjekty as infObjekty
 import mapa as mapa
+import logging
 
 SINGLETON_MAPA = None #prva mapa .... 
+
+class vytvoreniePolicka:
+    def __init__(self,x,y,xCoord,yCoord):
+        self.x=x
+        self.y=y
+        self.xCoord = xCoord
+        self.yCoord = yCoord
+    
+    def vytvorPolicko(self,mapa):
+        mapa.mapa[self.x][self.y] = mapa.vytvorPolickoNa(self.xCoord,self.yCoord)
+        
+class initStage2Task:
+    def __init__(self,policko):
+        self.policko = policko
+        
+    def initStage2(self):
+        self.policko.initStage2()
+            
 
 
 class Mapa:
@@ -22,6 +41,8 @@ class Mapa:
 
         self.hra=hra
         self.hrac = hra.hrac
+        
+        logging.info("init pola mapy")
         self.mapa = [[0 for sirka in range(nastavenia.MAP_SIZE_Y)] for vyska in range(nastavenia.MAP_SIZE_X)] 
         self.topLeftMapa = [0,0]
         self.topLeftCoord = [0,0]
@@ -30,14 +51,20 @@ class Mapa:
         self.menilSaZoom = False
         self.scaleNasobitel =1
         #self.minulaPoziciaHraca = [0,0]
+        logging.info("initKamera")
         self.initKamera()
         self.Test = pygame.image.load('img\\Test32.png').convert()
         
         #self.generator = generator.Generator(1234)
+        logging.info("init generatorov")
         self.inicializaciaGeneratorov()
+        logging.info("nacitanie inf obj")
         infObjekty.nacitajTexturyObjMapa()
+        logging.info("nacitanie mapy")
         self.nacitajMapu()
-        i = 2
+        
+        
+        logging.info("vytvorenie mapy hotovo")
 
 
         
@@ -55,30 +82,34 @@ class Mapa:
         return self.scaleNasobitel
     def nacitajPolicka(self,hrac):
         #ak sa hrac pohol prilis istym smerom je potrebne nacitat nove policka 
-        hracy =hrac.rectTextOblastMapa.centery
-        mapay = self.nacitanaMapa.centery 
-        
+        #hracy =hrac.rectTextOblastMapa.centery
+        #mapay = self.nacitanaMapa.centery 
         rozdiel = hrac.rectTextOblastMapa.centerx - self.nacitanaMapa.centerx 
+        
+        i = 0
         if rozdiel > 32: 
-            #print("pravo")
+            i += 1
+            logging.info("Mapa-nacitajPolicka Vpravo")
             self.nacitajPolickaVpravo()
             hrac.suradnice[0]+=1
             self.nacitanaMapa = self.nacitanaMapa.move(64,0)
         elif rozdiel < -32:
-            #print("lavo")
+            logging.info("Mapa-nacitajPolicka VLavo")
             self.nacitajPolickaVlavo()
             hrac.suradnice[0]-=1
             self.nacitanaMapa = self.nacitanaMapa.move(-64,0)
-        rozdiel = hrac.rectTextOblastMapa.centery - self.nacitanaMapa.centery 
-        if rozdiel > 32:
+        rozdiel2 = hrac.rectTextOblastMapa.centery - self.nacitanaMapa.centery 
+        if rozdiel2 > 32:
+            logging.info("Mapa-nacitajPolicka Dole")
             self.nacitajPolickaDole()
             hrac.suradnice[1]+=1
-            #self.nacitanaMapa = self.nacitanaMapa.move(0,64)
+
             
-        elif rozdiel < -32:
+        elif rozdiel2 < -32:
+            logging.info("Mapa-nacitajPolicka Hore")
             self.nacitajPolickaHore()
             hrac.suradnice[1]-=1
-            #self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
+
 
             
         
@@ -217,17 +248,26 @@ class Mapa:
         xCoord = self.topLeftCoord[0] + nastavenia.MAP_SIZE_X
         
         
-            
+        logging.info("A" + str((self.topLeftMapa[1],nastavenia.MAP_SIZE_Y)))   
         for y in range (self.topLeftMapa[1],nastavenia.MAP_SIZE_Y):
             self.mapa[self.topLeftMapa[0]][y].uloz()
             self.mapa[self.topLeftMapa[0]][y] = self.vytvorPolickoNa(xCoord,yCoord)
+ 
+            #task = vytvoreniePolicka(self.topLeftMapa[0],y,xCoord,yCoord)
+            #self.hra.zoznamNacitanie[task] = task
             yCoord += 1
             
+        logging.info("B" + str((0,self.topLeftMapa[1]))) 
         for y in range (0,self.topLeftMapa[1]):
             self.mapa[self.topLeftMapa[0]][y].uloz()
             self.mapa[self.topLeftMapa[0]][y] = self.vytvorPolickoNa(xCoord,yCoord)
+
+            #task = vytvoreniePolicka(self.topLeftMapa[0],y,xCoord,yCoord)
+            #self.hra.zoznamNacitanie[task] = task
             yCoord += 1
             
+            
+        logging.info("C")  
         self.topLeftMapa[0] +=1
         self.topLeftCoord[0] += 1
         if self.topLeftMapa[0] >= nastavenia.MAP_SIZE_X:
@@ -242,15 +282,28 @@ class Mapa:
         if self.topLeftMapa[1] <= 0:
             dolnaStrana -=1
             
+        logging.info("D" + str((self.topLeftMapa[1]+1,dolnaStrana))) 
         for y in range (self.topLeftMapa[1]+1,dolnaStrana):
             #print("x" + str(xStage2) + "  y" + str(y))
-            self.mapa[xStage2][y].initStage2()  
+            logging.info("D " + str(xStage2)) 
+            self.mapa[xStage2][y].initStage2() 
+
+            #a =  initStage2Task(self.mapa[xStage2][y])
+            #self.hra.zoznamStage2[a] = a 
  
-       
+        logging.info("E"+ str((0,self.topLeftMapa[1]-1))) 
         for y in range (0,self.topLeftMapa[1]-1):
             self.mapa[xStage2][y].initStage2()
 
+            #a =  initStage2Task(self.mapa[xStage2][y])
+            #self.hra.zoznamStage2[a] = a 
             
+        logging.info("Mapa - nacitanie dokoncene")
+
+            
+
+
+
 
     def scale(self):
         i =5 # to ani netreba ci? 
@@ -280,11 +333,20 @@ class Mapa:
         #print("Top left: " + str(self.topLeftCoord[0]) + "  " + str(self.topLeftCoord[1]))
         self.nacitanaMapa = pygame.Rect(self.topLeftCoord[0]*64, self.topLeftCoord[1]*64, nastavenia.MAP_SIZE_X*64, nastavenia.MAP_SIZE_Y*64) #rect predstavujuci nacitanu oblast
         #print(str(rohX) + "  " + str(rohY))
-        for x, stlpec in enumerate(self.mapa):
-            for y, policko in enumerate(stlpec):
-                self.mapa[x][y] = self.vytvorPolickoNa(self.topLeftCoord[0]+x,self.topLeftCoord[1]+y)
+        logging.info("nacitavanie policok")
+        #for x, stlpec in enumerate(self.mapa):
+        #    for y, policko in enumerate(stlpec):
+        #        self.mapa[x][y] = self.vytvorPolickoNa(self.topLeftCoord[0]+x,self.topLeftCoord[1]+y)
 
-        
+        for x in range (0,len(self.mapa)):
+            for y in range (0, len(self.mapa[x])):
+                self.mapa[x][y] = self.vytvorPolickoNa(self.topLeftCoord[0]+x,self.topLeftCoord[1]+y)
+                print("nacitane: " + str(x) + " " + str(y))
+
+
+
+
+        logging.info("policka stage2")
         for x, stlpec in enumerate(self.mapa):
             if x<=0 or x>=len(self.mapa)-1:
                 continue
@@ -373,7 +435,7 @@ class Mapa:
         sur[0] -= self.topLeftCoord[0]
         sur[1] -= self.topLeftCoord[1]
         if sur[0]>=nastavenia.MAP_SIZE_X or sur[1] >= nastavenia.MAP_SIZE_Y or sur[0]<0 or sur[1]<0:
-            print("NONE")
+            #print("NONE")
             return None
         
         sur[0] += self.topLeftMapa[0]

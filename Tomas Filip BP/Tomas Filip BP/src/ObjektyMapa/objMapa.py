@@ -54,7 +54,7 @@ class ObjMapa(pygame.sprite.Sprite):
         self.add(grupa)
         
     def initSprite(self):
-        pygame.sprite.Sprite.__init__(self,self.policka[0].objMapaBlit)#,self.policka[0].objMapaVlastne
+        pygame.sprite.Sprite.__init__(self,self.policka[0].objMapaBlit,self.policka[0].mapa.hra.allSprites)#,self.policka[0].objMapaVlastne
         self.initImage()
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(self.pixSurPolicko) #centruje na vlastne policko
@@ -80,12 +80,12 @@ class ObjMapa(pygame.sprite.Sprite):
         
         
     def initStage2(self):
-        raise NotImplemented
+        pass
     
     def linkPolicko(self,policko):
-        self.policka.append(policko)
+        #self.policka.append(policko)
         self.add(policko.objMapaBlit)
-        self.add(policko.objektyMapaCudzie)
+        #self.add(policko.objektyMapaCudzie)
         
 
 
@@ -156,7 +156,7 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
 
         
     def initSprite(self):
-        pygame.sprite.Sprite.__init__(self,self.inf.sprites,infObjekty.objMapaScalovanie)#,self.policka[0].objMapaVlastne
+        pygame.sprite.Sprite.__init__(self,self.inf.sprites,infObjekty.objMapaScalovanie,self.policka[0].mapa.hra.allSprites)#,self.policka[0].objMapaVlastne
         self.inf.aktualizujData()
         self.image = self.inf.img
         self.rect = self.image.get_rect()
@@ -164,7 +164,9 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
     def initStage2(self):
         group = self.policka[0].mapa.hra.dajAktivBlitGroup()
         group.add(self,layer = self.rectObjOblastMapa.y)
-        pygame.sprite.Sprite.add(group)
+        #self.layer = self.rectObjOblastMapa.y
+        #pygame.sprite.Sprite.add(group)
+        self.add(group)
         
     def updateImage(self):
         pass

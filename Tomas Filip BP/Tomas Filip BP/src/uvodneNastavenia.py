@@ -215,7 +215,7 @@ class UvodneNastavenia:
 
             for ev in self.events:
                 if ev.type == pygame.QUIT:
-                    ukonci()
+                    ukonci()#parameter? 
                 if ev.type == pygame.MOUSEBUTTONDOWN:
                     self.volajMetodu(sprites_pod_myskou, "mouseClicked")
     

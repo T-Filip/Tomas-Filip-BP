@@ -40,7 +40,7 @@ class InfObjScale(InfObj,scale.ObjScale):
         
     def scale(self,nas):
         self.img = pygame.transform.scale(self.imgZaloha,(int(self.imgZaloha.get_width()*nas),int( self.imgZaloha.get_height()*nas)))
-        print(str(int(self.imgZaloha.get_width()*nas)))
+        #print(str(int(self.imgZaloha.get_width()*nas)))
         for sp in self.sprites:
             sp.scale(nas)
             sp.newRefImg()
@@ -81,7 +81,7 @@ class InfObjCelPolPozadie(InfObjCelPol):
 def vlozInf (obj):
     global nextID
     INF_OBJ_MAPA[nextID] = obj
-    print(nextID)
+    #print(nextID)
     nextID +=1
     
 
@@ -333,7 +333,7 @@ def nacitajTexturyObjMapa():
     
     celoPolVoda = InfObjCelPolPozadie(zoznamInf,hlbokaVoda,voda,zozRect)
     vlozInf(celoPolVoda)
-    print("Nacitavanie inf done")
+    #print("Nacitavanie inf done")
 
  # -----------------------------------
 '''

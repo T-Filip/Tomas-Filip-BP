@@ -152,7 +152,7 @@ class CeloPolObj():
             if self.zoznamPolicok[3].dajIdCeloPol() == self.id:
                 indexyTvaru[0][3]=-1
             else:
-                indexyTvaru[0][3]=9
+                indexyTvaru[0][3]=10
         if self.zoznamPolicok[2].dajIdCeloPol() != self.id:
             indexyTvaru[0][3]=7
             indexyTvaru[3][3]=7
@@ -233,11 +233,6 @@ class CeloPolObj():
     def vytvorObjekt(self,x,y,indexy):
 
             index = self.random.randint(0,len(self.inf.infObjekty[indexy[x][y]])-1)
-            print (index)
-            print ("a")
-            #index = 0
-            if index > 0 :
-                i=5
             return objMapa.ObjMapaVlastInf(self.policko, self.id,(x*16,y*16),self.inf.infObjekty[indexy[x][y]][index])
                 
     

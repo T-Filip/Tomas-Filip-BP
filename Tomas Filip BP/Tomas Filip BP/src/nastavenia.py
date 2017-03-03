@@ -16,6 +16,8 @@ windowIndex = 1 #nacitat
 
 DEBUG = False
 
+#VYPIS = True
+
 FONT_1_16 = 0
 FONT_1_13 = 0
 FONT_1_10 = 0
@@ -45,7 +47,7 @@ SEED = 123456
 
 ROZLISENIA_X = [1280, 1600, 1920, 2560, 3200]
 ROZLISENIA_Y = [720, 900, 1080, 1440, 1800]
-vybrateRozlisenie = 1
+vybrateRozlisenie = 0
 
 UVODNE_NASTAVENIA_VYSKA = 400
 UVODNE_NASTAVENIA_SIRKA = 400

@@ -3,6 +3,7 @@ import ObjektyMapa.objMapa as objMapa
 import ObjektyMapa.scale as scale
 import random
 from tkinter.constants import HORIZONTAL
+import logging
 
 
 
@@ -36,8 +37,8 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
         
         self.vydrz = 400
         self.capVydrz = 400
-        self.maxRychlostSprint = 3
-        self.maxRychlost = 2 
+        self.maxRychlostSprint = 2.5#3
+        self.maxRychlost = 1.8#2 
         self.zrychlenie = 0.2
         self.zrychlenieSprint = 0.3
         self.spomalovanie = 0.15 # ako rychlo clovek brzdi 
@@ -257,14 +258,20 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
             
         if klavesy[pygame.K_RIGHT] or klavesy[pygame.K_d]:
             posun[0] +=1
-            
+           
+        logging.info("Hrac-posunPostavu") 
         self.posunPostavu(posun[0],posun[1])
         #print (posun)
 
+        
         self.topLeftScaleMap[0] = self.rectTextOblastMapa.x*self.hra.mapa.dajNas()
         self.topLeftScaleMap[1] = self.rectTextOblastMapa.y*self.hra.mapa.dajNas()
+        
+        logging.info("hrac->mapa-nacitajPolicka")
         self.hra.mapa.nacitajPolicka(self)
         
+        
+        logging.info("hrac-changelayer")
         #DOROBIT HITBOX NA rect hitboxu
         self.hra.dajAktivBlitGroup().change_layer(self,self.rectTextOblastMapa.y+30)
 

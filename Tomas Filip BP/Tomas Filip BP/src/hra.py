@@ -7,6 +7,8 @@ import nastavenia
 import mapa
 import postavy
 import ObjektyMapa.infObjekty as infObjekty
+import logging
+
 
 
 
@@ -19,7 +21,6 @@ class Hra:
         
         self.screen = screen
         #nacitat mapu a tak
-        b=4
         self.timeUP = time.time()+1
         
         self.pocetFPS = 0
@@ -29,21 +30,31 @@ class Hra:
         self.tpsCount = 0
         
     
-
+        self.allSprites = pygame.sprite.Group()
         self.aktivBlitObjMapa = pygame.sprite.LayeredUpdates()
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
-        self.hrac = postavy.Hrac(self,[2200,-2400],pygame.Rect(16,48,16,16))
+        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16))
+        
+        logging.info("Vytvorenie mapy")
         self.mapa = mapa.Mapa(self)
+        
+        logging.info("inicializacia mapy")
         self.hrac.initMapu()
         self.hrac.update()
-
         
+        '''
+        self.polickaSpritesTEST = pygame.sprite.RenderPlain()
+        for i in range (0,10000):
+            test(self,50,50)
+        '''
+
+
         
         self.imagee = pygame.Surface((64,64))
         #self.imagee.fill((100,200,120))
-        
+
         self.Test = pygame.image.load('img\\Test32.png')
         self.img = pygame.Surface((64,64))
         self.img.blit(self.Test,(0,0))
@@ -51,6 +62,7 @@ class Hra:
         self.img2 = pygame.Surface((64,64), pygame.SRCALPHA)
         self.img2.blit(self.Test,(0,0))
         self.img.convert_alpha()
+
         
         '''
         for i in range (1,1000):
@@ -80,10 +92,22 @@ class Hra:
         return self.aktivBlitObjMapa
 
     
+
+    
+    
     def vykresliHru(self):
         #self.screen.fill(nastavenia.BLACK)
         
+        #gc.collect()
+        if self.fpsCount == 1:
+            print("-------")
+            print("all sprites: " + str(len(self.allSprites)))
+            print(self.hrac.suradnice)
+        
+
+        
         self.fpsCount +=  1
+        #print(len(self.polickaSprites))
         
         for policko in self.polickaSprites:
             policko.updatePozicie(self.mapa)
@@ -130,6 +154,13 @@ class Hra:
         
         self.polickaSprites.draw(self.screen)
         self.aktivBlitObjMapa.draw(self.screen)
+        #self.polickaSpritesTEST.draw(self.screen)
+        '''
+        if self.fpsCount == 20:
+            print("---------------")
+            print (len(self.polickaSprites))
+            print (len(self.aktivBlitObjMapa))
+        '''
         
         font = nastavenia.FONT_1_16
         
@@ -170,8 +201,38 @@ class Hra:
         #sprites_pod_myskou = [s for s in self.layeredSprites if s.rect.collidepoint(pos)]
         #print(len(sprites_pod_myskou))
         
+        '''
+        bool = True
+        if len(self.zoznamNacitanie) >0:
+            #a = next (iter (self.zoznamNacitanie.values()))
+            b = self.zoznamNacitanie.keys()
+            a = self.zoznamNacitanie.pop(b)
+            a.vytvorPolicko(self.mapa)
+            bool = False
+        if len(self.zoznamNacitanie) >0:
+            a = next (iter (self.zoznamNacitanie.values()))
+            a.vytvorPolicko(self.mapa)
+        if len(self.zoznamNacitanie) >0:
+            a = next (iter (self.zoznamNacitanie.values()))
+            a.vytvorPolicko(self.mapa)
+            
+            
+        if len(self.zoznamNacitanie) <1 and bool:
+            if len(self.zoznamStage2) > 1:
+                a = next (iter (self.zoznamNacitanie.values()))
+                a.initStage2()
+            if len(self.zoznamStage2) > 1:
+                a = next (iter (self.zoznamNacitanie.values()))
+                a.initStage2()
+            if len(self.zoznamStage2) > 1:
+                a = next (iter (self.zoznamNacitanie.values()))
+                a.initStage2()
+        '''
+            
+            
+            
         
-        
+        logging.info("hrac-eventy")
         self.hrac.eventy()
         
         #nah = randint(0,99)
@@ -184,24 +245,16 @@ class Hra:
         
         
         
-            
-            
-        
-
-
-
-
-
 class test(pygame.sprite.Sprite):
-    def __init__(self, hra,sirka,vyska,image,col):
+    def __init__(self, hra,sirka,vyska):
         self.hra = hra
-        pygame.sprite.Sprite.__init__(self, self.hra.polickaSprites)
+        pygame.sprite.Sprite.__init__(self, self.hra.polickaSpritesTEST)
         self.image = pygame.Surface((64,64))
         #self.image.set_colorkey((255,0,255))
         #self.image = image
         #self.image.convert()
-        #self.image.fill((255,0,255))
-        self.image.blit(image,(0,0))
+        self.image.fill((255,0,255))
+        #self.image.blit(image,(0,0))
 
         self.rect = self.image.get_rect()
         self.rect.x = sirka
@@ -210,16 +263,16 @@ class test(pygame.sprite.Sprite):
         
         
 class test2(pygame.sprite.Sprite):
-    def __init__(self, hra,sirka,vyska,image,col):
+    def __init__(self, hra,sirka,vyska):
         self.hra = hra
         pygame.sprite.Sprite.__init__(self, self.hra.layeredSprites)
         #self.image = pygame.Surface((64,64), pygame.SRCALPHA )
         #self.image.set_colorkey((255,0,255))
-        self.zdroj = image
+        #self.zdroj = image
         self.image = pygame.Surface((64,64), pygame.SRCALPHA)
-        self.image.blit(self.zdroj,(0,0))                         
+        #self.image.blit(self.zdroj,(0,0))                         
         #self.image.convert()
-        #self.image.fill((255,0,255))
+        self.image.fill((255,0,255))
         #self.image.blit(image,(0,0))
 
         self.rect = self.image.get_rect()
@@ -229,7 +282,12 @@ class test2(pygame.sprite.Sprite):
     def update(self):
         self.rect = self.rect.inflate(1,1)
         self.image = pygame.transform.scale(self.zdroj,(self.rect.width,self.rect.height))
+            
         
+
+
+
+
 
 
 '''
