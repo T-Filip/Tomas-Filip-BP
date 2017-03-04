@@ -337,7 +337,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.jeStage2 = True
 
 
-            '''
+            #test ci nespdne 
             logging.info("Stage2policko- daj okolie") 
             self.okolie = self.dajOkolie()
             
@@ -347,7 +347,10 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             logging.info("Stage2policko- linkovanie") 
             self.polinkujObjekty()
-            '''
+            #test ci nespdne 
+            
+            
+            
             logging.info("Stage2policko- img init") 
             self.initImg()
             pygame.sprite.Sprite.__init__(self,self.mapa.hra.polickaSprites,self.mapa.hra.allSprites)
@@ -377,13 +380,13 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             
             if self.celPolObj != None:
-                #print(len(self.objMapaVlastne))
-                self.celPolObj = None
-                for obj in self.objMapaVlastne:
-                    obj.kill()
+                print(len(self.objMapaVlastne))
+                #self.celPolObj = None
+                #for obj in self.objMapaVlastne:
+                #    obj.kill()
                 #print(len(self.objMapaBlit))
-                for obj in self.objMapaBlit:
-                    obj.kill()
+                #for obj in self.objMapaBlit:
+                #    obj.kill()
                 #print(len(self.objMapaBlit))
                 #print(len(self.objMapaVlastne))
                     

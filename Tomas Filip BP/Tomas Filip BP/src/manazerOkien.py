@@ -13,6 +13,11 @@ import texturyPolicka
 import ObjektyMapa.infObjekty as infObjekty
 import logging
 import gc
+import Menu.menuOkno as menuOkno
+import Menu.menuOknoVyberPostavy as menuOknoVyberPostavy
+import textury
+
+
 #
 
 
@@ -26,11 +31,12 @@ class ManazerOkien:
         #print("Manaze init start")
         logging.info("initManazera")
         os.environ['SDL_VIDEO_CENTERED'] = '1'
-
-        pygame.init()
-        nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
-        nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
-        nastavenia.FONT_1_10 = pygame.font.Font("font\\armalite.ttf",10)
+        
+        #pygame.init()
+        
+        
+        
+        
         self.klavesy = pygame.key.get_pressed()
         self.predKlavesy  = pygame.key.get_pressed()
         mode = 0#pygame.DOUBLEBUF 
@@ -39,15 +45,25 @@ class ManazerOkien:
         elif nastavenia.borderIndex == 0:
             mode += pygame.NOFRAME
             
-        mode = 0
+
+        
+        
      
 
         logging.info("init screen")
         self.screen = pygame.display.set_mode((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]),
                                               mode )
+        #textury.init()
+        
+        #nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
+        #nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
+        #nastavenia.FONT_1_10 = pygame.font.Font("font\\armalite.ttf",10)
+
+      
         
         
-        logging.info("init texstury polisiek")
+        
+        logging.info("init textury policiek")
         texturyPolicka.initTextury()
 
 
@@ -83,7 +99,14 @@ class ManazerOkien:
         
         #print("manazer Init done")
         
+        self.initMenuOkna()
         logging.info("initDone")
+        
+
+        
+    def initMenuOkna(self):
+        self.oknoMenu = menuOknoVyberPostavy.MenuOknoVyberPostavy(self,nastavenia.SCREEN_SIZE_X/1280)
+        self.oknoVHre = None
 
     def run(self):
         
@@ -97,13 +120,23 @@ class ManazerOkien:
         gc.collect(0)
         while self.niejeUkoncena:
             #self.clock.tick(200)
+            
+            
 
             if time.time() > timeNextTick:
                 timeNextTick += nextTick
                 timeLastTick = time.time()
                 #try:
-                logging.info("TICK")
-                self.update()
+                if self.oknoMenu != None:
+                    logging.info("Menu-update")
+                    self.oknoMenu.update()
+                    
+                else:
+                    logging.info("TICK")
+                    self.update()
+                    
+                logging.info("ManazerOkien-eventy")
+                self.events()
                 #except Exception as e :
                  #   print("Exception Updated")
                 #pocDrawPoUpdate = 0
@@ -119,8 +152,13 @@ class ManazerOkien:
                 else:
                     #try:
                     '''
-                logging.info("FRAME")
-                self.draw()
+                
+                if self.oknoMenu != None:
+                    logging.info("draw Menu okno")
+                    self.oknoMenu.draw(self.screen)
+                else:
+                    logging.info("FRAME")
+                    self.draw()
                     #except:
                     #    print("Exception Draw")
                         
@@ -151,8 +189,7 @@ class ManazerOkien:
         
     def update(self):
         
-        logging.info("ManazerOkien-eventy")
-        self.events()
+        
         logging.info("Hra-update")
         self.hra.update()
         

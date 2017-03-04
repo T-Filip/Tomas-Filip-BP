@@ -1,12 +1,12 @@
 
 import pygame
 import uvodneNastavenia
-import generator
 import manazerOkien
 from generator import SimplexNoiseOctava
 import time 
 import itertools
 import logging
+
 
 '''
 gen = generator.SimplexNoise(300,0.4,123)

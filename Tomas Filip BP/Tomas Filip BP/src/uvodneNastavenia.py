@@ -2,11 +2,12 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 import pygame
-import nastavenia
 import sys
 import os
 from enum import Enum
-from nastavenia import UVODNE_NASTAVENIA_VYSKA
+import nastavenia
+import textury
+
 #os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
 
 class LastUpdate(Enum):
@@ -128,16 +129,19 @@ class UvodneNastavenia:
         #for mode in pygame.display.list_modes():
         #    print(mode)
         
+        
+        self.screen = pygame.display.set_mode((nastavenia.UVODNE_NASTAVENIA_SIRKA,nastavenia.UVODNE_NASTAVENIA_VYSKA ),pygame.NOFRAME)
+        textury.init()
+        
         nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
         nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
-        self.screen = pygame.display.set_mode((nastavenia.UVODNE_NASTAVENIA_SIRKA,nastavenia.UVODNE_NASTAVENIA_VYSKA ),pygame.NOFRAME)
        
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
         self.clock = pygame.time.Clock()
         self.tlacidla_sprites = pygame.sprite.LayeredUpdates()
-        
+
         self.uvodNastaveniaOkno = pygame.image.load('img\\uvodneNastavenia\\uvodNastaveniaOkno.png').convert_alpha()
-        
+        '''
         self.TUN1center = pygame.image.load('img\\uvodneNastavenia\\TUN1center.png').convert_alpha()
         self.TUN1left = pygame.image.load('img\\uvodneNastavenia\\TUN1left.png').convert_alpha()
         self.TUN1leftOznacene = pygame.image.load('img\\uvodneNastavenia\\TUN1leftOznacene.png').convert_alpha()
@@ -150,33 +154,23 @@ class UvodneNastavenia:
         #self.TUN1rightOznacene = pygame.image.load('img\\uvodneNastavenia\\TUN1rightOznacene.png').convert_alpha()
         self.TUN1right = pygame.transform.flip(self.TUN1left,True,False)
         self.TUN1rightOznacene = pygame.transform.flip(self.TUN1leftOznacene,True,False)
-        
         '''
-        #tlacidlo1 = TlacidloUNRozlisenie(self, 85, 260)
-        self.tlacidloRozlisenie = TUNVseobecne(self,self.TUN1center,"",nastavenia.FONT_1_16,zmenTextRozlisenia,140, 270, None)
-        self.tlacidloRozlisenie.clickMethod(self.tlacidloRozlisenie)
-        TUNVseobecne(self,self.TUN1left,"",nastavenia.FONT_1_16,znizRozlisenie,85, 270, self.TUN1leftOznacene)
-        TUNVseobecne(self,self.TUN1right,"",nastavenia.FONT_1_16,zvysRozlisenie,275, 270, self.TUN1rightOznacene)
-        TUNVseobecne(self,self.TUN2,"CLOSE",nastavenia.FONT_1_16,ukonci,215, 320, self.TUN2Oznacene)
-        TUNVseobecne(self,self.TUN2,"START",nastavenia.FONT_1_16,ukonci,85, 320, self.TUN2Oznacene)
-        TUNVseobecne(self,self.TUN2,"Full screen",nastavenia.FONT_1_16,krizikNegujKrizik,85, 220, self.TUN2Oznacene,160,40)
-        self.krizikFullScreen = [False,True]
-        TUNVKrizik(self,self.TUN3,"",nastavenia.FONT_1_16,krizikNeguj,275, 220,self.krizikFullScreen ,self.TUN3Krizik)
-        '''
+
+
         #Tlacidlo(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
-        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"CLOSE",nastavenia.FONT_1_16,215,320,ukonci)
-        TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"START",nastavenia.FONT_1_16,85,320,tlacidloStart)
-        self.tlacidloRozlisenie = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,270,zmenTextRozlisenia)
+        TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"CLOSE",16,215,320,ukonci)
+        TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,85,320,tlacidloStart)
+        self.tlacidloRozlisenie = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,270,zmenTextRozlisenia)
         self.tlacidloRozlisenie.click()
-        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,270,znizRozlisenie)
-        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,270,zvysRozlisenie)
+        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,270,znizRozlisenie)
+        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,270,zvysRozlisenie)
         
         #fullscreen border
-        tlacidloWindow = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene],"",nastavenia.FONT_1_13,85,220,zmenTextFullScreen)
+        tlacidloWindow = TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"",13,85,220,zmenTextFullScreen)
         tlacidloWindow.text = nastavenia.WINDOW[nastavenia.windowIndex]
         tlacidloWindow.updateText()
         tlacidloWindow.prekresli()
-        self.tlacidloBorder = TlacidloClickMethod(self,[self.TUN2,self.TUN2Oznacene,self.TUN2Oznacene2],"",nastavenia.FONT_1_13,215,220,zmenTextBorder)
+        self.tlacidloBorder = TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene,textury.TUN2Oznacene2],"",13,215,220,zmenTextBorder)
         self.tlacidloBorder.text = nastavenia.BORDER[nastavenia.borderIndex]
         if nastavenia.windowIndex == 0:
             self.tlacidloBorder.setLock(True)
@@ -185,17 +179,19 @@ class UvodneNastavenia:
         self.tlacidloBorder.prekresli()
         
         #tlacidla sirka mapy
-        self.tlacidloSirkaMapy = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,170,zmenTextSirkyMapy)
+        self.tlacidloSirkaMapy = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,170,zmenTextSirkyMapy)
         self.tlacidloSirkaMapy.click()
-        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,170,znizSirkuMapy)
-        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,170,zvysSirkuMapy)
+        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,170,znizSirkuMapy)
+        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,170,zvysSirkuMapy)
         
         #tlacidla vyska mapy
-        self.tlacidloVyskaMapy = TlacidloClickMethod(self,[self.TUN1center],"",nastavenia.FONT_1_16,140,120,zmenTextVyskyMapy)
+        self.tlacidloVyskaMapy = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,120,zmenTextVyskyMapy)
         self.tlacidloVyskaMapy.click()
-        TlacidloClickMethod(self,[self.TUN1left,self.TUN1leftOznacene],"",nastavenia.FONT_1_16,85,120,znizVyskuMapy)
-        TlacidloClickMethod(self,[self.TUN1right,self.TUN1rightOznacene],"",nastavenia.FONT_1_16,275,120,zvysVyskuMapy)
+        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,120,znizVyskuMapy)
+        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,120,zvysVyskuMapy)
 
+    def dajGroup(self):
+        return self.tlacidla_sprites
         
     def run(self):
         #cyklus pre nacitavacie menu
@@ -226,8 +222,8 @@ class UvodneNastavenia:
             
             self.draw()
             
-        pygame.display.quit()
-        pygame.quit()
+        #pygame.display.quit()
+        #pygame.quit()
 
 
     def draw(self):
@@ -242,113 +238,24 @@ class UvodneNastavenia:
         met = getattr(objekty[0],metoda)
         for sp in objekty:
             met();
-        
-    
-      
-    
-    
-
-
-
-
-
-class TUNVseobecne(pygame.sprite.Sprite):
-    def __init__(self,UvodneNastavenia,img1,text,font,metodaClick,x,y,img2 = None,sirka = None,vyska = None):
-        self.uvodneNastavenia = UvodneNastavenia
-        pygame.sprite.Sprite.__init__(self, self.uvodneNastavenia.tlacidla_sprites)
-        self.image1 = img1
-        if img2 == None:
-            self.image2 = img1
-        else:
-            self.image2 = img2
-        
-        self.image = pygame.Surface(self.image1.get_size())    
-        self.rect = self.image.get_rect()
-        self.trebaScalovat = False;
-        if vyska is not None:
-            self.rect.height = vyska
-            self.trebaScalovat = True;
-        if sirka is not None  :
-            self.rect.width = sirka
-            self.trebaScalovat = True;
-        
-        
-            
-            
-        #self.image = pygame.Surface(self.image1.get_size())
-        #self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.jeOznaceny = False
-        self.jeKliknuty = False
-        self.clickMethod = metodaClick
-        self.font = font
-        self.text = text
-        self.update()
-
-
-        
-    def update(self):
-        if self.trebaScalovat:
-            
-            if self.jeOznaceny:
-                self.image = pygame.transform.scale(self.image2, (self.rect.width, self.rect.height))
-            else:
-                self.image = pygame.transform.scale(self.image1,(self.rect.width, self.rect.height))
-            
-        else:
-            if self.jeOznaceny:
-                self.image.blit(self.image2,(0,0))
-            else:
-                self.image.blit(self.image1,(0,0))
-        
-        if self.jeKliknuty:
-            self.clickMethod(self)
-        self.jeOznaceny = False
-        self.jeKliknuty = False
-        self.updateText()
-        
-        
-        
-    def updateText(self):
-        
-            size = self.image.get_size()
-            self.textSurf = self.font.render(self.text,1, nastavenia.BLACK)
-            textX = (size[0] - self.textSurf.get_width())/2
-            textY = (size[1] - self.textSurf.get_height())/2
-            self.image.blit(self.textSurf, (textX, textY))
-        
-class TUNVKrizik(TUNVseobecne):
-    def __init__(self,UvodneNastavenia,img1,text,font,metodaClick,x,y,variableBoolean,img2 = None,sirka = None,vyska = None):
-        self.variable = variableBoolean;
-        super().__init__(UvodneNastavenia, img1, text, font, metodaClick, x, y, img2,sirka,vyska)
-        
-    
-    def update(self):
-        if self.variable[0]:
-            self.image.blit(self.image2,(0,0))
-        else:
-            self.image.blit(self.image1,(0,0))
-
-        
-        if self.jeKliknuty:
-            self.clickMethod(self)
-        #self.jeOznaceny = False
-        self.jeKliknuty = False
-        #self.updateText()
-        
+             
         
 class Tlacidlo(pygame.sprite.Sprite):
-    def __init__(self,Menu,imgs,text,font,sirka,vyska):
+    def __init__(self,Menu,imgs,text,fontVelkost,sirka,vyska,scale=1):
+        self.scaleNas = scale 
         self.menu = Menu
-        pygame.sprite.Sprite.__init__(self,self.menu.tlacidla_sprites)
-        self.images = imgs
+        pygame.sprite.Sprite.__init__(self,self.menu.dajGroup())
+        self.images = [0 for i in range (len(imgs))]
+ 
+        for i in range (len(imgs)):
+            self.images[i] = pygame.transform.scale(imgs[i],(int(imgs[i].get_width() * self.scaleNas),int(imgs[i].get_height() * self.scaleNas)))
         self.imageIndex = 0
         self.image = pygame.Surface(self.images[0].get_size())   
         self.rect = self.image.get_rect()
-        self.rect.x = sirka
-        self.rect.y = vyska
-        self.font = font
+        self.rect.x = sirka * self.scaleNas
+        self.rect.y = vyska * self.scaleNas
+        
+        self.font = textury.dajFont(int(fontVelkost*self.scaleNas))
         
         #Stav tlacidla
         self.trebaUpdate = True
@@ -444,9 +351,9 @@ class Tlacidlo(pygame.sprite.Sprite):
 okrem bezneho tlacidla ma moznost ako parameter prijat funkciu ktora sa vykona pri kliknuti na tlacidlo
 '''
 class TlacidloClickMethod (Tlacidlo):
-    def __init__(self,Menu,imgs,text,font,sirka,vyska,metoda):
+    def __init__(self,Menu,imgs,text,font,sirka,vyska,metoda,scale = 1):
         self.clickMetoda = metoda
-        super().__init__(Menu,imgs,text,font,sirka,vyska)
+        super().__init__(Menu,imgs,text,font,sirka,vyska,scale)
        
     def click(self):
         self.clickMetoda(self)

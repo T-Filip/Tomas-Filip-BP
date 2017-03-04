@@ -35,9 +35,7 @@ class CeloPolObj():
                 hlavneStrany += 1
             i += 2
                 
-        a = self.policko.suradnice
-        if a[0] == 22 and a[1]== -30:
-            i =5 
+
                 
        #da sa lepsie
         indexyTvaru = 0

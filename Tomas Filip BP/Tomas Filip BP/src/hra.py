@@ -41,7 +41,6 @@ class Hra:
         self.mapa = mapa.Mapa(self)
         
         logging.info("inicializacia mapy")
-        self.hrac.initMapu()
         self.hrac.update()
         
         '''
