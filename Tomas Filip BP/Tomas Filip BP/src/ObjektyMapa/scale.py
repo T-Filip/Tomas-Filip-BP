@@ -12,7 +12,7 @@ class ObjScale:
     #metoda prisposobi texturu scalovaniu
     #je nutne aby trieda obsahovala zalohu textury
     def scale(self,nasobitel):
-        #nasobitel je vzdy od zakladu 64x64
+        #nasobitel je vzdy od zakladu 64x64 ????
         self.updateTopLeft(nasobitel)
         #zmena velkosti vykreslovaneho objektu
         self.updateRectSize(nasobitel)
@@ -40,6 +40,12 @@ class ObjScale:
     def updateScreenPosition (self, mapa): 
         mapa.updatniPoziciu(self.topLeftScaleMap,self.rect)
         
+        
+class ObjScaleViacTextur (ObjScale):
+    
+    def updateImage(self):
+        self.image = pygame.transform.smoothscale(self.imageZaloha[self.smerPostavy],(self.rect.width, self.rect.height))    
+        print((self.rect.width, self.rect.height))
         
         
         

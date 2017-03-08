@@ -8,6 +8,7 @@ import itertools
 import logging
 
 
+
 '''
 gen = generator.SimplexNoise(300,0.4,123)
 print (gen.getNoise(1,1))
@@ -36,8 +37,8 @@ except IndexError:
 ''' 
 
 #log = open("log.txt", "w")
-  
 
+ 
 
 
 
@@ -45,6 +46,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='log.txt',
                     filemode='w')
+
 
  
 logging.info("--- Uvodne menu ---")

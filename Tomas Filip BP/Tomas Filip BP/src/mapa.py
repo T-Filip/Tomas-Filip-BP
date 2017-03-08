@@ -43,7 +43,7 @@ class Mapa:
         self.hrac = hra.hrac
         
         logging.info("init pola mapy")
-        self.mapa = [[0 for sirka in range(nastavenia.MAP_SIZE_Y)] for vyska in range(nastavenia.MAP_SIZE_X)] 
+        self.mapa = [[0 for xPos in range(nastavenia.MAP_SIZE_Y)] for yPos in range(nastavenia.MAP_SIZE_X)] 
         self.topLeftMapa = [0,0]
         self.topLeftCoord = [0,0]
         #self.lavoHorePixelKamera= [0,0]
@@ -65,8 +65,41 @@ class Mapa:
         
         
         logging.info("vytvorenie mapy hotovo")
+        
+        self.zoomZotrvacnost = 0
 
 
+    def updateZoom(self):
+        
+        
+        if self.zoomZotrvacnost == 0:
+            return
+        
+        print("Zotrvacnost")
+        print(self.zoomZotrvacnost)
+        self.zoom += int(round(self.zoomZotrvacnost*0.25))
+        if self.zoom < 32:
+            self.zoom = 32
+            self.zoomZotrvacnost = 0
+        if self.zoom > 386:
+            self.zoom = 386
+            self.zoomZotrvacnost = 0
+        self.scaleNasobitel = self.zoom /64
+        self.hra.mapa.menilSaZoom = True
+        if self.zoomZotrvacnost>0:
+            self.zoomZotrvacnost -= self.zoomZotrvacnost*0.25
+            
+        if self.zoomZotrvacnost<0:
+            self.zoomZotrvacnost -= self.zoomZotrvacnost*0.25
+            
+        if self.zoomZotrvacnost < 1 and self.zoomZotrvacnost > -1:
+            self.zoomZotrvacnost = 0
+        
+    def zvysZoom(self, i):
+        self.zoomZotrvacnost += self.zoom/64 *16
+        
+    def znizZoom(self, i): 
+        self.zoomZotrvacnost -= self.zoom/64 *16
         
     def inicializaciaGeneratorov(self):
         self.random = random.Random(nastavenia.SEED)
@@ -308,19 +341,8 @@ class Mapa:
     def scale(self):
         i =5 # to ani netreba ci? 
         
-    def zvysZoom(self):
-        self.zoom += 1
-        if self.zoom > 128:
-            self.zoom = 128
-        self.scaleNasobitel = self.zoom /64
-        self.hra.mapa.menilSaZoom = True
         
-    def znizZoom(self):
-        self.zoom -= 1
-        if self.zoom < 24:
-            self.zoom = 24
-        self.scaleNasobitel = self.zoom /64
-        self.hra.mapa.menilSaZoom = True
+    
         
         '''
         Prvotne nacitanie.
@@ -375,19 +397,8 @@ class Mapa:
                 index = i
         return index
     
-    def update(self):
-        #self.lavoHorePixelKamera[0] = hrac.pixeloveUmiestnenieNaMape[0] - nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2
-        #self.lavoHorePixelKamera[1] = hrac.pixeloveUmiestnenieNaMape[1] - nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2
-        #self.kamera.center = hrac.rectTextOblastMapa.center
-        #self.kamera.x = hrac.topLeftScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/2
-        #self.kamera.y = hrac.topLeftScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) -self.zoom/2
-        #print (str(self.kamera.x) + "  " + str(self.kamera.y) + "    " + str(hrac.topLeftScaleMap[0]) + "  " + str(hrac.topLeftScaleMap[1]))
-        
-        
-        
-        #print ("kamera: " + str(self.lavoHorePixelKamera[0]) + " " + str(self.lavoHorePixelKamera[1]))
-        #print(str(self.lavoHorePixelKamera[1]))
-        
+    
+      
         
         '''
         self.lavoHorePixelKamera[0] = hrac.pixeloveUmiestnenieNaMape[0] - self.minulaPoziciaHraca[0]
@@ -397,8 +408,8 @@ class Mapa:
         '''
         
     def updateKamera(self,hrac):
-        self.kamera.x = hrac.topLeftScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/2
-        self.kamera.y = hrac.topLeftScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) +self.zoom/2
+        self.kamera.x = hrac.topLeftScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        self.kamera.y = hrac.topLeftScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
         
     def initKamera(self):
         #self.lavoHorePixelKamera[0] = self.hrac.pixeloveUmiestnenieNaMape[0] - nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2

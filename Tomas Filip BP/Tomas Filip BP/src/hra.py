@@ -16,7 +16,7 @@ import logging
 
 
 class Hra:
-    def __init__(self,manazerOkien, screen):
+    def __init__(self,manazerOkien, screen, textury):
         self.manazerOkien = manazerOkien
         
         self.screen = screen
@@ -35,7 +35,8 @@ class Hra:
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
-        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16))
+        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury)
+        
         
         logging.info("Vytvorenie mapy")
         self.mapa = mapa.Mapa(self)
@@ -49,7 +50,7 @@ class Hra:
             test(self,50,50)
         '''
 
-
+        self.casovanieZoom = 0
         
         self.imagee = pygame.Surface((64,64))
         #self.imagee.fill((100,200,120))
@@ -82,6 +83,7 @@ class Hra:
         self.initTime = time.time()
 
         
+
         
         
     def addAktivBlit(self,sprite):
@@ -186,6 +188,10 @@ class Hra:
         
         
     def update(self):
+        self.casovanieZoom +=1
+        
+        if self.casovanieZoom % 10 == 0: 
+            self.mapa.updateZoom()
         
         self.tpsCount += 1
         
@@ -245,7 +251,7 @@ class Hra:
         
         
 class test(pygame.sprite.Sprite):
-    def __init__(self, hra,sirka,vyska):
+    def __init__(self, hra,xPos,yPos):
         self.hra = hra
         pygame.sprite.Sprite.__init__(self, self.hra.polickaSpritesTEST)
         self.image = pygame.Surface((64,64))
@@ -256,13 +262,13 @@ class test(pygame.sprite.Sprite):
         #self.image.blit(image,(0,0))
 
         self.rect = self.image.get_rect()
-        self.rect.x = sirka
-        self.rect.y = vyska
+        self.rect.x = xPos
+        self.rect.y = yPos
         
         
         
 class test2(pygame.sprite.Sprite):
-    def __init__(self, hra,sirka,vyska):
+    def __init__(self, hra,xPos,yPos):
         self.hra = hra
         pygame.sprite.Sprite.__init__(self, self.hra.layeredSprites)
         #self.image = pygame.Surface((64,64), pygame.SRCALPHA )
@@ -275,8 +281,8 @@ class test2(pygame.sprite.Sprite):
         #self.image.blit(image,(0,0))
 
         self.rect = self.image.get_rect()
-        self.rect.x = sirka
-        self.rect.y = vyska
+        self.rect.x = xPos
+        self.rect.y = yPos
         
     def update(self):
         self.rect = self.rect.inflate(1,1)

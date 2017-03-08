@@ -4,19 +4,22 @@ import ObjektyMapa.scale as scale
 import random
 from tkinter.constants import HORIZONTAL
 import logging
+import Postavy.smerPostavy as smerPostavy
 
 
 
-class Hrac(pygame.sprite.Sprite, scale.ObjScale):
-    def __init__(self,hra,surPix, rectObjektovaOblast):
+class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
+    def __init__(self,hra,surPix, rectObjektovaOblast,textury):
         self.suradnice = [int(surPix[0]/64),int(surPix[1]/64)]
         self.hra = hra
         pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup())
-        self.image = pygame.Surface((64,64))
+        self.image = pygame.Surface((48,48))
         self.rect = self.image.get_rect()
         
-        self.imageZaloha = pygame.Surface((64,64))
-        self.imageZaloha.fill((200,100,0))
+        self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+        self.imageZaloha = textury
+
+        
         self.rectTextOblastMapa = self.image.get_rect()
         self.rectTextOblastMapa = self.rectTextOblastMapa.move(surPix[0],surPix[1])
         
@@ -51,6 +54,9 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
         
         self.priemSucKoefRychl = 0
         self.pocKoefRychlosti = 0
+        
+
+        
         
 
 
@@ -221,6 +227,45 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
         
         #if nastalaKolizia:
         #print("smer pohybu:" + str(self.smerPohybu))
+        
+        pomHor = abs(self.smerPohybu[0])
+        pomVer = abs(self.smerPohybu[1])
+        
+        
+        if self.smerPohybu[0] != 0:
+        
+            if self.smerPohybu[0] > 0:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+                
+            else: 
+                self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+        else:
+            if self.smerPohybu[1] < 0:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+            else:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+        
+      
+        
+        
+        
+        
+        '''
+        if pomVer+self.maxRychlost/5 > pomHor :
+            #Vertikalne
+            if self.smerPohybu[1]<0:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+            else:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+            
+        else:
+            #Horizontalne
+            if self.smerPohybu[0]<0:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+            else:
+                self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+        '''
+        
             
         self.topLeftDouble[0] += self.smerPohybu[0] 
         self.topLeftDouble[1] += self.smerPohybu[1] 
@@ -242,6 +287,8 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
                 self.posunObjNaokoloHore()   
             self.suradnice[1] = y
             
+
+        
         
     def eventy(self):
         posun = [0,0]
@@ -260,9 +307,12 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScale):
             posun[0] +=1
            
         logging.info("Hrac-posunPostavu") 
+        
+        zalohaSmeru = self.smerPostavy
         self.posunPostavu(posun[0],posun[1])
         #print (posun)
-
+        if zalohaSmeru != self.smerPostavy:
+            self.updateImage()
         
         self.topLeftScaleMap[0] = self.rectTextOblastMapa.x*self.hra.mapa.dajNas()
         self.topLeftScaleMap[1] = self.rectTextOblastMapa.y*self.hra.mapa.dajNas()

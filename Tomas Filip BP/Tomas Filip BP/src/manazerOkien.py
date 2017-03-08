@@ -16,6 +16,8 @@ import gc
 import Menu.menuOkno as menuOkno
 import Menu.menuOknoVyberPostavy as menuOknoVyberPostavy
 import textury
+import Menu.menuOknoZakladMenu as menuOknoZakladMenu
+import Menu.enumOknaMenu as enumOknaMenu
 
 
 #
@@ -32,67 +34,28 @@ class ManazerOkien:
         logging.info("initManazera")
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         
-        #pygame.init()
-        
-        
-        
-        
         self.klavesy = pygame.key.get_pressed()
         self.predKlavesy  = pygame.key.get_pressed()
+        self.events()
         mode = 0#pygame.DOUBLEBUF 
         if nastavenia.windowIndex == 0:
             mode += pygame.FULLSCREEN + pygame.HWSURFACE
         elif nastavenia.borderIndex == 0:
             mode += pygame.NOFRAME
-            
-
-        
-        
-     
 
         logging.info("init screen")
         self.screen = pygame.display.set_mode((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]),
                                               mode )
-        #textury.init()
-        
-        #nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
-        #nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
-        #nastavenia.FONT_1_10 = pygame.font.Font("font\\armalite.ttf",10)
 
-      
-        
-        
         
         logging.info("init textury policiek")
         texturyPolicka.initTextury()
+        self.hra = None
 
-
-
-
-
-
-
-
-        #self.screen.set_alpha(None)#nie na opengl surf
         
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
         self.clock = pygame.time.Clock()
         
-        logging.info("vytvorenie instancie hry")
-        self.hra = hra.Hra(self, self.screen)
-        
-        
-
-        
-        #p1 = Process(target=tred,args=(self,))
-        #p1.start()
-        
-        
-
-        #t = threading.Thread(target=tred,args=(self,))
-
-
-        #t.start()
 
         
         self.timeUP = time.time()
@@ -101,12 +64,28 @@ class ManazerOkien:
         
         self.initMenuOkna()
         logging.info("initDone")
-        
 
         
+        
+        '''
+        Inicializacia vsetkych okien Menu v hre a ...
+        veberPostavy
+        zakladneMenu
+        '''
     def initMenuOkna(self):
-        self.oknoMenu = menuOknoVyberPostavy.MenuOknoVyberPostavy(self,nastavenia.SCREEN_SIZE_X/1280)
+        self.zoznamOkienMenu = {}
+        sc =nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
+        self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY] = menuOknoVyberPostavy.MenuOknoVyberPostavy(self,sc)
+        self.zakladneMenu = menuOknoZakladMenu.MenuOknoZakladMenu(self,sc)
+        self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU] = self.zakladneMenu
+        
+        self.oknoMenu = self.zakladneMenu
         self.oknoVHre = None
+        
+        
+    def vytvorHru(self,texturyHraca):
+        logging.info("vytvorenie instancie hry")
+        self.hra = hra.Hra(self, self.screen, texturyHraca)
 
     def run(self):
         
@@ -116,7 +95,7 @@ class ManazerOkien:
         timeLastTick = time.time()
         timeNextTick =  timeLastTick + 0.01 # 100 tickov za sekundu
         pocDrawPoUpdate = 0
-        nextTick = 1/120
+        nextTick = 1/100
         gc.collect(0)
         while self.niejeUkoncena:
             #self.clock.tick(200)
@@ -170,32 +149,46 @@ class ManazerOkien:
             #for i in range (1,100000):
             #    i = 5
             
+    def prepniMenu(self, enumLink):
+        if enumLink == None:
+            self.oknoMenu = None
+        else:
+            self.oknoMenu = self.zoznamOkienMenu[enumLink]
+            
+    def dajEventy(self):
+        return self.eventy
             
     def events(self):
-        for event in pygame.event.get():
+        self.eventy  = pygame.event.get()
+        for event in self.eventy:
             if event.type == pygame.QUIT:
                 if self.niejeUkoncena:
                     self.niejeUkoncena = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
-
-                    self.hra.mapa.zvysZoom()
+                    if self.hra != None:
+                        self.hra.mapa.zvysZoom(1)
                 elif event.button == 5:
-                    self.hra.mapa.znizZoom()
+                    if self.hra != None:
+                        self.hra.mapa.znizZoom(1)
 
         self.predKlavesy = self.klavesy
         self.klavesy = pygame.key.get_pressed()
         pygame.event.pump()
+
+        
         
     def update(self):
         
         
         logging.info("Hra-update")
-        self.hra.update()
+        if self.hra!=None:
+            self.hra.update()
         
     def draw(self):
         self.screen.fill((0,0,0))
-        self.hra.vykresliHru()
+        if self.hra!=None:
+            self.hra.vykresliHru()
 
 
 

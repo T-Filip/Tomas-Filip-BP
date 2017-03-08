@@ -20,7 +20,7 @@ textury.TUN2Oznacene2 = 0
 textury.TUN1right = 0
 textury.TUN1rightOznacene = 0
 
-textury.FONTY = [0 for i in range (20)]
+textury.FONTY = [0 for i in range (30)]
 
 def init():
     textury.uvodNastaveniaOkno = pygame.image.load('img\\uvodneNastavenia\\uvodNastaveniaOkno.png').convert_alpha()    
@@ -36,11 +36,11 @@ def init():
     textury.TUN1rightOznacene = pygame.transform.flip(textury.TUN1leftOznacene,True,False)
 
     fon = textury.FONTY
-    for i in range(20):
+    for i in range(30):
         fon[i] = pygame.font.Font("font\\armalite.ttf",i+10)
     
 def dajFont(velkost):
-    if velkost < 10 or velkost > 30:
+    if velkost < 10 or velkost > 40:
         logging.warning("textury.dajFont -> taka velkost fontu nie je nacitana")
     else:
         return textury.FONTY[velkost-10]

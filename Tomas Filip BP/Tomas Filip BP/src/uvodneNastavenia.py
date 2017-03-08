@@ -7,13 +7,10 @@ import os
 from enum import Enum
 import nastavenia
 import textury
+import Menu.objMenu as objMenu
 
 #os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
 
-class LastUpdate(Enum):
-    UPDATE = 1
-    HOVER = 2
-    CLICK = 3
         
 
 
@@ -157,20 +154,20 @@ class UvodneNastavenia:
         '''
 
 
-        #Tlacidlo(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
-        TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"CLOSE",16,215,320,ukonci)
-        TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,85,320,tlacidloStart)
-        self.tlacidloRozlisenie = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,270,zmenTextRozlisenia)
+        #objMenu(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
+        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"CLOSE",16,215,320,ukonci)
+        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,85,320,tlacidloStart)
+        self.tlacidloRozlisenie = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,270,zmenTextRozlisenia)
         self.tlacidloRozlisenie.click()
-        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,270,znizRozlisenie)
-        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,270,zvysRozlisenie)
+        objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,270,znizRozlisenie)
+        objMenu.Tlacidlo(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,270,zvysRozlisenie)
         
         #fullscreen border
-        tlacidloWindow = TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene],"",13,85,220,zmenTextFullScreen)
+        tlacidloWindow = objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"",13,85,220,zmenTextFullScreen)
         tlacidloWindow.text = nastavenia.WINDOW[nastavenia.windowIndex]
         tlacidloWindow.updateText()
         tlacidloWindow.prekresli()
-        self.tlacidloBorder = TlacidloClickMethod(self,[textury.TUN2,textury.TUN2Oznacene,textury.TUN2Oznacene2],"",13,215,220,zmenTextBorder)
+        self.tlacidloBorder = objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene,textury.TUN2Oznacene2],"",13,215,220,zmenTextBorder)
         self.tlacidloBorder.text = nastavenia.BORDER[nastavenia.borderIndex]
         if nastavenia.windowIndex == 0:
             self.tlacidloBorder.setLock(True)
@@ -179,16 +176,16 @@ class UvodneNastavenia:
         self.tlacidloBorder.prekresli()
         
         #tlacidla sirka mapy
-        self.tlacidloSirkaMapy = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,170,zmenTextSirkyMapy)
+        self.tlacidloSirkaMapy = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,170,zmenTextSirkyMapy)
         self.tlacidloSirkaMapy.click()
-        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,170,znizSirkuMapy)
-        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,170,zvysSirkuMapy)
+        objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,170,znizSirkuMapy)
+        objMenu.Tlacidlo(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,170,zvysSirkuMapy)
         
         #tlacidla vyska mapy
-        self.tlacidloVyskaMapy = TlacidloClickMethod(self,[textury.TUN1center],"",16,140,120,zmenTextVyskyMapy)
+        self.tlacidloVyskaMapy = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,120,zmenTextVyskyMapy)
         self.tlacidloVyskaMapy.click()
-        TlacidloClickMethod(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,120,znizVyskuMapy)
-        TlacidloClickMethod(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,120,zvysVyskuMapy)
+        objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,120,znizVyskuMapy)
+        objMenu.Tlacidlo(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,120,zvysVyskuMapy)
 
     def dajGroup(self):
         return self.tlacidla_sprites
@@ -240,123 +237,7 @@ class UvodneNastavenia:
             met();
              
         
-class Tlacidlo(pygame.sprite.Sprite):
-    def __init__(self,Menu,imgs,text,fontVelkost,sirka,vyska,scale=1):
-        self.scaleNas = scale 
-        self.menu = Menu
-        pygame.sprite.Sprite.__init__(self,self.menu.dajGroup())
-        self.images = [0 for i in range (len(imgs))]
- 
-        for i in range (len(imgs)):
-            self.images[i] = pygame.transform.scale(imgs[i],(int(imgs[i].get_width() * self.scaleNas),int(imgs[i].get_height() * self.scaleNas)))
-        self.imageIndex = 0
-        self.image = pygame.Surface(self.images[0].get_size())   
-        self.rect = self.image.get_rect()
-        self.rect.x = sirka * self.scaleNas
-        self.rect.y = vyska * self.scaleNas
-        
-        self.font = textury.dajFont(int(fontVelkost*self.scaleNas))
-        
-        #Stav tlacidla
-        self.trebaUpdate = True
-        self.text = text
-        self.jeLocknuty = False;
-        self.jeClicknuty = False;
-        self.jeNaNomMys = False;
-        
-        
-        self.indexTextury = 0
-        self.lastUpdate = -1
-        
-        self.update()
-        
-    def mouseOnSprite(self):
-        if self.jeLocknuty:
-            return
-        if self.lastUpdate is LastUpdate.HOVER:
-            return
-        self.lastUpdate = LastUpdate.HOVER
-        if len(self.images) > 1:
-            self.hover()
-        
-    def hover(self):
-        self.jeNaNomMys = True;
 
-
-
-    def mouseClicked(self):
-        if self.jeLocknuty:
-            return
-        if self.lastUpdate is LastUpdate.CLICK:
-            return
-        self.lastUpdate = LastUpdate.CLICK
-        self.click()#metoda pre override
-            
-    def click(self):
-        self.jeClicknuty = True
-        
-    def prekresli(self):
-        self.image.blit(self.images[self.imageIndex],(0,0))
-        self.image.blit(self.textSurf, (self.textX, self.textY))
-        
-    def updateText(self):
-        size = self.image.get_size()
-        self.textSurf = self.font.render(self.text,1, nastavenia.BLACK)
-        self.textX = (size[0] - self.textSurf.get_width())/2
-        self.textY = (size[1] - self.textSurf.get_height())/2
-        
-    '''
-    Umoznuje zablokovat tlacidlo
-    '''        
-    def setLock (self, hodnota):
-        if hodnota == self.jeLocknuty:
-            return
-        self.jeLocknuty = hodnota
-        self.trebaUpdate = True
-        
-    def nastalaZmena(self): #nastavZmenu
-        self.trebaUpdate = True
-
-    def nutnyUpdate(self):
-            self.lastUpdate = LastUpdate.UPDATE
-            self.trebaUpdate = False
-
-
-            if self.jeLocknuty and len(self.images) > 2 and self.images[2] is not None:
-                self.imageIndex = 2
-                
-                
-            else:
-                if self.jeNaNomMys and len(self.images) > 1 and self.images[1] is not None:
-                    self.imageIndex = 1
-                    self.trebaUpdate = True # hover moze zmiznut alebo potom informovat tlacidlo o zmiznuti hover
-                else:
-                    self.imageIndex = 0
-                
-            
-            self.updateText()
-            self.prekresli()
-          
-    def update(self):
-        if self.trebaUpdate == True or self.lastUpdate is not LastUpdate.UPDATE:
-            self.nutnyUpdate()
-        
-        self.jeClicknuty = False
-        self.jeNaNomMys = False
-        
-        
-        
-        
-'''
-okrem bezneho tlacidla ma moznost ako parameter prijat funkciu ktora sa vykona pri kliknuti na tlacidlo
-'''
-class TlacidloClickMethod (Tlacidlo):
-    def __init__(self,Menu,imgs,text,font,sirka,vyska,metoda,scale = 1):
-        self.clickMetoda = metoda
-        super().__init__(Menu,imgs,text,font,sirka,vyska,scale)
-       
-    def click(self):
-        self.clickMetoda(self)
         
 
 
