@@ -18,7 +18,12 @@ import Menu.menuOknoVyberPostavy as menuOknoVyberPostavy
 import textury
 import Menu.menuOknoZakladMenu as menuOknoZakladMenu
 import Menu.enumOknaMenu as enumOknaMenu
-
+import Menu.enumOknaHra as enumOknaHra
+import Menu.menuOknoInventar as menuOknoInventar
+from test.test_iterlen import NoneLengthHint
+import ObjektyMapa.infObjekty
+from Menu import menuOknoVlastnosti
+from Menu.oknoInventar import OknoInventar
 
 #
 
@@ -66,6 +71,9 @@ class ManazerOkien:
         logging.info("initDone")
 
         
+
+
+        
         
         '''
         Inicializacia vsetkych okien Menu v hre a ...
@@ -73,19 +81,34 @@ class ManazerOkien:
         zakladneMenu
         '''
     def initMenuOkna(self):
-        self.zoznamOkienMenu = {}
         sc =nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
+
+        self.zoznamOkienMenu = {}
         self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY] = menuOknoVyberPostavy.MenuOknoVyberPostavy(self,sc)
         self.zakladneMenu = menuOknoZakladMenu.MenuOknoZakladMenu(self,sc)
         self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU] = self.zakladneMenu
         
+        self.zoznamOkienHra = {}
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.INVENTAR] = menuOknoInventar.MenuOknoInventar(self,sc)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.VLASTNOSTI] = menuOknoVlastnosti.MenuOknoVlastnosti(self,sc,0.4,0.5)
+       
         self.oknoMenu = self.zakladneMenu
         self.oknoVHre = None
         
         
-    def vytvorHru(self,texturyHraca):
+    def vytvorHru(self,texturyHraca,vlastnosti,typP):
         logging.info("vytvorenie instancie hry")
-        self.hra = hra.Hra(self, self.screen, texturyHraca)
+        self.hra = hra.Hra(self, self.screen, texturyHraca,vlastnosti,typP)
+        
+    def dajOknoHra(self,kluc):
+        return self.zoznamOkienHra[kluc]
+    
+    def dajOknoMenu(self,kluc):
+        return self.zoznamOkienMenu[kluc]
+        
+        
+    def dajHru (self) :
+        return self.hra
 
     def run(self):
         
@@ -98,10 +121,6 @@ class ManazerOkien:
         nextTick = 1/100
         gc.collect(0)
         while self.niejeUkoncena:
-            #self.clock.tick(200)
-            
-            
-
             if time.time() > timeNextTick:
                 timeNextTick += nextTick
                 timeLastTick = time.time()
@@ -113,47 +132,46 @@ class ManazerOkien:
                 else:
                     logging.info("TICK")
                     self.update()
+                    if self.oknoVHre != None:
+                        self.oknoVHre.update()
                     
                 logging.info("ManazerOkien-eventy")
                 self.events()
-                #except Exception as e :
-                 #   print("Exception Updated")
-                #pocDrawPoUpdate = 0
+
             else:
-                '''
-                if pocDrawPoUpdate > 0:
-                    #zbytocne vykreslovat to iste ziaden update neprebehol
-                    cas = int(round(timeNextTick-time.time()*1000))
-                    if cas < 0:
-                        continue
-                    pygame.time.wait(cas*0.95)
-                    
-                else:
-                    #try:
-                    '''
-                
                 if self.oknoMenu != None:
                     logging.info("draw Menu okno")
                     self.oknoMenu.draw(self.screen)
                 else:
                     logging.info("FRAME")
                     self.draw()
-                    #except:
-                    #    print("Exception Draw")
+                    if self.oknoVHre != None:
+                        self.oknoVHre.draw(self.screen)
                         
-                    #pocDrawPoUpdate += 1
-
-
-            #print("sdfjdsfkjdaskjgnkasjgnkjraswmgnraengmknaerwtgkawgnkjawofkljngoklaswdngmjdnasgkjndfasgdfasyghttfgrtgrtg")
-            
-            #for i in range (1,100000):
-            #    i = 5
+                if self.hra != None: 
+                    self.hra.vykresliInfoRoh()
+                pygame.display.flip()
             
     def prepniMenu(self, enumLink):
         if enumLink == None:
             self.oknoMenu = None
         else:
             self.oknoMenu = self.zoznamOkienMenu[enumLink]
+            
+    def prepniMenuVHre (self, enum):
+        if self.oknoMenu != None:
+            return
+        if enum == None:
+            self.oknoVHre = None
+        else:
+            okno = self.zoznamOkienHra[enum]
+            if okno == self.oknoVHre: #aby sa tym istym tlacidlo mohlo aj vypnut
+                self.oknoVHre.close()
+                self.oknoVHre = None
+            else:
+                self.oknoVHre = okno
+                self.oknoVHre.reinit(self.hra.dajHraca())
+                
             
     def dajEventy(self):
         return self.eventy
@@ -164,19 +182,45 @@ class ManazerOkien:
             if event.type == pygame.QUIT:
                 if self.niejeUkoncena:
                     self.niejeUkoncena = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.volajMetoduVOknach("updateClickLeft")
+                if event.button == 3:
+                    self.volajMetoduVOknach("updateClickRight")
+
                 if event.button == 4:
                     if self.hra != None:
                         self.hra.mapa.zvysZoom(1)
                 elif event.button == 5:
                     if self.hra != None:
                         self.hra.mapa.znizZoom(1)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    if self.oknoMenu != None:
+                        self.oknoMenu = None
+                    else:
+                        self.oknoMenu = self.zakladneMenu
+                if event.key == pygame.K_i :
+                    self.prepniMenuVHre(enumOknaHra.EnumOknaHra.INVENTAR)
+                if event.key == pygame.K_v :
+                    self.prepniMenuVHre(enumOknaHra.EnumOknaHra.VLASTNOSTI)
+                    
+
+                     
+                
+                    
 
         self.predKlavesy = self.klavesy
         self.klavesy = pygame.key.get_pressed()
         pygame.event.pump()
 
         
+        
+    def volajMetoduVOknach(self,zmenRecept):
+        if self.oknoMenu != None:
+            getattr(self.oknoMenu,zmenRecept)()
+        if self.oknoVHre != None:
+            getattr(self.oknoVHre,zmenRecept)()
         
     def update(self):
         

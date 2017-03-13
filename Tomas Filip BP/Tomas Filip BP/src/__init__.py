@@ -6,6 +6,7 @@ from generator import SimplexNoiseOctava
 import time 
 import itertools
 import logging
+import ObjektyMapa.infObjekty as infObjekty
 
 
 
@@ -38,7 +39,7 @@ except IndexError:
 
 #log = open("log.txt", "w")
 
- 
+
 
 
 
@@ -48,10 +49,14 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w')
 
 
+
  
 logging.info("--- Uvodne menu ---")
 
 uvodneNastavenia.UvodneNastavenia().run()
+
+logging.info("nacitanie inf obj")
+infObjekty.nacitajTexturyObjMapa()
 logging.info("--- Hra ---")
 manazer = manazerOkien.ManazerOkien()
 manazer.run()

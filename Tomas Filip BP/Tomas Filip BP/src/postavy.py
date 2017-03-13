@@ -5,14 +5,21 @@ import random
 from tkinter.constants import HORIZONTAL
 import logging
 import Postavy.smerPostavy as smerPostavy
+import Predmety.inventar as inventar
+import Predmety.predmet as predmet
+
 
 
 
 class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
-    def __init__(self,hra,surPix, rectObjektovaOblast,textury):
+    def __init__(self,hra,surPix, rectObjektovaOblast,textury,vlastnosti,typPostavy):
+        self.typPostavy = typPostavy
+        self.vlastnosti = [[vlastnosti[0]],[vlastnosti[1]],[vlastnosti[2]],[vlastnosti[3]]] #obalim tie hodnoty do pola  .. ako Integer v jave
         self.suradnice = [int(surPix[0]/64),int(surPix[1]/64)]
         self.hra = hra
         pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup())
+        self.inventar = inventar.Inventar(20)
+        self.inventarRychlyPristup = inventar.Inventar(9)
         self.image = pygame.Surface((48,48))
         self.rect = self.image.get_rect()
         
@@ -38,26 +45,60 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
         self.topLeftDouble = list(surPix) # uklada sa umiestnenie hraca top left ... je to spojite cislo koli rychlosti pretypuje sa vzdy do int ked treba posunut
         
-        self.vydrz = 400
-        self.capVydrz = 400
-        self.maxRychlostSprint = 2.5#3
-        self.maxRychlost = 1.8#2 
-        self.zrychlenie = 0.2
-        self.zrychlenieSprint = 0.3
+        self.volneVlastnosti = [3]
+        
+        
+        self.reinitVlastnosti()
+        self.vydrz = self.capVydrz # len 1. krat
+        
+        self.vlozPredmety()
+        
+    def reinitVlastnosti(self):
+        self.capVydrz = self.vlastnosti[3][0]*50+100
+        
+        self.maxRychlostSprint = 1.5+self.vlastnosti[2][0]*0.25
+        self.maxRychlost = 1+self.vlastnosti[2][0]*0.2
+        self.zrychlenie = self.maxRychlost/10
+        self.zrychlenieSprint = self.maxRychlostSprint/8
+        
         self.spomalovanie = 0.15 # ako rychlo clovek brzdi 
+        if self.typPostavy == 0:
+            self.spomalovanie = 0.15 
+        elif self.typPostavy == 1:
+            self.spomalovanie = 0.13 
+        elif self.typPostavy == 2:
+            self.spomalovanie = 0.11 
+        
         self.smerPohybu=[0,0]
         self.jeSprintPovoleny = True
         self.jeKoliznyStav = False
-        self.obnovovanieVydrze = 1 # v percentach
+        self.obnovovanieVydrze = 1+self.vlastnosti[3][0]*0.1
         self.koliznySmerPohybu = [0,0]
         self.koeficienRychlosti = 1
         
         self.priemSucKoefRychl = 0
         self.pocKoefRychlosti = 0
         
+    def dajVolneVlastnosti(self):
+        return self.volneVlastnosti
+        
+    def dajVlastnosti(self):
+        return self.vlastnosti
+        
+    def dajInventar(self):
+        return self.inventar
 
+    def vlozPredmety(self):
+        self.inventar.vlozPredmet(predmet.Predmet(10,12))
+        self.inventar.vlozPredmet(predmet.Predmet(13,15))
+        self.inventar.vlozPredmet(predmet.Predmet(12,50))
+        self.inventar.vlozPredmet(predmet.Predmet(13,2))
+        self.inventar.vlozPredmet(predmet.Predmet(13,36))
         
+        self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
         
+    def dajInventarRychlyPristup(self):
+        return self.inventarRychlyPristup
 
 
     def collideOkolieHrac(self,sprite1,sprite2):
@@ -213,7 +254,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.vydrz += -maxSmerPohybu + (self.maxRychlost+ 0.1)*self.obnovovanieVydrze # ak sprintuje ubuda ak nie tak ak nebezi max rychlostou tak rastie
         
         if not self.jeSprintPovoleny:
-            if self.vydrz > 50:
+            if self.vydrz > self.capVydrz/8:
                 self.jeSprintPovoleny = True
         
         

@@ -13,6 +13,7 @@ from enum import IntEnum
 import sys
 import Postavy.smerPostavy as smerPostavy
 import Menu.enumOknaMenu as enumOknaMenu
+import Postavy.tvorcaPostav as tvorcaPostavy
 
 
 
@@ -29,68 +30,17 @@ def back(self):
         self.menu.prepniMenu(enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU)
 
 def hracUpdate(self):
-    im = self.menu.frame.copy()
-    postavy = self.menu.postavy
-    tvare = self.menu.tvare
-    
-    #postava = pygame.Surface((64,64),pygame.SRCALPHA)
-    
-    smerPostavy = self.args[0]
-    if smerPostavy==4:
-        smerPostavy = 2
-    #telo
-    postavaMala = pygame.Surface((64,64),pygame.SRCALPHA)
-    postavaMala.blit(postavy,(0,0),(int(64*smerPostavy),int(64*self.menu.typPostavy[0]),64,64))
-    #farbatela
-    farbaPostavy = pygame.Surface((64,64),pygame.SRCALPHA)
-    farbaPostavy.blit(postavy,(0,0),(int(64*smerPostavy+256),int(64*self.menu.typPostavy[0]),64,64))
-    farbaPostavy.fill(self.menu.farbaTela[self.menu.indexFarbyTela[0]], None, pygame.BLEND_RGBA_MULT)
-    
-    postavaMala.blit(farbaPostavy,(0,0))
-    
-    #HLAVA
-    hlava = pygame.Surface((32,32),pygame.SRCALPHA)
-    hlava.blit(tvare,(0,0),(64*self.menu.cisloTvare[0],0,32,32))
-    
-    #farbaHlavy
-    farbaHlavy = pygame.Surface((32,32),pygame.SRCALPHA)
-    farbaHlavy.blit(tvare,(0,0),(32+ 64*self.menu.cisloTvare[0],0,32,32))
-    farbaHlavy.fill(self.menu.farbaTela[self.menu.indexFarbyTela[0]], None, pygame.BLEND_RGBA_MULT)
-
-    
-    hlava.blit(farbaHlavy,(0,0))
-    
-    #oci
-    hlava.blit(tvare,(0,0),(int(32*smerPostavy+256*self.menu.cisloPohlavia[0]),int(32+32*self.menu.cisloOci[0]),32,32))
-    #vlasy
-    hlava.blit(tvare,(0,0),(int(32*smerPostavy+128+256*self.menu.cisloPohlavia[0]),int(32+32*self.menu.cisloVlasov[0]),32,32))
-
-    
-    if smerPostavy==2:
-        posHlava = (12,4)
-    else:
-        posHlava = (16,4)
-        
-    postavaMala.blit(hlava,posHlava)
-    
-    if self.args[0] == 4:
-        postavaMala = pygame.transform.flip(postavaMala, True, False)
-    
-    self.menu.postavyHrac[self.args[0]] = postavaMala
-    
-    #pygame.transform.scale(postavaMala,(64,64),postava)
-    #pygame.transform.scale2x(postavaMala,postava)
-    
-    
-    
-    im.blit(postavaMala,(8,8))
-    
+    im = textury.FRAME.copy()
+    postava = tvorcaPostavy.vytvorPostavu(True,self.args[0],self.menu.farbaTela[self.menu.indexFarbyTela[0]],self.menu.typPostavy[0],
+                                          self.menu.cisloTvare[0],self.menu.cisloVlasov[0],self.menu.cisloOci[0],self.menu.cisloPohlavia[0])
+    im.blit(postava,(8,8))
+    self.menu.postavyHrac[self.args[0]] = postava
     return im
     
     
 def startHry(self):
     self.menu.prepniMenu(None)
-    self.menu.manazerOkien.vytvorHru(self.menu.postavyHrac)
+    self.menu.manazerOkien.vytvorHru(self.menu.postavyHrac,self.menu.vlastnosti,self.menu.typPostavy)
     
     
     
@@ -100,14 +50,13 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
 
         super().__init__(manazerOkien,scale)
         
-        self.postavy = pygame.image.load('img\\Postavy\\postavyNew.png').convert_alpha()  
-        self.tvare = pygame.image.load('img\\Postavy\\tvareNew.png').convert_alpha() 
-        self.frame = pygame.image.load('img\\Postavy\\frame.png').convert_alpha() 
+        
         
 
         
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,525,600,startHry,scale)
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"BACK",16,655,600,back,scale)
+        self.vlastnosti = [0,0,0,0]
         
         
                 #vcetne
@@ -118,7 +67,7 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         capPohlavia = [0,1]
         capCisloOci = [[0,1],[0,1]]
         capCisloVlasov = [[0,1],[0,1]]
-        capTypTvare = [0,1]
+        capTypTvare = [0,2]
         
         
         
@@ -199,7 +148,36 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
 
         #s1.fill((255, 0, 0), None, pygame.BLEND_RGBA_MULT)
         
+    def vykresliVlastnosti(self,screen):
+        #scaleRec
+        font = textury.dajFont(int(25*self.scaleRes))
+        vlastnostiTypPostavy = nastavenia.VLASTNOSTI_POSTAVY_TYP_POSTAVY[self.typPostavy[0]]
+        vlastnostiPohlavie = nastavenia.VLASTNOSTI_POSTAVY_POHLAVIE[self.cisloPohlavia[0]]  
+        vlastnosti = nastavenia.VLASTNOSTI_POSTAVY
+        pocetVlastnosti = 4
+        x= 400*self.scaleRes
+        y= 0
         
+        for i in range (pocetVlastnosti):  
+            y +=1
+            self.vlastnosti[i] = vlastnostiTypPostavy[i] + vlastnostiPohlavie[i]      
+            text = vlastnosti[i] + ": " + str(self.vlastnosti[i])                                  
+            textSurf = font.render(text,1, nastavenia.BLACK)
+            #textX = int(self.rect.width/3 - textSurf.get_width()/2)*self.scaleRes
+            textY = 380 + 30*y 
+            textY = textY*self.scaleRes
+            screen.blit(textSurf,(x,textY))
+            
+            if y >= pocetVlastnosti / 2:
+                x = 730 * self.scaleRes
+                y = 0
+            
+            
+        
+        
+    def draw(self, screen):
+        menuOkno.MenuOkno.draw(self, screen)
+        self.vykresliVlastnosti(screen)
         
         #uvodneNastavenia.Tlacidlo(self,[s1   ,s2],"",16,100,100,test,scale)
         

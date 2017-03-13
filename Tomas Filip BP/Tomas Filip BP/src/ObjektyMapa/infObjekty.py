@@ -9,16 +9,28 @@ import collections
 import mapa
 from ObjektyMapa import scale
 import copy
+import textury
 
 INF_OBJ_MAPA = {}
 objMapaScalovanie = pygame.sprite.Group() # mnozina objektov na mape ktorym je nutne menit poziciu na obrazovke pri pohybe hraca (tak ako policka alebo aj samotnemu hracovi)
 infObjScalovanie = {}# mnozina infObj ktore su momentalne pouzivane a pre zobrazenie potrebuju scalovat
 nextID = 0
 
+class Inf():
+    def __init__(self,imgPredmet = None, stackKapacita = 64):
+        self.stackKapacita = stackKapacita
+        if imgPredmet == None:
+            self.imgPredmet = textury.PREDMET_BEZ_TEXTURY
+        else:
+            self.imgPredmet = imgPredmet
+    
+    def dajImgPredm(self):
+        return self.imgPredmet
+
 
 #InfObj = namTupDef("InfObj", "img rectObjOblastMapa rychlostPrechodu pocPouzivajucich", {'pocPouzivajucich':0})
-class InfObj:
-    def __init__(self,img, rectObjOblastMapa = None, rychlostPrechodu = 1):
+class InfObj(Inf):
+    def __init__(self,img, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64):
         self.img = img
         if rectObjOblastMapa == None:
             self.rectObjOblastMapa = self.img.get_rect()
@@ -26,6 +38,10 @@ class InfObj:
             self.rectObjOblastMapa = rectObjOblastMapa #relativna pozicia v img
         
         self.rychlostPrechodu = rychlostPrechodu
+        
+        super().__init__(imgPredmet, stackKapacita)
+        self.imgPredmet = img
+    
 
 
 
@@ -58,7 +74,7 @@ class InfObjScale(InfObj,scale.ObjScale):
 
         
 #informacie o celopolickovych objektoch - obsahuju niekolko InfObj a to o kazdom jeho kusku
-class InfObjCelPol:
+class InfObjCelPol(Inf):
     def __init__(self,zoznam,texturaPolicka):
         self.infObjekty = zoznam
         self.texturaPolicka = texturaPolicka # Tato textura sa vyuzije ak su vsade naokolo policka objekty s tymto id
@@ -91,6 +107,7 @@ def vlozInf (obj):
             
 
 def nacitajTexturyObjMapa():
+
 
     global nextID
 

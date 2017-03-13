@@ -58,8 +58,6 @@ class Mapa:
         #self.generator = generator.Generator(1234)
         logging.info("init generatorov")
         self.inicializaciaGeneratorov()
-        logging.info("nacitanie inf obj")
-        infObjekty.nacitajTexturyObjMapa()
         logging.info("nacitanie mapy")
         self.nacitajMapu()
         

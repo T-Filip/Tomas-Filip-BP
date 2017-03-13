@@ -25,8 +25,8 @@ DEBUG = False
 SCREEN_SIZE_X = user32.GetSystemMetrics(0)
 SCREEN_SIZE_Y = user32.GetSystemMetrics(1)
 
-MAP_SIZE_X = 25
-MAP_SIZE_Y = 15
+MAP_SIZE_X = 8
+MAP_SIZE_Y = 8
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -37,6 +37,13 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
+
+#3 typy pre kazdy postavu ine vlastnosti
+#Zdravie Sila Rychlost vytrvalost
+#mala postava fit a silna
+VLASTNOSTI_POSTAVY = ["Zdravie", "Sila", "Rychlost", "Vytrvalost"]
+VLASTNOSTI_POSTAVY_TYP_POSTAVY = [[3,3,5,5,],[4,4,4,4],[6,5,3,2]]
+VLASTNOSTI_POSTAVY_POHLAVIE = [[0,1,0,0],[0,0,0,1]]
 
 
 #SEED = time.time()  #123456

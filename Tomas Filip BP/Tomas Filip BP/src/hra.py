@@ -8,6 +8,8 @@ import mapa
 import postavy
 import ObjektyMapa.infObjekty as infObjekty
 import logging
+import Menu.oknoInventar as oknoInventar
+import Menu.enumOknaHra as enumOknaHra
 
 
 
@@ -16,9 +18,9 @@ import logging
 
 
 class Hra:
-    def __init__(self,manazerOkien, screen, textury):
+    def __init__(self,manazerOkien, screen, textury,vlastnosti,typP):
         self.manazerOkien = manazerOkien
-        
+        scale = nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
         self.screen = screen
         #nacitat mapu a tak
         self.timeUP = time.time()+1
@@ -35,7 +37,7 @@ class Hra:
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
-        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury)
+        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury,vlastnosti,typP)
         
         
         logging.info("Vytvorenie mapy")
@@ -43,6 +45,10 @@ class Hra:
         
         logging.info("inicializacia mapy")
         self.hrac.update()
+        
+        self.initInventarRychlyPristup(scale)
+        self.invOknoRychlyPristup.reinit(self.hrac.dajInventarRychlyPristup())
+        self.manazerOkien.dajOknoHra(enumOknaHra.EnumOknaHra.INVENTAR).vlozOkno(self.invOknoRychlyPristup)
         
         '''
         self.polickaSpritesTEST = pygame.sprite.RenderPlain()
@@ -83,7 +89,17 @@ class Hra:
         self.initTime = time.time()
 
         
+    def dajOknoInventarRychlyPristup(self):
+        return self.invOknoRychlyPristup
 
+       
+    def initInventarRychlyPristup(self,scale):
+        width= int(640*scale)
+        posX = int(320*scale)
+        posY = int(635*scale)
+        height = int(64*scale)
+        self.invOknoRychlyPristup = oknoInventar.OknoInventar(pygame.Rect(posX,posY,width,height))
+       
         
         
     def addAktivBlit(self,sprite):
@@ -93,18 +109,20 @@ class Hra:
         return self.aktivBlitObjMapa
 
     
-
+    def dajHraca(self):
+        return self.hrac
     
     
     def vykresliHru(self):
         #self.screen.fill(nastavenia.BLACK)
         
         #gc.collect()
+        '''
         if self.fpsCount == 1:
             print("-------")
             print("all sprites: " + str(len(self.allSprites)))
             print(self.hrac.suradnice)
-        
+        '''
 
         
         self.fpsCount +=  1
@@ -163,6 +181,10 @@ class Hra:
             print (len(self.aktivBlitObjMapa))
         '''
         
+        self.invOknoRychlyPristup.draw(self.screen)
+        
+        
+    def vykresliInfoRoh(self):
         font = nastavenia.FONT_1_16
         
         text = str("x: " + str(self.hrac.suradnice[0]) + "   y: " + str(self.hrac.suradnice[1]))

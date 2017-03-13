@@ -228,11 +228,11 @@ class UvodneNastavenia:
         self.tlacidla_sprites.draw(self.screen)
         pygame.display.flip()
         
-    def volajMetodu (self,objekty,metoda):
+    def volajMetodu (self,objekty,zmenRecept):
         if len(objekty) < 1:
             return
             
-        met = getattr(objekty[0],metoda)
+        met = getattr(objekty[0],zmenRecept)
         for sp in objekty:
             met();
              

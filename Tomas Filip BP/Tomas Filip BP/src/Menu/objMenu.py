@@ -73,13 +73,13 @@ class objMenu(pygame.sprite.Sprite):
         if self.lastUpdate is LastUpdate.CLICK:
             return
         self.lastUpdate = LastUpdate.CLICK
-        self.click()#metoda pre override
+        self.click()#zmenRecept pre override
             
     def click(self):
         self.jeClicknuty = True
         
     def prekresli(self):
-        self.image.blit(self.images[self.imageIndex],(0,0))
+        self.image.blit(self.images[self.imageIndex],(0,0)) # treba to prekreslovat nestaci vymeni
         if hasattr(self, "textSurf"):
             self.image.blit(self.textSurf, (self.textX, self.textY))
         
@@ -93,8 +93,8 @@ class objMenu(pygame.sprite.Sprite):
     Umoznuje zablokovat tlacidlo
     '''        
     def setLock (self, hodnota):
-        if hodnota == self.jeLocknuty:
-            return
+        if self.jeLocknuty == hodnota:
+             return
         self.jeLocknuty = hodnota
         self.trebaUpdate = True
         
@@ -128,18 +128,7 @@ class objMenu(pygame.sprite.Sprite):
         self.jeClicknuty = False
         self.jeNaNomMys = False
         
-        '''
-    def refresh(self):#watafak
-        self.initImages(self.imagesZaloha)
-        self.trebaUpdate = True
-        self.text = self.text
-        self.jeLocknuty = False;
-        self.jeClicknuty = False;
-        self.jeNaNomMys = False;
-        self.indexTextury = 0
-        self.lastUpdate = -1
-        self.update()
-        '''
+
         
         
         
@@ -148,11 +137,14 @@ class objMenu(pygame.sprite.Sprite):
 okrem bezneho tlacidla ma moznost ako parameter prijat funkciu ktora sa vykona pri kliknuti na tlacidlo
 '''
 class Tlacidlo (objMenu):
-    def __init__(self,Menu,imgs,text,font,sirka,vyska,metoda,scaler = 1,scale = 1):
-        self.clickMetoda = metoda
+    def __init__(self,Menu,imgs,text,font,sirka,vyska,zmenRecept,scaler = 1,scale = 1,args=None):
+        self.args = args
+        self.clickMetoda = zmenRecept
         super().__init__(Menu,imgs,text,font,sirka,vyska,scaler,scale)
        
     def click(self):
+        if self.jeLocknuty:
+            return
         self.clickMetoda(self)
         
         
@@ -167,24 +159,23 @@ class Tlacidlo (objMenu):
         '''
 class TlacidloIncDecVal (Tlacidlo):
     def __init__(self,Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,cap, scale = 1,kontrola = None):
-        metoda = self.zmenHodnotu
         self.maSaZvysitHore = zvysovatHore
         self.hodnota = hodnota
         self.cap = cap
         self.cykliSa = cykliSa
         self.kontrola = kontrola
-        super().__init__(Menu, imgs, text, font, sirka, vyska, metoda, scale)
+        super().__init__(Menu, imgs, text, font, sirka, vyska, self.zmenHodnotu, scale)
         
-    def zmenHodnotu(self,self2):#metoda definovana v nutri takze 2x self
+    def zmenHodnotu(self,self2):#zmenRecept definovana v nutri takze 2x self
         if self.maSaZvysitHore:
-            self.hodnota[0]+=1
+            self.zvacsiHodnotu()
             if self.hodnota[0] > self.cap[1]:
                 if self.cykliSa:
                     self.hodnota[0] = self.cap[0]
                 else:
                     self.hodnota[0] = self.cap[1]
         else:
-            self.hodnota[0]-=1
+            self.zmensiHodnotu()
             if self.hodnota[0] < self.cap[0]:
                 if self.cykliSa:
                     self.hodnota[0] = self.cap[1]
@@ -194,6 +185,11 @@ class TlacidloIncDecVal (Tlacidlo):
         self.kontrolaPrvkov()
         self.menu.refresh()
         
+    def zmensiHodnotu(self):
+        self.hodnota[0]-=1
+        
+    def zvacsiHodnotu(self):
+        self.hodnota[0]+=1
         
     def kontrolaHodnoty(self):
         if self.hodnota[0] > self.cap[1]:
@@ -213,8 +209,32 @@ class TlacidloIncDecVal (Tlacidlo):
             return
         for prv in self.kontrola:
             prv.kontrolaHodnoty()
+            
+            
+            '''
+                pokial pridana hodnota je <= 0 tlacidlo sa lockne pokial je mimo capu tlacidlo sa lockne
+            '''
+class TlacidloIncDecValLock(TlacidloIncDecVal):
+    def __init__(self,Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,hodnotaLock, cap, scale = 1,kontrola = None):
+        self.hodnotaLock = hodnotaLock
+        super().__init__(Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,cap, scale,kontrola)
+        
+    def zmensiHodnotu(self):
+        TlacidloIncDecVal.zmensiHodnotu(self)
+        self.hodnotaLock[0] += 1
+        
+    def zvacsiHodnotu(self):
+        TlacidloIncDecVal.zvacsiHodnotu(self)
+        self.hodnotaLock[0] -= 1
 
-   
+    def update(self):
+        TlacidloIncDecVal.update(self)
+        if self.hodnotaLock[0] <= 0 or self.hodnota[0] > self.cap[1] or self.hodnota[0] < self.cap[0]:
+            self.setLock(True)
+        else:
+            self.setLock(False)
+            
+
         
         
 '''
@@ -275,8 +295,8 @@ class TlacidloIncDecValByVal (TlacidloIncDecVal):
      je ulohou je podavat informacie pouzivatelovy za pomocou textury ktoru je mozne updatovat   
 '''
 class ObjMenuInfo (objMenu):
-    def __init__(self,Menu, imgs, text, fontVelkost, sirka, vyska, metoda,args,scaler=1, scale=1):
-        self.metUpdateTex = metoda
+    def __init__(self,Menu, imgs, text, fontVelkost, sirka, vyska, zmenRecept,args,scaler=1, scale=1):
+        self.metUpdateTex = zmenRecept
         self.args = args
         super().__init__(Menu, imgs, text, fontVelkost, sirka, vyska, scaler, scale)
         
@@ -294,7 +314,83 @@ class ObjMenuInfo (objMenu):
         pass
     def updateText(self):
         pass
+    
+    
+    '''
+    nescaluje sa rovnomerne z kazdej strany ale berie ako parameter rect a scaluje sa donho - mozu nastat nepekne graficke efekty ak je pomer stran prilis rozdielny
+    '''
+class objMenuRect(objMenu):
+    def __init__(self,menu,imgs,text,fontVelkost,rect,scaler=1,scale = 1):
+        self.rect = rect
+        super().__init__(menu, imgs, text, fontVelkost, 0, 0, scaler, scale)
         
+    def initImages(self,imgs):
+        self.images = [0 for i in range (len(imgs))]
+ 
+        for i in range (len(imgs)):
+            self.images[i] = pygame.transform.scale(imgs[i],(int(self.rect.width * self.scaleRes* self.scale),int(self.rect.height * self.scaleRes * self.scale)))
+        self.imageIndex = 0
+        self.image = pygame.Surface(self.images[0].get_size(),pygame.SRCALPHA)
+    
+    def initRect(self, xPos, yPos):
+        pass
+    
+    
+    
+class ObjMenuInventar(objMenuRect):
+    def __init__(self,menu,imgs,text,fontVelkost,rect,scaler=1,scale = 1):
+        super().__init__(menu, imgs, text, fontVelkost, rect, scaler, scale)
+
+    
+    def initImages(self, imgs):
+        pass
+    
+    def updateText(self):
+        pass
+    
+    def prekresli(self):
+        pass
+
+        
+        
+    def reinit(self,inventar):
+        self.inventar = inventar
+        pocSlotX = int((self.rect.width - 6)/ 70)
+        pocSlotY = int((self.rect.height -6)/ 70)
+        xSur = self.rect.x +3
+        ySur = self.rect.y +3
+        
+        sloty = self.inventar.dajSloty()
+        
+        
+        pocX = 0
+        pocY = 0
+
+        for slot in sloty:
+            slot.reinit(xSur,ySur,1,self.inventar.dajGroupSloty())
+            pocX += 1
+            if pocX > pocSlotX:
+                pocY+=1
+                xSur = self.rect.x +3
+                ySur += 70
+            
+            if pocY > pocSlotY:
+                break
+            
+        predmety = self.inventar.dajPredmety()
+        for pr in predmety:
+            pr.aktualizujGrafiku()
+
+    
+    def update(self):
+        objMenu.update(self)
+        
+
+        
+        
+        
+        
+
         
         
         
