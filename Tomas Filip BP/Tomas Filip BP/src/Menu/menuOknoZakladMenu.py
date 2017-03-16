@@ -5,7 +5,7 @@ Created on 7. 3. 2017
 '''
 import Menu.menuOkno as menuOkno
 import Menu.objMenu as objMenu
-import textury
+from Textury import textury
 import pygame
 import sys
 import Menu.enumOknaMenu as enumOknaMenu

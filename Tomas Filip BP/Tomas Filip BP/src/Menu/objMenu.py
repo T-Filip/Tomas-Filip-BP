@@ -4,7 +4,7 @@ Created on 6. 3. 2017
 @author: T.Filip
 '''
 import pygame
-import textury
+from Textury import textury
 from enum import Enum
 import nastavenia
 

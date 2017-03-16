@@ -6,9 +6,10 @@ Created on 9. 3. 2017
 
 import pygame
 import ObjektyMapa.infObjekty as infObjekty
-import textury
+from Textury import textury
 import nastavenia
 from _operator import pos
+from Textury import enumTextura
 
 class Predmet (pygame.sprite.Sprite):
     def __init__(self,id,pocetKusov = 1):
@@ -51,6 +52,11 @@ class Predmet (pygame.sprite.Sprite):
     def dajPocetKusov(self):
         return self.pocetKusov
     
+    def dajImgNaMape(self):
+        return self.inf.dajImgNaMape()
+    
+    def dajInf (self):
+        return self.inf
 
         
 
@@ -105,6 +111,8 @@ class MiestoPrePredmet:
         self.predmet.aktualizujGrafiku()
         self.vlozDoGroup()
 
+    def dajPredmet(self):
+        return self.predmet
         
     def vydajPredmet(self):
         self.predmet.miestoPrePredmet = None
@@ -179,11 +187,39 @@ class MiestoPredmetu (pygame.sprite.Sprite,MiestoPrePredmet):
         
     def reinit(self,x,y, velkostStrany):
         self.rect = pygame.Rect(x,y,velkostStrany,velkostStrany)
-        self.image = pygame.transform.scale(textury.MIESTO_PREDMET,(velkostStrany,velkostStrany)) # vracia novy surf - mozne vylepsit
+        self.updateImage(velkostStrany)
         
+    def updateImage(self,velkostStrany):
+        self.image = textury.dajTexturu(enumTextura.EnumTextura.MIESTO_PREDMET, velkostStrany,velkostStrany)
         
     def dajRectPrePredmet(self):
         return self.rect
+    
+class MiestoPredmetuOznacitelne (MiestoPredmetu):
+    def __init__(self,group,inventar):
+        self.jeOznacene = False
+        self.nastalReinit = False
+        super().__init__(group, inventar)
+        
+    def updateImage(self,velkostStrany):
+        if not self.nastalReinit:
+            return
+        if self.jeOznacene:
+            self.image = textury.dajTexturu(enumTextura.EnumTextura.MIESTO_PREDMET_OZNACENY, self.velkostStrany, self.velkostStrany)
+        else:
+            self.image = textury.dajTexturu(enumTextura.EnumTextura.MIESTO_PREDMET, self.velkostStrany, self.velkostStrany)
+            
+    def reinit(self, x, y, velkostStrany):
+        self.nastalReinit = True
+        self.velkostStrany = velkostStrany
+        MiestoPredmetu.reinit(self, x, y, velkostStrany)
+            
+        
+    def zmenOznacene(self,hodnota):
+        if hodnota != self.jeOznacene:
+            self.jeOznacene = hodnota
+            self.updateImage(0)
+    
 
 
         

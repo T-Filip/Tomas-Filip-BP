@@ -6,7 +6,7 @@ import sys
 import os
 from enum import Enum
 import nastavenia
-import textury
+from Textury import textury
 import Menu.objMenu as objMenu
 
 #os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"

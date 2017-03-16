@@ -18,6 +18,6 @@
 	
 	-mapa daj okolie vola metodku ktora sa pri viacerych volaniach okolitych policiek da oprimalizovat (nemusi sa to vzdy preratavat)... asi skoda casu
 	
-	-stage 2 cyklus sa obcas vykonava zbytocne ak sa meni smer
+	-stage 2 cyklus sa obcas vykonava zbytocne ak sa meni smer - opravene?
 	
 	- pri pohybe hraca sa jeho okolie pri pohybe nacitava vzdy odznova pricom 20/25 objektov ostavaju rovnake 

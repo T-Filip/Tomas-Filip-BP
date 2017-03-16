@@ -9,7 +9,7 @@ import collections
 import mapa
 from ObjektyMapa import scale
 import copy
-import textury
+from Textury import textury
 
 INF_OBJ_MAPA = {}
 objMapaScalovanie = pygame.sprite.Group() # mnozina objektov na mape ktorym je nutne menit poziciu na obrazovke pri pohybe hraca (tak ako policka alebo aj samotnemu hracovi)
@@ -26,6 +26,9 @@ class Inf():
     
     def dajImgPredm(self):
         return self.imgPredmet
+    
+    def dajObjOblastMapa(self):
+        return pygame.Rect(0,0,0,0)
 
 
 #InfObj = namTupDef("InfObj", "img rectObjOblastMapa rychlostPrechodu pocPouzivajucich", {'pocPouzivajucich':0})
@@ -41,8 +44,12 @@ class InfObj(Inf):
         
         super().__init__(imgPredmet, stackKapacita)
         self.imgPredmet = img
+        
+    def dajImgNaMape(self):
+        return self.img
     
-
+    def dajObjOblastMapa(self):
+        return self.rectObjOblastMapa
 
 
         

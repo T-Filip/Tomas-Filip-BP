@@ -15,9 +15,12 @@ class Inventar():
     def __init__(self,velkost):
         self.sloty = pygame.sprite.RenderPlain()
         self.predmety = pygame.sprite.RenderPlain()
+        self.initMiesta(velkost)
+        
+            
+    def initMiesta(self,velkost):
         for i in range(velkost):
             predmet.MiestoPredmetu(self.sloty,self)
-        
         
     def vlozPredmet(self,predmet):
         pred = predmet

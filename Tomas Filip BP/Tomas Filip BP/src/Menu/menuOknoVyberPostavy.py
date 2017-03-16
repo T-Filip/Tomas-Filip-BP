@@ -5,7 +5,7 @@ Created on 4. 3. 2017
 '''
 import Menu.menuOkno as menuOkno
 import uvodneNastavenia 
-import textury 
+from Textury import textury 
 import nastavenia
 import pygame
 import Menu.objMenu as objMenu

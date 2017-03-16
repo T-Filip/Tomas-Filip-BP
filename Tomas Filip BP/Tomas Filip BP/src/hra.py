@@ -37,11 +37,16 @@ class Hra:
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
-        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury,vlastnosti,typP)
         
+        
+        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury,vlastnosti,typP)
         
         logging.info("Vytvorenie mapy")
         self.mapa = mapa.Mapa(self)
+        
+        self.hrac.linkMapa(self.mapa)
+        
+        
         
         logging.info("inicializacia mapy")
         self.hrac.update()
@@ -88,6 +93,8 @@ class Hra:
             
         self.initTime = time.time()
 
+    def dajHraca(self):
+        return self.hrac
         
     def dajOknoInventarRychlyPristup(self):
         return self.invOknoRychlyPristup
@@ -108,9 +115,7 @@ class Hra:
     def dajAktivBlitGroup(self):
         return self.aktivBlitObjMapa
 
-    
-    def dajHraca(self):
-        return self.hrac
+
     
     
     def vykresliHru(self):
@@ -132,7 +137,7 @@ class Hra:
             policko.updatePozicie(self.mapa)
         
         
-
+        
 
 
         if self.mapa.menilSaZoom:
@@ -152,6 +157,8 @@ class Hra:
             
             for obj in infObjekty.objMapaScalovanie:
                 obj.scale(nas)
+                
+            
                 
                 
        #iba ak sa hrac pohne? 
@@ -180,9 +187,23 @@ class Hra:
             print (len(self.polickaSprites))
             print (len(self.aktivBlitObjMapa))
         '''
-        
+        if not self.manazerOkien.jeVykresleneNejakeMenu():
+                self.hrac.vykresliOznacenyPredmet(self.screen)
         self.invOknoRychlyPristup.draw(self.screen)
         
+    def dajMapu(self):
+        return self.mapa
+        
+    def klikButton1(self):
+        pass
+    def klikButton2(self):
+        pass
+    def klikButton3(self):
+        pass
+    def klikButton4(self):
+        pass
+    def klikButton5(self):
+        pass
         
     def vykresliInfoRoh(self):
         font = nastavenia.FONT_1_16
@@ -214,6 +235,7 @@ class Hra:
         
         if self.casovanieZoom % 10 == 0: 
             self.mapa.updateZoom()
+        self.hrac.update()
         
         self.tpsCount += 1
         
@@ -270,6 +292,39 @@ class Hra:
         
         #self.polickaSprites.update(self.mapa) # nic tam nie je 
         
+    def stlacena0(self):
+        self.hrac.stlacena0()
+        
+    def stlacena1(self):
+        self.hrac.stlacena1()
+        
+    def stlacena2(self):
+        self.hrac.stlacena2()
+        
+    def stlacena3(self):
+        self.hrac.stlacena3()
+        
+    def stlacena4(self):
+        self.hrac.stlacena4()
+        
+    def stlacena5(self):
+        self.hrac.stlacena5()
+        
+    def stlacena6(self):
+        self.hrac.stlacena6()
+        
+    def stlacena7(self):
+        self.hrac.stlacena7()
+        
+    def stlacena8(self):
+        self.hrac.stlacena8()
+        
+    def stlacena9(self):
+        self.hrac.stlacena9()
+    
+    
+    
+    
         
         
 class test(pygame.sprite.Sprite):

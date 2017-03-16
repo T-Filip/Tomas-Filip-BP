@@ -5,7 +5,7 @@ Created on 9. 2. 2017
 '''
 import pygame
 import nastavenia
-import texturyPolicka
+from Textury import texturyPolicka
 import random
 import ObjektyMapa.objMapa as objMapa
 import ObjektyMapa.scale as scale
@@ -60,6 +60,9 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
     def dajTextOblastMapa(self):
         return self.rectTextOblastMapa
+    
+    def dajSuradnice(self):
+        return self.suradnice
         
     def vytvorObjMapa(self):
         #predcasne vytvori vsetky objekty na mape - potom sa budu preriedovat ak sa budu prelinat
@@ -119,6 +122,8 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             pass 
         
 
+    def dajRect(self):
+        return self.rect
             
     def vlozObj(self,obj):    
         col = pygame.sprite.spritecollideany(obj, self.objMapaVlastne,collideObjOblastMapa)

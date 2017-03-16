@@ -6,6 +6,7 @@ from tkinter.constants import HORIZONTAL
 import logging
 import Postavy.smerPostavy as smerPostavy
 import Predmety.inventar as inventar
+from Predmety import inventarOznPredmet
 import Predmety.predmet as predmet
 
 
@@ -19,7 +20,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.hra = hra
         pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup())
         self.inventar = inventar.Inventar(20)
-        self.inventarRychlyPristup = inventar.Inventar(9)
+        self.inventarRychlyPristup = inventarOznPredmet.InventarOznPredmet(9,self)
         self.image = pygame.Surface((48,48))
         self.rect = self.image.get_rect()
         
@@ -35,6 +36,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         #self.rectTextOblastMapa.x = surPix[0]
         #self.rectTextOblastMapa.y = surPix[1]
         self.topLeftScaleMap = [self.rect.x, self.rect.y]
+        self.topLeftNoScaleMap = self.topLeftScaleMap.copy()
         #self.rect.x = sur[0]#?
         #self.rect.y = sur [1]
         self.scale(1)#da sa aj lepsie
@@ -52,6 +54,16 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.vydrz = self.capVydrz # len 1. krat
         
         self.vlozPredmety()
+        
+    def dajTextOblastMapa(self):
+        return self.rectTextOblastMapa
+        
+        
+    def dajTopLeftScaleMap(self):
+        return self.topLeftScaleMap
+        
+    def dajTopLeftNoScaleMap(self):
+        return self.topLeftNoScaleMap
         
     def reinitVlastnosti(self):
         self.capVydrz = self.vlastnosti[3][0]*50+100
@@ -81,6 +93,13 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
     def dajVolneVlastnosti(self):
         return self.volneVlastnosti
+    
+    def dajhru(self):
+        return self.hra
+    
+    def linkMapa(self,mapa):
+        self.mapa = mapa
+        self.inventarRychlyPristup.linkMapa(self.mapa)
         
     def dajVlastnosti(self):
         return self.vlastnosti
@@ -121,16 +140,10 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
     def dajObjOblastMapa(self):
         return self.rectObjOblast
-
+        
 
     def update(self, *args):
-        i = 6
-        #self.hra.mapa.updatniPoziciu(self.topLeftScaleMap,self.rect)
-        #print("hrac: " + str(self.rectTextOblastMapa))
-        #self.rect.x = self.pixeloveUmiestnenieNaMape[0] - self.hra.mapa.lavoHorePixelKamera[0]-32
-        #self.rect.y = self.pixeloveUmiestnenieNaMape[1] - self.hra.mapa.lavoHorePixelKamera[1]-32
-        #print ("hrac suradnice pix: " + str(self.pixeloveUmiestnenieNaMape[0]) + " " + str(self.pixeloveUmiestnenieNaMape[1]))
-        #print ("hrac vykreslovanie: " + str(self.rect.x) + " " + str(self.rect.y))
+        self.inventarRychlyPristup.update()
         
     def aktualizujObjOblast(self):
         #aktualizacia rect obj oblasti
@@ -142,15 +155,8 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
         
     def dajNoveOkolie(self):
-        
-        
-        mapa = self.hra.mapa
-        self.objMapaNaokolo = pygame.sprite.Group()
-        for x in range (self.suradnice[0]-2,self.suradnice[0]+3):
-            for y in range (self.suradnice[1]-2,self.suradnice[1]+3):
-                    self.objMapaNaokolo.add(mapa.dajPolicko((x,y)).dajVlastneObjekty())
-                    
-        #print("pocet obj okolie: " + str(len(self.objMapaNaokolo)))
+        self.objMapaNaokolo = self.hra.mapa.dajObjektyVOblasti(3,self.suradnice[0],self.suradnice[1])
+
         
         
         
@@ -357,6 +363,8 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
         self.topLeftScaleMap[0] = self.rectTextOblastMapa.x*self.hra.mapa.dajNas()
         self.topLeftScaleMap[1] = self.rectTextOblastMapa.y*self.hra.mapa.dajNas()
+        self.topLeftNoScaleMap[0] = self.rectTextOblastMapa.x
+        self.topLeftNoScaleMap[1] = self.rectTextOblastMapa.y
         
         logging.info("hrac->mapa-nacitajPolicka")
         self.hra.mapa.nacitajPolicka(self)
@@ -366,7 +374,41 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         #DOROBIT HITBOX NA rect hitboxu
         self.hra.dajAktivBlitGroup().change_layer(self,self.rectTextOblastMapa.y+30)
 
+    def zmenVyznacenyPredmet(self,cislo):
+        self.inventarRychlyPristup.zmenOznacenie(cislo)
+
+    def stlacena0(self):
+        pass #na nule nic nerobim zatial
         
+    def stlacena1(self):
+        self.zmenVyznacenyPredmet(1)
+        
+    def stlacena2(self):
+        self.zmenVyznacenyPredmet(2)
+        
+    def stlacena3(self):
+        self.zmenVyznacenyPredmet(3)
+        
+    def stlacena4(self):
+        self.zmenVyznacenyPredmet(4)
+        
+    def stlacena5(self):
+        self.zmenVyznacenyPredmet(5)
+        
+    def stlacena6(self):
+        self.zmenVyznacenyPredmet(6)
+        
+    def stlacena7(self):
+        self.zmenVyznacenyPredmet(7)
+        
+    def stlacena8(self):
+        self.zmenVyznacenyPredmet(8)
+        
+    def stlacena9(self):
+        self.zmenVyznacenyPredmet(9)
+        
+    def vykresliOznacenyPredmet(self,screen):
+        self.inventarRychlyPristup.draw(screen)
         
         
         

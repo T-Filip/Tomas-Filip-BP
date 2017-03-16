@@ -8,7 +8,7 @@ import Menu.menuOkno as menuOkno
 import pygame
 import Menu.objMenu as objMenu
 import nastavenia
-import textury
+from Textury import textury
 import Menu.oknoInventar as oknoInventar
 import Predmety.predmet as predmet
 import Predmety.inventar as inventar
@@ -33,6 +33,8 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          predmet.MiestoPrePredmet.__init__(self, None)
          krajnaMedzera = 30*scale
          
+
+         
          x = int(self.rect.x+krajnaMedzera + self.rect.width/2.5 -15)
          y = self.rect.y+self.rect.height/2
          width = int(self.rect.width - krajnaMedzera - krajnaMedzera - self.rect.width/2.5)
@@ -52,12 +54,13 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          
          x = int(self.rect.x + 600*self.scaleRes)
          
+         
          prodRect = pygame.Rect(x-10,y,130,95)
          self.oknoProdukt = oknoInventar.OknoInventar(prodRect)
          
          
-         x = int(self.rect.x + 485*self.scaleRes)
-         y = int(self.rect.y + 85*self.scaleRes)
+         x = int(self.topLeftXPredScale + 485)
+         y = int(self.topLeftYPredScale + 85)
                   
          self.tlacidloCraft = objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene,textury.TUN2Oznacene2],"craft",29,x,y,metodaCraft,self.scaleRes,0.75)
          self.recept = None
@@ -65,9 +68,9 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          #init__(self,Menu,imgs,text,font,sirka,vyska,zmenRecept,scaler = 1,scale = 1,args):
          #objMenu.Tlacidlo(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],)
          #objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[3],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
-         x = int(self.rect.x + 50*self.scaleRes)
-         y = int(self.rect.y + 85*self.scaleRes)
-         medzera = int(30*self.scaleRes)
+         x = int(self.topLeftXPredScale + 50)
+         y = int(self.topLeftYPredScale + 85)
+         medzera = int(30)
          poradie = 1
 
          
@@ -78,10 +81,11 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
              poradie +=1
              y += medzera
              if poradie == 11:
-                 x = int(self.rect.x + 50*self.scaleRes + tlac.rect.width)
-                 y = int(self.rect.y + 85*self.scaleRes)
+                 x = int(self.topLeftXPredScale + 50 + 120)
+                 y = int(self.topLeftYPredScale + 85)
                  
              
+         self.craftCheck()
 
          
          
@@ -99,7 +103,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
     def vykresliCraftingText(self,screen):
         y = int(self.rect.y + 90*self.scaleRes)
         x = int(self.rect.x + 350*self.scaleRes)
-        font = textury.dajFont(20)                                 
+        font = textury.dajFont(int(20*self.scaleRes))                                 
         textSurf = font.render("material",1, nastavenia.BLACK)
         screen.blit(textSurf,(x,y))
         
@@ -153,25 +157,28 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         daSaVykraftit = True # predpokladam ze sa da
         #material = self.recept.dajMaterial
         
-        #for okno in self.oknoMaterial:
-        inv = self.oknoMaterial.dajInventar()
-        if inv == None:
-            return
-        predmetyMaterial = inv.dajPredmety()
-        for predmet in predmetyMaterial:
-            potrebneKs = predmet.dajPocetKusov()
-            potrebneId = predmet.dajId()
-            
-            #pre kazde okno co drzi praca s predmetmi musime pozriet ci tam je toho dost
-            for okno in okna:
-                predmety = okno.dajInventar().dajPredmety()
-                for predmet in predmety:
-                    if predmet.dajId() == potrebneId:
-                        potrebneKs -= predmet.dajPocetKusov()
-                        
-            if potrebneKs > 0:
-                daSaVykraftit = False
-                break;
+        if self.recept != None:
+            #for okno in self.oknoMaterial:
+            inv = self.oknoMaterial.dajInventar()
+            if inv == None:
+                return
+            predmetyMaterial = inv.dajPredmety()
+            for predmet in predmetyMaterial:
+                potrebneKs = predmet.dajPocetKusov()
+                potrebneId = predmet.dajId()
+                
+                #pre kazde okno co drzi praca s predmetmi musime pozriet ci tam je toho dost
+                for okno in okna:
+                    predmety = okno.dajInventar().dajPredmety()
+                    for predmet in predmety:
+                        if predmet.dajId() == potrebneId:
+                            potrebneKs -= predmet.dajPocetKusov()
+                            
+                if potrebneKs > 0:
+                    daSaVykraftit = False
+                    break;
+        else:
+            daSaVykraftit = False
         
         if daSaVykraftit:
             self.tlacidloCraft.setLock(False)

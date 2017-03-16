@@ -4,7 +4,7 @@ Created on 9. 3. 2017
 @author: T.Filip
 '''
 
-import textury
+from Textury import textury
 import pygame
 
 '''

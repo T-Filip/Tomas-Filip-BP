@@ -46,14 +46,18 @@ class Mapa:
         self.mapa = [[0 for xPos in range(nastavenia.MAP_SIZE_Y)] for yPos in range(nastavenia.MAP_SIZE_X)] 
         self.topLeftMapa = [0,0]
         self.topLeftCoord = [0,0]
+        self.okolieMysly = pygame.sprite.Group()
         #self.lavoHorePixelKamera= [0,0]
+        self.starePolickoveSurMysky = [0,0]
         self.zoom = 64 #zakladny zoom
         self.menilSaZoom = False
         self.scaleNasobitel =1
+        self.okolieMysky = pygame.sprite.Group()
         #self.minulaPoziciaHraca = [0,0]
         logging.info("initKamera")
         self.initKamera()
-        self.Test = pygame.image.load('img\\Test32.png').convert()
+        self.Test = pygame.image.load('img/Test32.png').convert()
+        self.polickoveSurMysky = [0,0]
         
         #self.generator = generator.Generator(1234)
         logging.info("init generatorov")
@@ -61,6 +65,7 @@ class Mapa:
         logging.info("nacitanie mapy")
         self.nacitajMapu()
         
+        self.topLeftNoScale = [0,0] # pozicia kamery v nescalovanom svete pix suradnice jej laveho horneho rohu
         
         logging.info("vytvorenie mapy hotovo")
         
@@ -83,7 +88,7 @@ class Mapa:
             self.zoom = 386
             self.zoomZotrvacnost = 0
         self.scaleNasobitel = self.zoom /64
-        self.hra.mapa.menilSaZoom = True
+        self.menilSaZoom = True
         if self.zoomZotrvacnost>0:
             self.zoomZotrvacnost -= self.zoomZotrvacnost*0.25
             
@@ -92,6 +97,15 @@ class Mapa:
             
         if self.zoomZotrvacnost < 1 and self.zoomZotrvacnost > -1:
             self.zoomZotrvacnost = 0
+            
+
+    def dajTopLeftPolicko(self):
+        sur = self.mapa[self.topLeftMapa[0]][self.topLeftMapa[1]].dajSuradnice()
+        surRoh = [0,0]
+        surRoh[0] = sur[0] + 1
+        surRoh[1] = sur[1] + 1
+        return self.dajPolicko(surRoh)
+
         
     def zvysZoom(self, i):
         self.zoomZotrvacnost += self.zoom/64 *16
@@ -108,6 +122,23 @@ class Mapa:
         
     def dajZoom(self):
         return self.zoom
+    def dajScaleNas (self):
+        return self.scaleNasobitel
+    
+    def updatePolickoveSuradniceMysky(self):
+        #ulozi suradnice policka na ktore ukazuje myska
+        pos = pygame.mouse.get_pos()
+
+        x = self.kamera.x + pos[0]
+        y = self.kamera.y + pos[1]
+        self.polickoveSurMysky = [int(x/self.zoom),int(y/self.zoom)]
+        
+    def dajPolickoveSurMysky(self):
+        return self.polickoveSurMysky
+    
+    def update(self):
+        self.updatePolickoveSuradniceMysky()
+        self.skontrolujPolickoNaMyske()
         
     def dajNas(self):
         return self.scaleNasobitel
@@ -115,6 +146,7 @@ class Mapa:
         #ak sa hrac pohol prilis istym smerom je potrebne nacitat nove policka 
         #hracy =hrac.rectTextOblastMapa.centery
         #mapay = self.nacitanaMapa.centery 
+        
         rozdiel = hrac.rectTextOblastMapa.centerx - self.nacitanaMapa.centerx 
         
         i = 0
@@ -133,17 +165,28 @@ class Mapa:
         if rozdiel2 > 32:
             logging.info("Mapa-nacitajPolicka Dole")
             self.nacitajPolickaDole()
+            self.nacitanaMapa = self.nacitanaMapa.move(0,64)
             hrac.suradnice[1]+=1
 
             
         elif rozdiel2 < -32:
             logging.info("Mapa-nacitajPolicka Hore")
             self.nacitajPolickaHore()
+            self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
             hrac.suradnice[1]-=1
 
 
             
+    def skontrolujPolickoNaMyske(self):
+        sur = self.dajPolickoveSurMysky()
+        if sur[0] == self.starePolickoveSurMysky[0] and sur[1] == self.starePolickoveSurMysky[1]:
+            return
+        #inak nastala zmena
+        self.starePolickoveSurMysky = sur
+        self.okolieMysky = self.dajObjektyVOblasti(3, sur[0], sur[1])
         
+    def dajOkolieMysky(self):
+        return self.okolieMysky
 
          
     def nacitajPolickaDole(self):
@@ -169,7 +212,7 @@ class Mapa:
         if self.topLeftMapa[1] >= nastavenia.MAP_SIZE_Y:
             #nastavenie na dol ak by bola mimo pole
             self.topLeftMapa[1] = 0
-        self.nacitanaMapa = self.nacitanaMapa.move(0,64)
+        #self.nacitanaMapa = self.nacitanaMapa.move(0,64)
 
         yStage2 =self.topLeftMapa[1]-2
         
@@ -234,7 +277,7 @@ class Mapa:
 
 
 
-        self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
+        #self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
             
         
     def nacitajPolickaVlavo(self):
@@ -279,7 +322,7 @@ class Mapa:
         xCoord = self.topLeftCoord[0] + nastavenia.MAP_SIZE_X
         
         
-        logging.info("A" + str((self.topLeftMapa[1],nastavenia.MAP_SIZE_Y)))   
+  
         for y in range (self.topLeftMapa[1],nastavenia.MAP_SIZE_Y):
             self.mapa[self.topLeftMapa[0]][y].uloz()
             self.mapa[self.topLeftMapa[0]][y] = self.vytvorPolickoNa(xCoord,yCoord)
@@ -288,7 +331,7 @@ class Mapa:
             #self.hra.zoznamNacitanie[task] = task
             yCoord += 1
             
-        logging.info("B" + str((0,self.topLeftMapa[1]))) 
+
         for y in range (0,self.topLeftMapa[1]):
             self.mapa[self.topLeftMapa[0]][y].uloz()
             self.mapa[self.topLeftMapa[0]][y] = self.vytvorPolickoNa(xCoord,yCoord)
@@ -298,7 +341,7 @@ class Mapa:
             yCoord += 1
             
             
-        logging.info("C")  
+ 
         self.topLeftMapa[0] +=1
         self.topLeftCoord[0] += 1
         if self.topLeftMapa[0] >= nastavenia.MAP_SIZE_X:
@@ -312,17 +355,16 @@ class Mapa:
         dolnaStrana = nastavenia.MAP_SIZE_Y
         if self.topLeftMapa[1] <= 0:
             dolnaStrana -=1
-            
-        logging.info("D" + str((self.topLeftMapa[1]+1,dolnaStrana))) 
+ 
         for y in range (self.topLeftMapa[1]+1,dolnaStrana):
             #print("x" + str(xStage2) + "  y" + str(y))
-            logging.info("D " + str(xStage2)) 
+
             self.mapa[xStage2][y].initStage2() 
 
             #a =  initStage2Task(self.mapa[xStage2][y])
             #self.hra.zoznamStage2[a] = a 
  
-        logging.info("E"+ str((0,self.topLeftMapa[1]-1))) 
+
         for y in range (0,self.topLeftMapa[1]-1):
             self.mapa[xStage2][y].initStage2()
 
@@ -373,6 +415,10 @@ class Mapa:
             for y, policko in enumerate(stlpec):
                 if y>0 and y<len(stlpec)-1:
                     self.mapa[x][y].initStage2()
+                    
+                    
+    def dajNacitanuMapu(self):
+        return self.nacitanaMapa#pixelova mapa ktora je nacitana
         
     def vytvorPolickoNa(self,x,y):
         #bud nacitat alebo generator
@@ -406,8 +452,20 @@ class Mapa:
         '''
         
     def updateKamera(self,hrac):
-        self.kamera.x = hrac.topLeftScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
-        self.kamera.y = hrac.topLeftScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        topLeftScaleMap = hrac.dajTopLeftScaleMap()
+        topLeftNoScaleMap = hrac.dajTopLeftNoScaleMap()
+        
+        self.kamera.x = topLeftScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        self.kamera.y = topLeftScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        
+        self.topLeftNoScale[0] = topLeftNoScaleMap[0] - int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        self.topLeftNoScale[1] = topLeftNoScaleMap[1] - int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2) +self.zoom/4
+        
+    def dajTopLeftNoScale(self):
+        return self.topLeftNoScale
+        
+    def dajKamera(self):
+        return self.kamera
         
     def initKamera(self):
         #self.lavoHorePixelKamera[0] = self.hrac.pixeloveUmiestnenieNaMape[0] - nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2
@@ -421,7 +479,7 @@ class Mapa:
         
     def updatniPoziciu(self,topLeftScaleMap,rect):
         rect.x = topLeftScaleMap[0] - self.kamera.x
-        #rect.y = self.kamera.y - topLeftScaleMap[1] # menim smer y suradnice hore sa znizuje :D bo pygame rect D: 
+        #rect.y = self.kamera.y - topLeftScaleMap[1] # menim smer y suradnice hore sa znizuje
         rect.y = topLeftScaleMap[1] -self.kamera.y
         
     def dajOkolie (self, surNaMape):
@@ -438,7 +496,26 @@ class Mapa:
             self.dajPolicko((surNaMape[0]+1,surNaMape[1]-1)),
             ]
         return zoznam
-        
+    
+    def dajObjektyVOblasti(self,radius,stredX,stredY):
+        #vrati vsetky policka v danom radiuse
+        #radius = 1 vrati 1 policko
+        #radiu 2 vrati 9 policok
+        # 3- 25   4 - 49 ...
+        xLHranica = stredX - radius + 1
+        xPHranica = stredX + radius
+        yHHranica = stredY - radius + 1
+        yDHranica = stredY + radius
+        group = pygame.sprite.Group()
+        try:
+            for x in range (xLHranica,xPHranica):
+                for y in range (yHHranica,yDHranica):
+                        group.add(self.dajPolicko((x,y)).dajVlastneObjekty())
+        except:
+            return None # dane policka nemusia byt nacitane
+            
+        return group
+            
     def dajPolicko(self, surNaMape ):
         sur = [surNaMape[0],surNaMape[1]]
         sur[0] -= self.topLeftCoord[0]

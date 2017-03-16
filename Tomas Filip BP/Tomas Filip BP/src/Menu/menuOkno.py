@@ -7,7 +7,7 @@ import pygame
 import logging
 import nastavenia
 import manazerOkien
-import textury
+from Textury import textury
 
 
 class MenuOkno():
@@ -101,6 +101,12 @@ class MenuOknoHra(MenuOkno):
         self.nastalReinit = False
         x = nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]
         y = nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]
+        self.sirkaPodiel = sirka
+        self.vyskaPodiel = vyska
+         #tlacidla maju vlastne scalovania preto nie je vhodne scalovat ich poziciu 
+         #tieto atributy predstavuju pozicu pri rozliseni 1280/720 
+        self.topLeftXPredScale = int((1280 - (self.sirkaPodiel*1280))/2)
+        self.topLeftYPredScale = int((720 - (self.sirkaPodiel*720))/2)
         sirkaOkna = sirka*x
         vyskaOkna = vyska*y
         topLeftX = int((x - sirkaOkna)/2)

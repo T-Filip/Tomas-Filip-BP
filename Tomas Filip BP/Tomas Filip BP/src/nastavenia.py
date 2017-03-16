@@ -5,16 +5,16 @@ import pygame
 import math
 import random
 import time
-user32 = ctypes.windll.user32
+
 
 
 
 BORDER = ["BorderLess", "Border"]
-borderIndex = 0 # nacitat
+borderIndex = 1 # nacitat
 WINDOW = ["Full screen","Windowed"]
 windowIndex = 1 #nacitat
 
-DEBUG = False
+DEBUG = True
 
 #VYPIS = True
 
@@ -22,11 +22,8 @@ DEBUG = False
 
 
 
-SCREEN_SIZE_X = user32.GetSystemMetrics(0)
-SCREEN_SIZE_Y = user32.GetSystemMetrics(1)
-
-MAP_SIZE_X = 8
-MAP_SIZE_Y = 8
+MAP_SIZE_X = 18
+MAP_SIZE_Y = 18
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -46,7 +43,6 @@ VLASTNOSTI_POSTAVY_TYP_POSTAVY = [[3,3,5,5,],[4,4,4,4],[6,5,3,2]]
 VLASTNOSTI_POSTAVY_POHLAVIE = [[0,1,0,0],[0,0,0,1]]
 
 
-#SEED = time.time()  #123456
 SEED = 123456
 
 

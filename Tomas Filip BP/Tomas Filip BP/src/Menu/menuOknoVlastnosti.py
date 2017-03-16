@@ -3,7 +3,7 @@ Created on 11. 3. 2017
 
 @author: T.Filip
 '''
-import textury
+from Textury import textury
 import nastavenia
 import Menu.menuOkno as menuOkno
 import Menu.objMenu as objMenu
@@ -16,9 +16,11 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         
     def reinit(self, hrac):
         menuOkno.MenuOknoHra.reinit(self, hrac)
-        x= int((self.rect.x + 80)*self.scaleRes)
-        y= int((self.rect.y + 80)*self.scaleRes)
-        zvKonst = int(50*self.scaleRes)
+        #x= int((self.rect.x + 80)*self.scaleRes)
+        #y= int((self.rect.y + 80)*self.scaleRes)
+        x= self.topLeftXPredScale + 80
+        y= self.topLeftYPredScale + 50
+        zvKonst = 50
         #def __init__(self,Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,hodnotaLock, cap, scale = 1,kontrola = None):
         objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[0],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
         y+=zvKonst
@@ -41,8 +43,8 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         font = textury.dajFont(int(25*self.scaleRes))  
         vlastnosti = nastavenia.VLASTNOSTI_POSTAVY # text
         pocetVlastnosti = 4
-        x= (self.rect.x + 150)*self.scaleRes
-        y= (self.rect.y + 85)*self.scaleRes
+        x= (self.topLeftXPredScale + 150)*self.scaleRes
+        y= (self.topLeftYPredScale + 55)*self.scaleRes
         zvKonst = (50*self.scaleRes)
 
         vlastnostiHraca = self.hrac.dajVlastnosti()
@@ -57,8 +59,8 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         font = textury.dajFont(int(25*self.scaleRes))
         text = "Volne vlastnosti: " + str(self.hrac.dajVolneVlastnosti()[0])                                 
         textSurf = font.render(text,1, nastavenia.BLACK)
-        x= int((self.rect.x + (self.rect.width - textSurf.get_width())/2)*self.scaleRes)
-        y= int((self.rect.y + self.rect.height - 45)*self.scaleRes)
+        x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
+        y= self.rect.y + self.rect.height - int(45*self.scaleRes)
         screen.blit(textSurf,(x,y))
 
                 
