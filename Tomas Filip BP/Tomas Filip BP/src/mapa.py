@@ -72,14 +72,30 @@ class Mapa:
         self.zoomZotrvacnost = 0
 
 
+    def dajMyskuNaMape(self):
+        scale = self.dajScaleNas()
+        pos = pygame.mouse.get_pos()
+
+        nacitanaMapa = self.dajNacitanuMapu()
+        rectTopLeftPolicka = self.dajTopLeftPolicko().dajRect()
+        relatMysX= pos[0] - rectTopLeftPolicka.x + rectTopLeftPolicka.width
+        relatMysY= pos[1] - rectTopLeftPolicka.y + rectTopLeftPolicka.height
+
+        relatMysX = relatMysX/scale
+        relatMysY = relatMysY/scale
+        ret = [relatMysX + nacitanaMapa.x,relatMysY + nacitanaMapa.y]
+        return ret
+        
+        
+
     def updateZoom(self):
         
         
         if self.zoomZotrvacnost == 0:
             return
         
-        print("Zotrvacnost")
-        print(self.zoomZotrvacnost)
+        #print("Zotrvacnost")
+        #print(self.zoomZotrvacnost)
         self.zoom += int(round(self.zoomZotrvacnost*0.25))
         if self.zoom < 32:
             self.zoom = 32
@@ -128,7 +144,6 @@ class Mapa:
     def updatePolickoveSuradniceMysky(self):
         #ulozi suradnice policka na ktore ukazuje myska
         pos = pygame.mouse.get_pos()
-
         x = self.kamera.x + pos[0]
         y = self.kamera.y + pos[1]
         self.polickoveSurMysky = [int(x/self.zoom),int(y/self.zoom)]
@@ -142,6 +157,7 @@ class Mapa:
         
     def dajNas(self):
         return self.scaleNasobitel
+    
     def nacitajPolicka(self,hrac):
         #ak sa hrac pohol prilis istym smerom je potrebne nacitat nove policka 
         #hracy =hrac.rectTextOblastMapa.centery
@@ -177,11 +193,12 @@ class Mapa:
 
 
             
-    def skontrolujPolickoNaMyske(self):
+    def skontrolujPolickoNaMyske(self,nutnaKontrola = False):
         sur = self.dajPolickoveSurMysky()
-        if sur[0] == self.starePolickoveSurMysky[0] and sur[1] == self.starePolickoveSurMysky[1]:
-            return
-        #inak nastala zmena
+        if not nutnaKontrola:
+            if sur[0] == self.starePolickoveSurMysky[0] and sur[1] == self.starePolickoveSurMysky[1]:
+                return
+            #inak nastala zmena
         self.starePolickoveSurMysky = sur
         self.okolieMysky = self.dajObjektyVOblasti(3, sur[0], sur[1])
         

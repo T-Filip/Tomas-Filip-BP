@@ -14,6 +14,7 @@ import sys
 import Postavy.smerPostavy as smerPostavy
 import Menu.enumOknaMenu as enumOknaMenu
 import Postavy.tvorcaPostav as tvorcaPostavy
+from Postavy.enumTypPostavy import EnumTypPostavy
 
 
 
@@ -21,10 +22,7 @@ import Postavy.tvorcaPostav as tvorcaPostavy
 
 
     
-class TypPostavy(IntEnum):
-    UZKA = 0
-    FIT = 1
-    SILNA = 2
+
 
 def back(self):
         self.menu.prepniMenu(enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU)
@@ -78,7 +76,7 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         self.cisloTvare = [0]
         self.cisloPohlavia = [0]
         
-        self.typPostavy = [TypPostavy.SILNA]
+        self.typPostavy = [EnumTypPostavy.SILNA]
         
         self.postavyHrac = [0,0,0,0,0]
         

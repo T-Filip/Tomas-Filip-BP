@@ -6,32 +6,68 @@ from tkinter.constants import HORIZONTAL
 import logging
 import Postavy.smerPostavy as smerPostavy
 import Predmety.inventar as inventar
-from Predmety import inventarOznPredmet
+from Predmety import invVyuzPredmetu
 import Predmety.predmet as predmet
+from Postavy.enumTypPostavy import EnumTypPostavy
+from Postavy.smerPostavy import SmerPostavy
+
 
 
 
 
 class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
-    def __init__(self,hra,surPix, rectObjektovaOblast,textury,vlastnosti,typPostavy):
-        self.typPostavy = typPostavy
+    def __init__(self,hra,surPix, typP,textury,vlastnosti,sirka,vyska):
         self.vlastnosti = [[vlastnosti[0]],[vlastnosti[1]],[vlastnosti[2]],[vlastnosti[3]]] #obalim tie hodnoty do pola  .. ako Integer v jave
         self.suradnice = [int(surPix[0]/64),int(surPix[1]/64)]
         self.hra = hra
-        pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup())
+        pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup(),self.hra.dajPostavyGroup())
         self.inventar = inventar.Inventar(20)
-        self.inventarRychlyPristup = inventarOznPredmet.InventarOznPredmet(9,self)
-        self.image = pygame.Surface((48,48))
+        self.inventarRychlyPristup = invVyuzPredmetu.InvVyuzPredmetu(9,self)
+        
+        
+        self.image = pygame.Surface((sirka,vyska))
         self.rect = self.image.get_rect()
         
         self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
         self.imageZaloha = textury
+        
+
 
         
         self.rectTextOblastMapa = self.image.get_rect()
         self.rectTextOblastMapa = self.rectTextOblastMapa.move(surPix[0],surPix[1])
         
-        self.rectObjOblastZaloha = rectObjektovaOblast #fixna poloha voci texturovej oblasti pri pouziti na mapa je potrebne vyuzit aktualizovanu verziu
+        
+        
+        
+        #obj oblast sa nachadza kvazi pod nohami, vzhladom na styl textur je obj oblast momentalne z casti mimo texturovej oblasti - zo spodnej casti textury pretrcaa
+        self.rectObjOblastZaloha = None #fixna poloha voci texturovej oblasti pri pouziti na mapa je potrebne vyuzit aktualizovanu verziu
+        self.typPostavy = typP[0]
+        if self.typPostavy == EnumTypPostavy.UZKA:
+            x = int(sirka*0.375)
+            y = int(vyska*0.85)
+            w = int(sirka*0.25)
+            h = int(vyska*0.25)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        elif self.typPostavy == EnumTypPostavy.FIT:
+            x = int(sirka*0.35)
+            y = int(vyska*0.8)
+            w = int(sirka*0.3)
+            h = int(vyska*0.3)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        elif self.typPostavy == EnumTypPostavy.SILNA:
+            x = int(sirka*0.325)
+            y = int(vyska*0.75)
+            w = int(sirka*0.35)
+            h = int(vyska*0.35)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        else:
+            logging.warning("vytvaranie objektovej oblasti hraca -> Neznamy typ postavy: " + str(self.typPostavy))
+            self.rectObjOblastZaloha = None
+            
+        
+        
+        
         self.aktualizujObjOblast()
         #self.rectTextOblastMapa.x = surPix[0]
         #self.rectTextOblastMapa.y = surPix[1]
@@ -54,6 +90,12 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.vydrz = self.capVydrz # len 1. krat
         
         self.vlozPredmety()
+        
+    def dajRectTextOblastMapa(self):
+        return self.rectTextOblastMapa
+        
+    def dajHru(self):
+        return self.hra
         
     def dajTextOblastMapa(self):
         return self.rectTextOblastMapa
@@ -94,8 +136,23 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajVolneVlastnosti(self):
         return self.volneVlastnosti
     
-    def dajhru(self):
-        return self.hra
+
+
+    def dajSmerPostavy(self):
+        return self.smerPostavy
+    
+    def dajSuradnicePreAnimaciu(self):
+        if self.smerPohybu == SmerPostavy.DOPREDU:
+            return [self.rect.centerx,self.rect.centery-10]
+        if self.smerPohybu == SmerPostavy.DOZADU:
+            return [self.rect.centerx,self.rect.centery-10]
+        if self.smerPohybu == SmerPostavy.DOPRAVA:
+            return [self.rect.centerx+10,self.rect.centery-10]
+        if self.smerPohybu == SmerPostavy.DOLAVA:
+            return [self.rect.centerx-10,self.rect.centery-10]
+        else:
+            return [self.rect.centerx,self.rect.centery-10]
+
     
     def linkMapa(self,mapa):
         self.mapa = mapa
@@ -106,6 +163,9 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
     def dajInventar(self):
         return self.inventar
+    
+    def vlozPredmet(self,predmet):
+        self.inventar.vlozPredmet(predmet)
 
     def vlozPredmety(self):
         self.inventar.vlozPredmet(predmet.Predmet(10,12))
@@ -113,6 +173,9 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.inventar.vlozPredmet(predmet.Predmet(12,50))
         self.inventar.vlozPredmet(predmet.Predmet(13,2))
         self.inventar.vlozPredmet(predmet.Predmet(13,36))
+        self.inventar.vlozPredmet(predmet.Predmet(2000,15))
+        self.inventar.vlozPredmet(predmet.Predmet(3001,1))
+        self.inventar.vlozPredmet(predmet.Predmet(3000,1))
         
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
         
@@ -340,7 +403,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def eventy(self):
         posun = [0,0]
         
-        klavesy = self.hra.manazerOkien.klavesy
+        klavesy = self.hra.manazerOkien.dajKlavesy()
         if klavesy[pygame.K_UP] or klavesy[pygame.K_w]:
             posun[1] +=-1
             
@@ -373,9 +436,28 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         logging.info("hrac-changelayer")
         #DOROBIT HITBOX NA rect hitboxu
         self.hra.dajAktivBlitGroup().change_layer(self,self.rectTextOblastMapa.y+30)
+        
+        
+    def dajLayer(self):
+        return self.rectTextOblastMapa.y+30
 
     def zmenVyznacenyPredmet(self,cislo):
         self.inventarRychlyPristup.zmenOznacenie(cislo)
+        
+        
+    def klikButton1(self):
+        self.inventarRychlyPristup.leftClick()
+    def klikButton2(self):
+        pass
+    def klikButton3(self):
+        self.inventarRychlyPristup.rightClick()
+    def klikButton4(self):
+        pass
+    def klikButton5(self):
+        pass 
+        
+        
+
 
     def stlacena0(self):
         pass #na nule nic nerobim zatial

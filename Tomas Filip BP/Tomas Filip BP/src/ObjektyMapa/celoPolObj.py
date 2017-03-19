@@ -8,6 +8,8 @@ import ObjektyMapa.infObjekty as infObjekty
 import ObjektyMapa.objMapa as objMapa  
 import pygame 
 import random
+from Predmety.enumTypMaterialu import EnumTypMaterialu
+import Predmety.tazenie as tazenie
         
         
 
@@ -258,7 +260,7 @@ class CeloPolObjPoz(CeloPolObj):
         if indexy[x][y]< 0:
             surf = pygame.Surface(self.inf.infObjekty[0][0].img.get_size(), pygame.SRCALPHA)
             rect = pygame.Rect(0,0,surf.get_width(),surf.get_height())
-            infobj = infObjekty.InfObj(surf,rect,0.4)
+            infobj = infObjekty.InfObj(surf,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.4)
             return objMapa.ObjMapaVlastInfPozadie(self.policko, self.id,(x*16,y*16),infobj,self.inf.pozadie)#pozadie sa nedava - kreslene v plnej velkosti ako default
         else:
             #podobne ako v rodicovy akurat sa vytvara potomok ObjMapy s fukciou pre kreslenie pozadia

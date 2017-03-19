@@ -37,8 +37,9 @@ class ManazerOkien:
         #print("Manaze init start")
         logging.info("initManazera")
         os.environ['SDL_VIDEO_CENTERED'] = '1'
-        
+        pygame.event.get()
         self.klavesy = pygame.key.get_pressed()
+        self.pressedMouse = pygame.mouse.get_pressed()
         self.predKlavesy  = pygame.key.get_pressed()
         self.events()
         mode = 0#pygame.DOUBLEBUF 
@@ -72,6 +73,9 @@ class ManazerOkien:
         
 
 
+
+    def dajKlavesy(self):
+        return self.klavesy
         
         
         '''
@@ -104,6 +108,9 @@ class ManazerOkien:
     
     def dajOknoMenu(self,kluc):
         return self.zoznamOkienMenu[kluc]
+    
+    def dajPressedMouse(self):
+        return self.pressedMouse
         
         
     def dajHru (self) :
@@ -229,6 +236,7 @@ class ManazerOkien:
 
         self.predKlavesy = self.klavesy
         self.klavesy = pygame.key.get_pressed()
+        self.pressedMouse = pygame.mouse.get_pressed()
         pygame.event.pump()
         
         
@@ -236,6 +244,7 @@ class ManazerOkien:
         self.volajMetoduVOknach("updateClickLeft")
         if self.hra != None:
             self.hra.klikButton1()
+            
         
         
     def klikButton2(self):

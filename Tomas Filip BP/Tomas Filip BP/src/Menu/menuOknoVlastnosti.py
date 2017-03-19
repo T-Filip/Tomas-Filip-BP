@@ -15,6 +15,7 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         
         
     def reinit(self, hrac):
+        print("REINIT VLASTNOSTI")
         menuOkno.MenuOknoHra.reinit(self, hrac)
         #x= int((self.rect.x + 80)*self.scaleRes)
         #y= int((self.rect.y + 80)*self.scaleRes)
@@ -29,10 +30,12 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[2],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
         y+=zvKonst
         objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[3],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
-
+        print ("DLZKA")
+        print(str(len(self.allSprites)))
         
         
     def close(self):
+        self.allSprites.empty()
         self.hrac.reinitVlastnosti()
         
         

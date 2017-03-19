@@ -5,14 +5,16 @@ Created on 9. 3. 2017
 '''
 
 import pygame
-import ObjektyMapa.infObjekty as infObjekty
+#import ObjektyMapa.infObjekty as infObjekty
 from Textury import textury
 import nastavenia
-from _operator import pos
+#from _operator import pos
 from Textury import enumTextura
 
 class Predmet (pygame.sprite.Sprite):
     def __init__(self,id,pocetKusov = 1):
+        import ObjektyMapa.infObjekty as infObjekty
+        #mutual top-level imports -> predmety su zavisle na datach ktore su obsiahnute v triedach v module InfObjekty tie vsak obsahuju metody a data ktore su zavisle na predmetoch takze sa to cykli
         self.inf = infObjekty.INF_OBJ_MAPA[id]
         self.id = id
         self.miestoPrePredmet = None
@@ -54,6 +56,9 @@ class Predmet (pygame.sprite.Sprite):
     
     def dajImgNaMape(self):
         return self.inf.dajImgNaMape()
+    
+    def dajImgPredm(self):
+        return self.inf.dajImgPredm()
     
     def dajInf (self):
         return self.inf

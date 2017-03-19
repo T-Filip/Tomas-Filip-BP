@@ -14,7 +14,7 @@ borderIndex = 1 # nacitat
 WINDOW = ["Full screen","Windowed"]
 windowIndex = 1 #nacitat
 
-DEBUG = True
+DEBUG = False
 
 #VYPIS = True
 

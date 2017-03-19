@@ -11,6 +11,8 @@ import ObjektyMapa.objMapa as objMapa
 import ObjektyMapa.scale as scale
 import ObjektyMapa.celoPolObj as celoPolObj
 import logging
+import ObjektyMapa.infObjekty as infObjekty
+from ObjektyMapa.infObjekty import InfObj
 
 
 
@@ -125,12 +127,21 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
     def dajRect(self):
         return self.rect
             
-    def vlozObj(self,obj):    
-        col = pygame.sprite.spritecollideany(obj, self.objMapaVlastne,collideObjOblastMapa)
+    def vlozObj(self,obj, maSaPrekreslit = False,kontrolaSOkolim = True):  
+        if kontrolaSOkolim:
+            col = pygame.sprite.spritecollideany(obj, self.objMapaVlastne,collideObjOblastMapa)
+        else:
+            col = None
+            
         if col == None:
             obj.vlozDo(self.objMapaVlastne)
         else:
             obj.kill()
+            #print("MAZEM")
+            return
+        
+        if maSaPrekreslit:
+            self.initImg(True)#True aby sa hned pouzil aj scale policka
             
     def vytvorKamenolom (self,rand,lavaH,pravaH,typ=None):
         #Noise sa nachadza medzi hodnotami lavaH a pravaH
@@ -274,6 +285,23 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             nah = int(rand.triangular(0,2,10)) 
             for i in range (nah):
                 self.vytvorMaliKamen(rand,typ)
+                
+                
+    #alternativa pre vloz objekt akurat si ten objekt vytvori sam - vhodne ak pri vytvarani nie je jasne ake vykreslovanie vytvarany objekt potrebuje
+    #vytvarany objekt sa hned hodi do stage 2
+    def vytvorObjekt(self,id,suradnice,suToSuradniceStredu=False,inf = None,nastaneKontrolaSOkolim = True):
+        if inf == None:
+            inf = infObjekty.dajInf(id)
+            
+        if isinstance(inf,infObjekty.InfObjScale):
+            obj = objMapa.ObjMapaAktivPrek(self,id,suradnice,suToSuradniceStredu)
+            self.vlozObj(obj)
+        else:
+            obj = objMapa.ObjMapa(self,id,suradnice,suToSuradniceStredu)
+            self.vlozObj(obj,True)
+            
+        
+        obj.initStage2()
             
             
     def vytvorVelkyKamen(self,rand,typ=None):
@@ -342,7 +370,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.jeStage2 = True
 
 
-            #test ci nespdne 
+
             logging.info("Stage2policko- daj okolie") 
             self.okolie = self.dajOkolie()
             
@@ -352,7 +380,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             logging.info("Stage2policko- linkovanie") 
             self.polinkujObjekty()
-            #test ci nespdne 
+ 
             
             
             
@@ -380,12 +408,12 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             
             logging.info("Stage2policko- scale") 
-            self.scale(self.mapa.scaleNasobitel)
+            self.scale(self.mapa.dajScaleNas())
             
             
             
-            if self.celPolObj != None:
-                print(len(self.objMapaVlastne))
+            #if self.celPolObj != None:
+                #print(len(self.objMapaVlastne))
                 #self.celPolObj = None
                 #for obj in self.objMapaVlastne:
                 #    obj.kill()
@@ -408,7 +436,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             self.okolie = self.mapa.dajOkolie(self.suradnice)
         return self.okolie
 
-    def initImg(self):
+    def initImg(self,maSaScalenut = False):
         self.imageZaloha = pygame.Surface((64,64))
         self.imageZaloha.blit(texturyPolicka.POLICKO_TRAVA[self.biom],(0,0))
         #self.imageZaloha = texturyPolicka.POLICKO_TRAVA[self.biom]
@@ -420,6 +448,10 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             obj.centrujDoRect(self.rectTextOblastMapa)
         self.objMapaBlit.draw(self.imageZaloha)
         self.image = self.imageZaloha
+        
+        if maSaScalenut:
+            self.scale(self.mapa.dajScaleNas())
+            
        
 
     def addUpdate(self):

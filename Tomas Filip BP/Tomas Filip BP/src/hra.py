@@ -31,15 +31,17 @@ class Hra:
         self.pocetTPS = 0
         self.tpsCount = 0
         
+        self.pocetTickov = 0
     
         self.allSprites = pygame.sprite.Group()
         self.aktivBlitObjMapa = pygame.sprite.LayeredUpdates()
+        self.postavyGroup = pygame.sprite.Group()
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
         
         
-        self.hrac = postavy.Hrac(self,[2100,-2300],pygame.Rect(16,48,16,16),textury,vlastnosti,typP)
+        self.hrac = postavy.Hrac(self,[2100,-2300],typP,textury,vlastnosti,48,48)
         
         logging.info("Vytvorenie mapy")
         self.mapa = mapa.Mapa(self)
@@ -92,6 +94,15 @@ class Hra:
 
             
         self.initTime = time.time()
+        
+    def dajPostavyGroup(self):
+        return self.postavyGroup
+        
+    def dajManazerOkien(self):
+        return self.manazerOkien
+        
+    def dajPocetTickov(self):
+        return self.pocetTickov
 
     def dajHraca(self):
         return self.hrac
@@ -195,15 +206,15 @@ class Hra:
         return self.mapa
         
     def klikButton1(self):
-        pass
+        self.hrac.klikButton1()
     def klikButton2(self):
-        pass
+        self.hrac.klikButton2()
     def klikButton3(self):
-        pass
+        self.hrac.klikButton3()
     def klikButton4(self):
-        pass
+        self.hrac.klikButton4()
     def klikButton5(self):
-        pass
+        self.hrac.klikButton5()
         
     def vykresliInfoRoh(self):
         font = nastavenia.FONT_1_16
@@ -232,6 +243,7 @@ class Hra:
         
     def update(self):
         self.casovanieZoom +=1
+        self.pocetTickov += 1 
         
         if self.casovanieZoom % 10 == 0: 
             self.mapa.updateZoom()

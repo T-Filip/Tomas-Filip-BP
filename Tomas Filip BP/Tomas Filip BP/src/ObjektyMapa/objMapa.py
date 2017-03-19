@@ -10,7 +10,7 @@ import random
 import policko
 import nastavenia
 import mapa
-from ObjektyMapa.infObjekty import InfObj
+#from ObjektyMapa.infObjekty import InfObj
 
 
 
@@ -33,7 +33,7 @@ class ObjMapa(pygame.sprite.Sprite):
         else:
             centX = 0
             centY = 0
-            
+        
         self.pixSurMapa = (pixSurPolickoCenter[0]+policko.rectTextOblastMapa.x-centX,pixSurPolickoCenter[1]+policko.rectTextOblastMapa.y-centY)
         self.pixSurPolicko = [pixSurPolickoCenter[0]-centX,pixSurPolickoCenter[1]-centY]
         
@@ -49,6 +49,9 @@ class ObjMapa(pygame.sprite.Sprite):
         
     def dajKoeficienRychlosti(self):
         return self.inf.rychlostPrechodu
+    
+    def dajCasTazenia(self):
+        return self.inf.dajCasTazenia()
         
     def vlozDo(self,grupa):  
         self.add(grupa)
@@ -62,6 +65,8 @@ class ObjMapa(pygame.sprite.Sprite):
     def initImage(self):
         self.image = self.inf.img
         
+    def dajRectTextOblastMapa(self):
+        return self.rectTextOblastMapa
         
     def dajRectObjOblastMapa(self): # aby som to mohol prepisat
         return self.inf.rectObjOblastMapa  
@@ -102,6 +107,11 @@ class ObjMapa(pygame.sprite.Sprite):
     def kill(self):
         #self.inf.sprite.remove(self)
         pygame.sprite.Sprite.kill(self)
+        self.policka[0].initImg()
+        
+    def dajDrop(self,hrac):
+        drop = self.inf.dajDrop()
+        drop[0](drop[1],hrac)
 
 
 
@@ -172,7 +182,7 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
         pass
         
     def kill(self):
-        ObjMapa.kill(self)
+        pygame.sprite.Sprite.kill(self)
         
     def newRefImg (self):
         self.image = self.inf.img
