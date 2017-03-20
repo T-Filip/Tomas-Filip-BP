@@ -10,7 +10,7 @@ from Predmety import invVyuzPredmetu
 import Predmety.predmet as predmet
 from Postavy.enumTypPostavy import EnumTypPostavy
 from Postavy.smerPostavy import SmerPostavy
-
+import nastavenia
 
 
 
@@ -91,6 +91,10 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
         self.vlozPredmety()
         
+        
+    def dajRect(self):
+        return self.rect
+        
     def dajRectTextOblastMapa(self):
         return self.rectTextOblastMapa
         
@@ -141,6 +145,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajSmerPostavy(self):
         return self.smerPostavy
     
+    '''
     def dajSuradnicePreAnimaciu(self):
         if self.smerPohybu == SmerPostavy.DOPREDU:
             return [self.rect.centerx,self.rect.centery-10]
@@ -152,7 +157,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             return [self.rect.centerx-10,self.rect.centery-10]
         else:
             return [self.rect.centerx,self.rect.centery-10]
-
+    '''
     
     def linkMapa(self,mapa):
         self.mapa = mapa
@@ -175,7 +180,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.inventar.vlozPredmet(predmet.Predmet(13,36))
         self.inventar.vlozPredmet(predmet.Predmet(2000,15))
         self.inventar.vlozPredmet(predmet.Predmet(3001,1))
-        self.inventar.vlozPredmet(predmet.Predmet(3000,1))
+        self.inventar.vlozPredmet(predmet.Predmet(3000,2))
         
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
         
@@ -352,10 +357,30 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         else:
             if self.smerPohybu[1] < 0:
                 self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
-            else:
+            elif self.smerPohybu[1] > 0:
                 self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+            else:#hrac sa nehybe pozera za myskou
+                pos = pygame.mouse.get_pos()
+                mousePos = [pos[0],pos[1]]
+                mousePos[0] -= int(nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/2)
+                mousePos[1] -= int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2)
+                if mousePos[0]*2 >mousePos[1]:#pravo spodna cast
+                    if mousePos[0]*2 > -mousePos[1]:#pravohorna
+                        self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+                    else:
+                        self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+                        
+                else: #lavo horna
+                    if mousePos[0]*2 > -mousePos[1]:#pravohorna
+                        self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+                    else:
+                        self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+                       
+                    
+                
         
-      
+        
+        
         
         
         

@@ -77,7 +77,8 @@ class ObjMapa(pygame.sprite.Sprite):
         
         
     def initTextOblast(self):
-        self.rectTextOblastMapa = pygame.Rect(self.pixSurMapa[0],self.pixSurMapa[1],self.inf.img.get_width(),self.inf.img.get_height())
+        rozmery = self.inf.dajRozmery()
+        self.rectTextOblastMapa = pygame.Rect(self.pixSurMapa[0],self.pixSurMapa[1],rozmery[0],rozmery[1])
         
         
     def dajNasRychlosti(self):
@@ -90,6 +91,7 @@ class ObjMapa(pygame.sprite.Sprite):
     def linkPolicko(self,policko):
         #self.policka.append(policko)
         self.add(policko.objMapaBlit)
+        self.policka.append(policko)
         #self.add(policko.objektyMapaCudzie)
         
 
@@ -104,10 +106,12 @@ class ObjMapa(pygame.sprite.Sprite):
     def dajTextOblastMapa(self):
         return self.rectTextOblastMapa
     
-    def kill(self):
+    def kill(self, trebaPrekreslit = False):
         #self.inf.sprite.remove(self)
         pygame.sprite.Sprite.kill(self)
-        self.policka[0].initImg()
+        for policko in self.policka:
+            policko.initImg(trebaPrekreslit)
+
         
     def dajDrop(self,hrac):
         drop = self.inf.dajDrop()
@@ -181,7 +185,7 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
     def updateImage(self):
         pass
         
-    def kill(self):
+    def kill(self,trebaPrekreslit = False):
         pygame.sprite.Sprite.kill(self)
         
     def newRefImg (self):

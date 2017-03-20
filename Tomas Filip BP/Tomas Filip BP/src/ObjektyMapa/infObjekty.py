@@ -60,6 +60,10 @@ class InfNaMape(Inf):
         
     def dajMaterial(self):
         return self.material
+    
+
+    
+
 
 
 #InfObj = namTupDef("InfObj", "img rectObjOblastMapa rychlostPrechodu pocPouzivajucich", {'pocPouzivajucich':0})
@@ -68,6 +72,7 @@ class InfObj(InfNaMape):
         self.casTazenia = casTazenia
         self.drop = drop
         self.img = img
+        super().__init__(material,imgPredmet, stackKapacita)
         if rectObjOblastMapa == None:
             self.rectObjOblastMapa = self.img.get_rect()
         else:
@@ -75,8 +80,11 @@ class InfObj(InfNaMape):
         
         self.rychlostPrechodu = rychlostPrechodu
         
-        super().__init__(material,imgPredmet, stackKapacita)
-        self.imgPredmet = img
+
+        self.imgPredmet = self.img
+        
+    def dajRozmery(self):
+        return [self.img.get_width(),self.img.get_height()]
         
     def dajCasTazenia(self):
         return self.casTazenia
@@ -84,8 +92,10 @@ class InfObj(InfNaMape):
     def dajImgNaMape(self):
         return self.img
     
-    def dajObjOblastMapa(self):
+    def dajObjOblastMapa(self):#relativne vzhladom na to ze je to pre kazdy objekt .. na mape znamena ze tam nie ja zahrnuty scale
         return self.rectObjOblastMapa
+    
+
 
     def dajDrop(self):
         return self.drop
@@ -101,6 +111,10 @@ class InfObjScale(InfObj,scale.ObjScale):
         
     def dajImgPredm(self):
         return self.imgZaloha
+    
+    #override pretoze sa meni z droj... povodny sa teraz scaluje a preto by boli rozmery zavisle od scalu
+    def dajRozmery(self):
+        return [self.imgZaloha.get_width(),self.imgZaloha.get_height()]
         
     def scale(self,nas):
         self.img = pygame.transform.scale(self.imgZaloha,(int(self.imgZaloha.get_width()*nas),int( self.imgZaloha.get_height()*nas)))

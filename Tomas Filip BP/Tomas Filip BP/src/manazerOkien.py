@@ -191,8 +191,8 @@ class ManazerOkien:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.klikButton1()
-                    #if event.button == 2:
-                #    self.klikButton2()
+                if event.button == 2:
+                    self.klikButton2()
                 elif event.button == 3:
                     self.klikButton3()
                 elif event.button == 4:
@@ -248,10 +248,10 @@ class ManazerOkien:
         
         
     def klikButton2(self):
-        self.volajMetoduVOknach("updateClickRight")
         if self.hra != None:
             self.hra.klikButton2()
     def klikButton3(self):
+        self.volajMetoduVOknach("updateClickRight")
         if self.hra != None:
             self.hra.klikButton3()
         
@@ -270,11 +270,11 @@ class ManazerOkien:
         else:
             return True
         
-    def volajMetoduVOknach(self,zmenRecept):
+    def volajMetoduVOknach(self,key):
         if self.oknoMenu != None:
-            getattr(self.oknoMenu,zmenRecept)()
+            getattr(self.oknoMenu,key)()
         if self.oknoVHre != None:
-            getattr(self.oknoVHre,zmenRecept)()
+            getattr(self.oknoVHre,key)()
         
     def update(self):
         

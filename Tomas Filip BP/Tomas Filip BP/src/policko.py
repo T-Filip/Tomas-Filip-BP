@@ -20,7 +20,6 @@ def collideTextOblastMapa(sprite1, sprite2):
     return sprite1.dajTextOblastMapa().colliderect(sprite2.dajTextOblastMapa())
 
 def collideObjOblastMapa(sprite1,sprite2):
-
     return sprite1.dajObjOblastMapa().colliderect(sprite2.dajObjOblastMapa())
 
 
@@ -129,6 +128,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
     def vlozObj(self,obj, maSaPrekreslit = False,kontrolaSOkolim = True):  
         if kontrolaSOkolim:
+            #vhodne kontrolovat aj v inych polickach ale zatial nepouzivane
             col = pygame.sprite.spritecollideany(obj, self.objMapaVlastne,collideObjOblastMapa)
         else:
             col = None
@@ -141,6 +141,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             return
         
         if maSaPrekreslit:
+            self.polikujObjekt(obj)#ak sa ma prekreslit treba aby sa prekreslil aj na ostatnych polickach
             self.initImg(True)#True aby sa hned pouzil aj scale policka
             
     def vytvorKamenolom (self,rand,lavaH,pravaH,typ=None):
@@ -346,11 +347,11 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             pygame.sprite.groupcollide(self.objMapaVlastne, policko.objMapaVlastne, True, False, collideObjOblastMapa)
                 
     
+    
+    '''
+    vsetky objekty v okolitych polickach ktore zasahuju do tohto policka sa linknu s tymto polickom
+    '''
     def polinkujObjekty(self):
-        #hrac = self.mapa.hra.hrac
-        #suradnice = hrac.suradnice
-        #if suradnice[0] == 64 and suradnice [1] == -34:
-        #    i = 5
         for policko in self.okolie:
             p1 = pygame.sprite.spritecollide(self, policko.objMapaBlit, False, collideTextOblastMapa)
             #p2 = pygame.sprite.spritecollide(self, policko.objektyMapaPrekryvajuce, False, collideTextOblastMapa)
@@ -359,7 +360,18 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                 obj.linkPolicko(self)
             #for obj in p2:
             #    obj.linkPolicko(self)
-    
+            
+            
+    '''
+    objekt na mape vlozeny ako parameter sa linkne s polikami do ktorych zasahuje
+    '''
+    def polikujObjekt(self,obj,maSaPrekreslitLinknutePolicko = True):
+        for policko in self.okolie:
+            if collideTextOblastMapa(policko,obj):
+                obj.linkPolicko(self)
+                if maSaPrekreslitLinknutePolicko:
+                    policko.initImg(True)
+                
     def initStage2 (self):
 
         
@@ -367,7 +379,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         
         if not self.jeStage2:
             logging.info("-Stage2Policko") 
-            self.jeStage2 = True
+            
 
 
 
@@ -395,7 +407,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             #self.rectTextOblastMapa.y = self.suradnice[1] * 64
             
             self.topLeftScaleMap = [self.rectTextOblastMapa.x,self.rectTextOblastMapa.y]
-            
+            self.jeStage2 = True
             
             
             
@@ -449,8 +461,9 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         self.objMapaBlit.draw(self.imageZaloha)
         self.image = self.imageZaloha
         
-        if maSaScalenut:
+        if maSaScalenut and self.jeStage2: # ak nie je v stage 2 je to zbytocne lebo nie je viditelny a pri vstupe do stage 2 sa scalne nanovo
             self.scale(self.mapa.dajScaleNas())
+            
             
        
 

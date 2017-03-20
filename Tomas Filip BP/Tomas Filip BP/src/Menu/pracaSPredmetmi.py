@@ -20,7 +20,6 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
         self.posledneMiestoPredmetu = None # ak je v myske nejaky predmet je potrebne aby sme si pamatali odkial bol vzaty 
 
     def clickRight(self):
-        
         if self.predmet == None: # click ziaden predmet
             #ak nema predmet musime pozriet ci na nejaky klikol
             pos = pygame.mouse.get_pos()

@@ -38,7 +38,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         self.casTazenia = 0
         self.posledneTazenie = 0 #tick v ktorom sa naposledy tazilo
         
-        self.animacia = Animacia(self.hrac)
+        
         self.beziAnimacia = False
         
     def update(self):
@@ -46,28 +46,35 @@ class InvVyuzPredmetu(inventar.Inventar):
         self.eventy()
         
     def eventy(self):
+        if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
+            return
+        self.beziAnimacia = False
+        #print("--------------")
+        #print(self.beziAnimacia)
+        
         pressMouse = self.hrac.dajHru().dajManazerOkien().dajPressedMouse()
+        
         
         if pressMouse[0] == True:
             self.utok()
             self.vykonajAnimaciu()
             
+        #print(self.beziAnimacia)
+        if not self.beziAnimacia:
+            self.animacia.ukonciAnimaciu()
+            
     def vykonajAnimaciu(self):
         pred = self.polePredmetov[self.oznacenyIndex].dajPredmet()
         if pred == None:
-            if self.beziAnimacia:
-                self.animacia.ukonciAnimaciu()
-                self.beziAnimacia = False
             return # Mozno animacia ruk ak tam nie je predmet
             
         inf = pred.dajInf()
-        self.beziAnimacia = False
         if isinstance(inf, InfNastroje):
             self.animacia.update(inf)
             self.beziAnimacia = True
+            #print(self.beziAnimacia)
         
-        if not self.beziAnimacia:
-            self.animacia.ukonciAnimaciu()
+        
         
     def updateTexturyOznPredmetu(self):
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
@@ -153,8 +160,8 @@ class InvVyuzPredmetu(inventar.Inventar):
             return
         texOriginal = self.oznPredmet.dajImgPredm()
         size = texOriginal.get_size()
-        print("size:" + str(size))
-        print (self.mapa.dajScaleNas())
+        #print("size:" + str(size))
+        #print (self.mapa.dajScaleNas())
         w = int(size[0]*self.mapa.dajScaleNas())
         h = int(size[1]*self.mapa.dajScaleNas())
         #self.imageOznPredmetu = pygame.Surface((w,h),pygame.SRCALPHA)
@@ -169,6 +176,10 @@ class InvVyuzPredmetu(inventar.Inventar):
         #mapa sa vytvara az po vytvoreni hraca preto dodatocne linkovanie
     def linkMapa(self,mapa):
         self.mapa = mapa
+        self.vytvorAnimaciu()#trosku jednoduchsi pristup k informaciam ak ma animacia priamy pristup k instancii mapy
+        
+    def vytvorAnimaciu(self):
+        self.animacia = Animacia(self.hrac,self.mapa)
         
     def zmenOznacenie(self,cislo):
         cis = cislo - 1
@@ -205,7 +216,14 @@ class InvVyuzPredmetu(inventar.Inventar):
         
         screen.blit(self.imageOznPredmetu,self.topLeftObjMyska)
         
+        
+        
+        '''
+        Stavanie predmetu co je v ruke
+        '''
     def rightClick(self):
+        if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
+            return
         if self.jeNacerveno:
             return
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
@@ -245,7 +263,9 @@ class InvVyuzPredmetu(inventar.Inventar):
         postavy = self.hrac.dajHru().dajPostavyGroup()
         #mousePos = pygame.mouse.get_pos()
         myskaNaMape = self.mapa.dajMyskuNaMape()
-        
+        print("---------------------------")
+        print("Myska na mape: " + str(myskaNaMape))
+        print()
         ###kontakt s postavami
         if postavy != None:
             for postava in postavy:
@@ -262,9 +282,10 @@ class InvVyuzPredmetu(inventar.Inventar):
             for obj in okolieMysky:
                 col = obj.dajRectTextOblastMapa().collidepoint(myskaNaMape)
                 if col: # ak trafil texturu objektu
+                    print(obj.dajRectTextOblastMapa())
                     pocTick = self.hrac.dajHru().dajPocetTickov()
-                    print(pocTick)
-                    print(self.posledneTazenie)
+                    #print(pocTick)
+                    #print(self.posledneTazenie)
                     if self.posledneTazenie != pocTick-1:
                         self.casTazenia = 0
                     self.posledneTazenie = pocTick
@@ -272,7 +293,7 @@ class InvVyuzPredmetu(inventar.Inventar):
                         self.casTazenia +=1
                         if self.casTazenia >= tazenie.vypocitajDlzkuTazenia(obj, self.oznPredmet, self.hrac):
                             obj.dajDrop(self.hrac)
-                            obj.kill()
+                            obj.kill(True)
                         
                     else:
                         self.tazenyObjekt = obj
@@ -283,10 +304,15 @@ class InvVyuzPredmetu(inventar.Inventar):
 
         
     def leftClick(self):
+        return
+        if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
+            return
+        
+        
         #self.tickLeftclick = -1
         #self.leftClickObj = None
         #print("left click")
-        pass
+
         
     def zautocNaPostavu(self,postava):
         print("UTOK na postavu doimplementovat!!")
