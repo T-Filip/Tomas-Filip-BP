@@ -333,6 +333,9 @@ class Hra:
         
     def stlacena9(self):
         self.hrac.stlacena9()
+        
+    def stlaceneR(self):
+        self.hrac.stlaceneR()
     
     
     

@@ -10,6 +10,8 @@ import random
 import policko
 import nastavenia
 import mapa
+from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu 
+import logging
 #from ObjektyMapa.infObjekty import InfObj
 
 
@@ -20,8 +22,10 @@ import mapa
 
 
 class ObjMapa(pygame.sprite.Sprite):
-    def __init__(self,policko,id,pixSurPolickoCenter,suToSuradniceCenter = False):
+    def __init__(self,policko,id,pixSurPolickoCenter,invVyuzitiePredmetov = None,suToSuradniceCenter = False):
         self.id = id
+        self.invVyuzitiePredmetov = invVyuzitiePredmetov
+
         
         
         
@@ -45,7 +49,7 @@ class ObjMapa(pygame.sprite.Sprite):
     def initInf(self):
         self.inf = infObjekty.INF_OBJ_MAPA[self.id]
         if not isinstance(self.inf, infObjekty.InfObj):
-            i = 5
+            logging.warn("nepodarilo sa pomocou vlozeneho id ziskat inf ktore je instanciou InfObj")
         
     def dajKoeficienRychlosti(self):
         return self.inf.rychlostPrechodu
@@ -68,17 +72,26 @@ class ObjMapa(pygame.sprite.Sprite):
     def dajRectTextOblastMapa(self):
         return self.rectTextOblastMapa
         
-    def dajRectObjOblastMapa(self): # aby som to mohol prepisat
+    def dajInfRectObjOblastMapa(self): # aby som to mohol prepisat
         return self.inf.rectObjOblastMapa  
     
     def initObjOblast(self):
-        self.rectObjOblastMapa = self.dajRectObjOblastMapa().copy()
+        self.rectObjOblastMapa = self.dajInfRectObjOblastMapa().copy()
         self.rectObjOblastMapa = self.rectObjOblastMapa.move(self.pixSurMapa)
+        
+    def dajRozmery(self):
+        return self.inf.dajRozmery()
         
         
     def initTextOblast(self):
-        rozmery = self.inf.dajRozmery()
+        rozmery = self.dajRozmery()
         self.rectTextOblastMapa = pygame.Rect(self.pixSurMapa[0],self.pixSurMapa[1],rozmery[0],rozmery[1])
+        
+    def akciaRightClick(self):
+        met = self.inf.dajMetoduRightClick()
+        if met != None:
+            return met(self)
+        return False # vrati false ak sa nic nevykona aby sa mohlo stavat
         
         
     def dajNasRychlosti(self):
@@ -153,17 +166,9 @@ class ObjMapaVlastInfPozadie(ObjMapaVlastInf):
             self.image.blit(self.pozadiePolicka,(self.rectPozadia[i].x,self.rectPozadia[i].y),(self.pixSurPolicko[0],self.pixSurPolicko[1],self.rectPozadia[i].width,self.rectPozadia[i].height))
        
 
-        
-    
-        
-        
-        
-    
-    
-#vykresluje sa aktivne v kazdom frame aby za to hrac mohol "zajst"
 class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
-    def __init__(self,policko,id,pixSurPolicko, suToSurCent = False):
-        super().__init__(policko,id,pixSurPolicko,suToSurCent)
+    def __init__(self,policko,id,pixSurPolicko,invVyuzitiePredmetov, suToSurCent = False):
+        super().__init__(policko,id,pixSurPolicko,invVyuzitiePredmetov,suToSurCent)
         #pygame.sprite.Sprite.add(self.inf.ulozSprite(self))
         #infObjekty.objMapaScalovanie.add(self)
         self.scale(mapa.SINGLETON_MAPA.dajNas())
@@ -172,7 +177,7 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
     def initSprite(self):
         pygame.sprite.Sprite.__init__(self,self.inf.sprites,infObjekty.objMapaScalovanie,self.policka[0].mapa.hra.allSprites)#,self.policka[0].objMapaVlastne
         self.inf.aktualizujData()
-        self.image = self.inf.img
+        self.initImage()
         self.rect = self.image.get_rect()
         
     def initStage2(self):
@@ -193,6 +198,35 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
         
     def updateRectSize(self, nasobitel):
         pass
+        
+    
+class ObjMapaAktivPrekViacImg (ObjMapaAktivPrek):
+    def __init__(self,policko,id,pixSurPolicko,invVyuzitiePredmetov, suToSurCent = False):
+        self.id = id
+        self.initInf()
+        self.smer = invVyuzitiePredmetov.dajCisloTextury()%len(self.inf.imgZaloha)
+        self.prvotnySmer = self.smer
+        super().__init__(policko, id, pixSurPolicko,invVyuzitiePredmetov, suToSurCent)
+                 
+    def dajRozmery(self):
+        return self.inf.dajRozmery(self.smer)
+    
+    def dajInfRectObjOblastMapa(self): 
+        return self.inf.rectObjOblastMapa[self.smer]
+    
+    def initObjOblast(self):
+        self.rectObjOblastMapa = self.dajInfRectObjOblastMapa().copy()
+        self.rectObjOblastMapa = self.rectObjOblastMapa.move(self.pixSurMapa)
+        
+    def initImage(self):
+        self.image = self.inf.img[self.smer]
+
+    def newRefImg (self):
+        self.image = self.inf.img[self.smer]
+        
+            
+        
+        
 
         
 

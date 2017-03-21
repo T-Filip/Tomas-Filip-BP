@@ -57,8 +57,8 @@ class Predmet (pygame.sprite.Sprite):
     def dajImgNaMape(self):
         return self.inf.dajImgNaMape()
     
-    def dajImgPredm(self):
-        return self.inf.dajImgPredm()
+    def dajImgPredm(self,cislo=0):
+        return self.inf.dajImgPredm(cislo)
     
     def dajInf (self):
         return self.inf

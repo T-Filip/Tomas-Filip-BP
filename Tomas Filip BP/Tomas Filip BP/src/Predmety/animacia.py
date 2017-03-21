@@ -4,7 +4,7 @@ Created on 18. 3. 2017
 @author: T.Filip
 '''
 import pygame
-from Predmety.enumTypAnimacie import EnumTypAnimacie
+
 from Postavy.smerPostavy import SmerPostavy
 
 
@@ -30,7 +30,7 @@ class Animacia(pygame.sprite.Sprite):
         self.tickAnimacie = 0
         self.layer = self.hrac.dajLayer()
         self.inf = inf
-        self.animacia = ZOZNAM_ANIMACII[inf.dajTypAnimacie()]
+        self.animacia = inf.dajAnimaciu()
         self.update(inf)
         
         
@@ -123,8 +123,8 @@ def rotacia360SAFE(inf,tick,animacia,x,y,scale,smer):
 
         
         
-    uhol = tick % 45
-    uhol = uhol*2
+    uhol = tick % 120
+    uhol = uhol*3
     uhol = 360 - uhol
     org = inf.dajImgAnimacie()
     siz = org.get_size()
@@ -148,14 +148,14 @@ def rotacia360(animacia):
     scale = animacia.dajMapu().dajScaleNas()
     pozicia = animacia.dajPoziciuAnimacie()
     
-    uhol = tick % 60
-    uhol = uhol*2
+    uhol = tick % 120
+    uhol = uhol*3
     
     
     img = inf.dajImgAnimacie()
     if smer == SmerPostavy.DOZADU or smer == SmerPostavy.DOLAVA:
         img = pygame.transform.flip(img,True,False)
-        uhol = 360 + uhol
+        uhol = uhol
     else:
         uhol = 360 - uhol
 
@@ -208,10 +208,7 @@ def rot_center(image, angle):
     return rot_image
     
 
-#key: enum value: metoda vytvarania animacie
-ZOZNAM_ANIMACII = {}
 
-ZOZNAM_ANIMACII[EnumTypAnimacie.ROTACIA360] = rotacia360
 
 
         

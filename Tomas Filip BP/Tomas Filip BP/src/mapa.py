@@ -86,6 +86,7 @@ class Mapa:
         ret = [relatMysX + nacitanaMapa.x,relatMysY + nacitanaMapa.y]
         return ret
         
+
         
 
     def updateZoom(self):
@@ -147,6 +148,7 @@ class Mapa:
         x = self.kamera.x + pos[0]
         y = self.kamera.y + pos[1]
         self.polickoveSurMysky = [int(x/self.zoom),int(y/self.zoom)]
+
         
     def dajPolickoveSurMysky(self):
         return self.polickoveSurMysky
@@ -204,6 +206,15 @@ class Mapa:
         
     def dajOkolieMysky(self):
         return self.okolieMysky
+    
+    def dajObjektNaMyske(self):
+        okolieMysky = self.dajOkolieMysky()
+        pos = self.dajMyskuNaMape()
+        for obj in okolieMysky:
+            if obj.dajTextOblastMapa().collidepoint(pos[0],pos[1]):
+                return obj
+        return None
+            
 
          
     def nacitajPolickaDole(self):

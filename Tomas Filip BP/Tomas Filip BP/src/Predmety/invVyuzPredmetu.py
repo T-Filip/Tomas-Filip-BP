@@ -38,6 +38,8 @@ class InvVyuzPredmetu(inventar.Inventar):
         self.casTazenia = 0
         self.posledneTazenie = 0 #tick v ktorom sa naposledy tazilo
         
+        self.cisloTexturyOznPredm = 0#tlacidlo R incrementuje a metoda co dava texturu pomocou modula vrati spravnu texturu
+        
         
         self.beziAnimacia = False
         
@@ -51,15 +53,16 @@ class InvVyuzPredmetu(inventar.Inventar):
         self.beziAnimacia = False
         #print("--------------")
         #print(self.beziAnimacia)
-        
-        pressMouse = self.hrac.dajHru().dajManazerOkien().dajPressedMouse()
+        manazer = self.hrac.dajHru().dajManazerOkien()
+        pressMouse = manazer.dajPressedMouse()
         
         
         if pressMouse[0] == True:
             self.utok()
             self.vykonajAnimaciu()
-            
-        #print(self.beziAnimacia)
+
+
+
         if not self.beziAnimacia:
             self.animacia.ukonciAnimaciu()
             
@@ -158,7 +161,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         self.oznPredmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
         if self.oznPredmet == None:
             return
-        texOriginal = self.oznPredmet.dajImgPredm()
+        texOriginal = self.oznPredmet.dajImgPredm(self.cisloTexturyOznPredm)
         size = texOriginal.get_size()
         #print("size:" + str(size))
         #print (self.mapa.dajScaleNas())
@@ -217,6 +220,13 @@ class InvVyuzPredmetu(inventar.Inventar):
         screen.blit(self.imageOznPredmetu,self.topLeftObjMyska)
         
         
+    def rightClickNaObj(self):
+        obj = self.mapa.dajObjektNaMyske()
+        if obj!=None:
+            return obj.akciaRightClick() # ak sa ziadna akcia nevykona vrati False a pokracuje sa v stavani inak sa stavanie rusi
+        else:
+            return False
+        
         
         '''
         Stavanie predmetu co je v ruke
@@ -224,6 +234,18 @@ class InvVyuzPredmetu(inventar.Inventar):
     def rightClick(self):
         if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
             return
+        
+        if self.rightClickNaObj():
+            return # ak sa vykona akcia na nejaky objekt uz sa dalen nestavia 
+        else:
+            self.stavaj()
+        
+    def dajCisloTextury(self):
+        return self.cisloTexturyOznPredm
+        
+        
+    def stavaj(self):
+        
         if self.jeNacerveno:
             return
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
@@ -232,7 +254,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         
         
         infPredmetu = predmet.dajInf()
-        velkostTexObjektu = infPredmetu.dajImgPredm().get_size()
+        velkostTexObjektu = infPredmetu.dajImgPredm(self.cisloTexturyOznPredm).get_size()
 
         myskaNaMape = self.mapa.dajMyskuNaMape()
         myskaNaMape[0] -= velkostTexObjektu[0]/3
@@ -251,9 +273,12 @@ class InvVyuzPredmetu(inventar.Inventar):
 
         
         #kontrolu uz je zbytocne vykonavat kedze to nezbehne ak je objekt nacerveno a teda ze kontrola ukazala ze tam sa neda stavat - na druhu stranu vyzera ze koli zaokruhlovaniu alebo nejakej inej chyba je to o pixel posunute
-        policko.vytvorObjekt(predmet.dajId(),topLeft,False,infPredmetu,False)
+        policko.vytvorObjekt(predmet.dajId(),topLeft,self,False,infPredmetu,False)
         
-        self.mapa.skontrolujPolickoNaMyske(True)#Nutne nove okoli koli zmene
+        self.mapa.skontrolujPolickoNaMyske(True)#Nutne nove okolie koli zmene
+        
+    
+        
         
     def utok(self):
         #print("UTOK")
@@ -263,9 +288,9 @@ class InvVyuzPredmetu(inventar.Inventar):
         postavy = self.hrac.dajHru().dajPostavyGroup()
         #mousePos = pygame.mouse.get_pos()
         myskaNaMape = self.mapa.dajMyskuNaMape()
-        print("---------------------------")
-        print("Myska na mape: " + str(myskaNaMape))
-        print()
+        #print("---------------------------")
+        #print("Myska na mape: " + str(myskaNaMape))
+        #print()
         ###kontakt s postavami
         if postavy != None:
             for postava in postavy:
@@ -308,6 +333,9 @@ class InvVyuzPredmetu(inventar.Inventar):
         if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
             return
         
+    def stlaceneR(self):
+        self.cisloTexturyOznPredm += 1
+        self.reinitImageOznPredmet()
         
         #self.tickLeftclick = -1
         #self.leftClickObj = None

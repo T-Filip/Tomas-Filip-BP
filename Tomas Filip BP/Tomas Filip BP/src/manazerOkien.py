@@ -229,6 +229,8 @@ class ManazerOkien:
                     self.hra.stlacena8()
                 elif event.key == pygame.K_9:
                     self.hra.stlacena9()
+                elif event.key == pygame.K_r:
+                    self.hra.stlaceneR()
                     
                      
                 

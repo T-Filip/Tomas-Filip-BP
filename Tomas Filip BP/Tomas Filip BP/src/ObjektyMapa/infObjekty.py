@@ -12,32 +12,53 @@ from Textury import textury
 import logging
 from Predmety.enumTypMaterialu import EnumTypMaterialu
 import Predmety.tazenie as tazenie
-from Predmety.enumTypAnimacie import EnumTypAnimacie
+from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu
+import Predmety.animacia as animacia
+import ObjektyMapa.metodyPredmety as metodyPredmety
+
+
+
 
 INF_OBJ_MAPA = {}
 objMapaScalovanie = pygame.sprite.Group() # mnozina objektov na mape ktorym je nutne menit poziciu na obrazovke pri pohybe hraca (tak ako policka alebo aj samotnemu hracovi)
 infObjScalovanie = {}# mnozina infObj ktore su momentalne pouzivane a pre zobrazenie potrebuju scalovat
 nextID = 0
 
+
+
+
 class Inf():
     def __init__(self,imgPredmet = None, stackKapacita = 64):
         self.stackKapacita = stackKapacita
+        
+        self.initImgPredmet(imgPredmet)
+        
+        
+    
+    def initImgPredmet(self,imgPredmet):
         if imgPredmet == None:
-            self.imgPredmet = textury.PREDMET_BEZ_TEXTURY
+            img = self.dajImgNaInitPredmet()
+            if img != None:
+                self.imgPredmet = img
+            else:
+                self.imgPredmet = textury.PREDMET_BEZ_TEXTURY
         else:
             self.imgPredmet = imgPredmet
     
-    
-    def dajImgPredm(self):
+    def dajImgPredm(self,cislo = 0):
         return self.imgPredmet
     
     def dajObjOblastMapa(self):
         return pygame.Rect(0,0,0,0)
     
+    def dajImgNaInitPredmet(self):
+        return None
+    
     
 class InfNastroje(Inf):
-    def __init__(self,typAnimacie,imgAnimacia = None,imgPredmet = None, stackKapacita = 64):
-        self.typAnimacie = typAnimacie
+    def __init__(self,animacia,imgAnimacia = None,imgPredmet = None, stackKapacita = 64):
+        self.animacia = animacia
+
         super().__init__(imgPredmet, stackKapacita)
         if imgAnimacia == None: # ak nema specialny img pre animaciu pouzije sa imgPredmet alebo default textura
             self.imgAnimacia = self.imgPredmet
@@ -45,22 +66,32 @@ class InfNastroje(Inf):
             self.imgAnimacia = imgAnimacia
             
             
-    def dajTypAnimacie(self):
-        return self.typAnimacie
+    def dajAnimaciu(self):
+        return self.animacia
     
     def dajImgAnimacie(self):
         return self.imgAnimacia
     
+
+    
     
     
 class InfNaMape(Inf):
-    def __init__(self,material,imgPredmet = None, stackKapacita = 64):
+    def __init__(self,material,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.material = material
+        self.objNaMape(trieda)
+        self.metodaRightClick = metodaRightClick
         super().__init__(imgPredmet, stackKapacita)
         
     def dajMaterial(self):
         return self.material
     
+    def objNaMape(self,trieda = None):
+        import ObjektyMapa.objMapa as objMapa
+        self.objMapa = objMapa.ObjMapa
+        
+    def dajMetoduRightClick(self):
+        return self.metodaRightClick
 
     
 
@@ -68,20 +99,31 @@ class InfNaMape(Inf):
 
 #InfObj = namTupDef("InfObj", "img rectObjOblastMapa rychlostPrechodu pocPouzivajucich", {'pocPouzivajucich':0})
 class InfObj(InfNaMape):
-    def __init__(self,img,material,casTazenia,drop, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64):
+    def __init__(self,img,material,casTazenia,drop, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.casTazenia = casTazenia
         self.drop = drop
+        self.initImg(img)
+        super().__init__(material,imgPredmet, stackKapacita,trieda,metodaRightClick)
+
+        self.initRectOblastMapa(rectObjOblastMapa)
+        
+        self.rychlostPrechodu = rychlostPrechodu
+        
+    def dajImgNaInitPredmet(self):
+        return self.img
+        
+        
+        
+    def initImg(self,img):
         self.img = img
-        super().__init__(material,imgPredmet, stackKapacita)
+
+        
+    def initRectOblastMapa(self,rectObjOblastMapa):
         if rectObjOblastMapa == None:
             self.rectObjOblastMapa = self.img.get_rect()
         else:
             self.rectObjOblastMapa = rectObjOblastMapa #relativna pozicia v img
-        
-        self.rychlostPrechodu = rychlostPrechodu
-        
 
-        self.imgPredmet = self.img
         
     def dajRozmery(self):
         return [self.img.get_width(),self.img.get_height()]
@@ -92,7 +134,7 @@ class InfObj(InfNaMape):
     def dajImgNaMape(self):
         return self.img
     
-    def dajObjOblastMapa(self):#relativne vzhladom na to ze je to pre kazdy objekt .. na mape znamena ze tam nie ja zahrnuty scale
+    def dajObjOblastMapa(self,index = 0):#relativne vzhladom na to ze je to pre kazdy objekt .. na mape znamena ze tam nie ja zahrnuty scale
         return self.rectObjOblastMapa
     
 
@@ -100,24 +142,29 @@ class InfObj(InfNaMape):
     def dajDrop(self):
         return self.drop
 
+        #_(self,img,material,casTazenia,drop, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
         
-        
-class InfObjScale(InfObj,scale.ObjScale):
-    def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop):
+        #abstraktna trieda ktora nededi ziaden scale ale mai mplementovane metody zavisle na tomto dedeni
+        #potomci tejto triedy dedia rozny scale
+class InfObjBezScale(InfObj):
+    def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.imgZaloha = img.copy()
         infObjScalovanie[self]=self
-        self.sprites = pygame.sprite.Group()
-        super().__init__(img,material,casTazenia,drop, rectObjOblastMapa, rychlostPrechodu)
+        self.sprites = pygame.sprite.Group()#zoznam vsetkych objektov ktore pouzivaju toto inf
+        super().__init__(img,material,casTazenia,drop, rectObjOblastMapa, rychlostPrechodu,stackKapacita,stackKapacita,trieda,metodaRightClick)
         
-    def dajImgPredm(self):
-        return self.imgZaloha
+    def dajImgPredm(self,cislo = 0):
+        return self.dajImgZaloha()
     
-    #override pretoze sa meni z droj... povodny sa teraz scaluje a preto by boli rozmery zavisle od scalu
+    #override pretoze sa meni zdroj... povodny sa teraz scaluje a preto by boli rozmery zavisle od scalu
     def dajRozmery(self):
-        return [self.imgZaloha.get_width(),self.imgZaloha.get_height()]
+        return [self.dajImgZaloha().get_width(),self.dajImgZaloha().get_height()]
+    
+    def dajImgZaloha(self,index=0):
+        return self.imgZaloha
         
     def scale(self,nas):
-        self.img = pygame.transform.scale(self.imgZaloha,(int(self.imgZaloha.get_width()*nas),int( self.imgZaloha.get_height()*nas)))
+        self.img = pygame.transform.scale(self.dajImgZaloha(),(int(self.dajImgZaloha().get_width()*nas),int( self.dajImgZaloha().get_height()*nas)))
         #print(str(int(self.imgZaloha.get_width()*nas)))
         for sp in self.sprites:
             sp.scale(nas)
@@ -125,11 +172,71 @@ class InfObjScale(InfObj,scale.ObjScale):
 
     #metoda sa vola pri vytvarani noveho objektu v mape s aktivnym prekreslovanim, kedze data objektov ktore nie su pouzivane sa nescaluju je potrebne tak urobit na zaciatku ich pouzivania
     def aktualizujData(self): 
-        if len(self.sprites) <= 1:
+        if len(self.sprites) <= 1:#kedze sa data aktualizuju pri vstupe do stage 2 a vzhladom na to ze aktualizacia prebieha pre vsetky objekty tak to staci volat iba ak je pocet pouzivajucich prave 1
             self.scale(mapa.SINGLETON_MAPA.dajNas())
 
     #def vymazSprite(self,sprite):
     #   self.sprites.remove(sprite) 
+    
+    
+   #self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+class InfObjScale(InfObjBezScale,scale.ObjScale):
+    def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+        
+        super().__init__(img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet,stackKapacita,trieda,metodaRightClick)
+        
+    def objNaMape(self,trieda = None):
+        import ObjektyMapa.objMapa as objMapa
+        self.objMapa = objMapa.ObjMapaAktivPrek
+        
+    
+        
+  #vlozInf(InfObjScaleViacImg([vpravo,vlavo,hore,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],zmenSmerDvere))  
+  #__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+class InfObjScaleViacImg(InfObjBezScale,scale.ObjScaleViacTextur):
+    def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+        self.imgZaloha = img # pole obrazkov .. pre kazdy smer jeden
+        super().__init__(img,rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet,stackKapacita,trieda,metodaRightClick)
+
+    def dajImgNaInitPredmet(self):
+        return self.img[0]
+
+    def objNaMape(self,trieda = None):
+        import ObjektyMapa.objMapa as objMapa
+        self.objMapa = objMapa.ObjMapaAktivPrekViacImg
+        
+    def dajImgZaloha(self,index=0):
+        return self.imgZaloha[index]
+    
+    def dajRozmery(self,smer):
+        return [self.imgZaloha[smer].get_width(),self.imgZaloha[smer].get_height()]
+    
+    def initRectOblastMapa(self,rectObjOblastMapa):
+        self.rectObjOblastMapa = rectObjOblastMapa # pole rectov
+
+    def dajObjOblastMapa(self,index = 0):#relativne vzhladom na to ze je to pre kazdy objekt .. na mape znamena ze tam nie ja zahrnuty scale
+        return self.rectObjOblastMapa[index]
+    
+    def dajImgPredm(self,cislo = 0):
+        #kedze predmet neviem kolko je moznych textur riesene cez modulo
+        cis = cislo % len(self.imgZaloha)
+        return self.dajImgZaloha(cis)
+
+    def initImg(self,img):
+        self.img = img
+    
+
+        
+    def scale(self,nas):
+        
+        for index in range (len(self.img)):
+            self.img[index] = pygame.transform.scale(self.dajImgZaloha(index),(int(self.dajImgZaloha(index).get_width()*nas),int( self.dajImgZaloha(index).get_height()*nas)))
+        
+        #print(str(int(self.imgZaloha.get_width()*nas)))
+        for sp in self.sprites:
+            sp.scale(nas)
+            sp.newRefImg()
+
 
 
 
@@ -185,8 +292,10 @@ def nacitajTexturyObjMapa():
     global nextID
 
 #-------------------STOROMY----------------
-    stromy = pygame.image.load('img\\objektyMapa\\Stromy.png').convert_alpha()
+    stromy = pygame.image.load('img/objektyMapa/Stromy.png').convert_alpha()
     texturaStromov = [pygame.Surface((48,64),pygame.SRCALPHA) for i in range (0,18)]
+
+#self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
 
     #rectStromov = pygame.Rect(16,16,16,32)#relativna hodnota v texturovej oblasti, zatial docasne rovnake pre vsetky stromy .. docasne? 
     rectStromov = pygame.Rect(16,48,16,16)
@@ -201,7 +310,7 @@ def nacitajTexturyObjMapa():
 
 #------------------------KVIETKY-------------------
     nextID = 50
-    kvietky = pygame.image.load('img\\objektyMapa\\kvietky.png').convert_alpha()
+    kvietky = pygame.image.load('img/objektyMapa/kvietky.png').convert_alpha()
     rect = pygame.Rect(4,10,8,6)
     texturaKvietkov = [pygame.Surface((16,16),pygame.SRCALPHA) for i in range (0,6)]
     for y in range (0,6):
@@ -211,7 +320,7 @@ def nacitajTexturyObjMapa():
     
 
 #---------------------SUTRE---------------
-    sutre = pygame.image.load('img\\objektyMapa\\Sutre.png').convert_alpha()
+    sutre = pygame.image.load('img/objektyMapa/Sutre.png').convert_alpha()
     
     
     #zacinaju sutre
@@ -264,6 +373,7 @@ def nacitajTexturyObjMapa():
         surf = pygame.Surface((12,9),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(80,0+posun,12,9))
         vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,140,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75))
+
         
         rect = pygame.Rect(2,3,7,6)
         surf = pygame.Surface((11,9),pygame.SRCALPHA)
@@ -299,9 +409,9 @@ def nacitajTexturyObjMapa():
     #zacinaju celopolicka
 
     nextID = 200
-    pobrezia = pygame.image.load('img\\objektyMapa\\Pobrezia.png').convert_alpha()
-    voda  = pygame.image.load('img\\objektyMapa\\voda.png').convert_alpha()
-    hlbokaVoda = pygame.image.load('img\\objektyMapa\\hlbokaVoda.png').convert_alpha()
+    pobrezia = pygame.image.load('img/objektyMapa/Pobrezia.png').convert_alpha()
+    voda  = pygame.image.load('img/objektyMapa/voda.png').convert_alpha()
+    hlbokaVoda = pygame.image.load('img/objektyMapa/hlbokaVoda.png').convert_alpha()
     
 
     #Zozanm[][]   [tvar][cislotextury]
@@ -431,7 +541,7 @@ def nacitajTexturyObjMapa():
     
     
             #-------------DREVO-----------------
-    predmety = pygame.image.load('img\\Predmety\\predmety.png').convert_alpha()
+    predmety = pygame.image.load('img/Predmety/predmety.png').convert_alpha()
     nextID = 2000
     
     
@@ -473,14 +583,45 @@ def nacitajTexturyObjMapa():
     #SEKERA1
     predmText = pygame.Surface((64,64),pygame.SRCALPHA)
     predmText.blit(predmety,(0,0),(0,128,64,64))
-    vlozInf(InfNastroje(EnumTypAnimacie.ROTACIA360,None,predmText,1))
+    vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
     
     
     
     #KRUMPAC1
     predmText = pygame.Surface((64,64),pygame.SRCALPHA)
     predmText.blit(predmety,(0,0),(0,192,64,64))
-    vlozInf(InfNastroje(EnumTypAnimacie.ROTACIA360,None,predmText,1))
+    vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+    
+    
+    
+    
+    
+    
+    
+    
+    #--------------------------------DVERE-----------------
+    texturaObjektov = pygame.image.load('img/objektyMapa/objekty.png').convert_alpha()
+    nextID = 4000
+    
+    vpravo = pygame.Surface((51,36),pygame.SRCALPHA)
+    vlavo = pygame.Surface((51,36),pygame.SRCALPHA)
+    hore = pygame.Surface((18,50),pygame.SRCALPHA)
+    dole = pygame.Surface((18,50),pygame.SRCALPHA)
+    
+    vpravo.blit(texturaObjektov,(0,0),(0,0,51,36))
+    vlavo.blit(texturaObjektov,(0,0),(51,0,51,36))
+    dole.blit(texturaObjektov,(0,0),(0,36,18,60))
+    hore.blit(texturaObjektov,(0,0),(18,36,18,60))
+    
+    #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+    
+    rect = [pygame.Rect(1,28,50,8),pygame.Rect(6,10,6,50)]
+    vlozInf(InfObjScaleViacImg([vpravo,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,metodyPredmety.zmenSmerDveri))
+    
+    
+    
+    
+    
 '''
 Povinne:
 rychlostPrechodu # nasobitel ak 0.5 tak sa pohybuje 50% rychlostou (este sa to ale potom priemeruje)

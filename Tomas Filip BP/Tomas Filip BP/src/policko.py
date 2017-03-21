@@ -141,7 +141,8 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             return
         
         if maSaPrekreslit:
-            self.polikujObjekt(obj)#ak sa ma prekreslit treba aby sa prekreslil aj na ostatnych polickach
+            if not isinstance(obj, objMapa.ObjMapaAktivPrek):#ak sa prekresluje aktivne tak sa linkovat nemoze
+                self.polikujObjekt(obj,True)#ak sa ma prekreslit treba aby sa prekreslil aj na ostatnych polickach
             self.initImg(True)#True aby sa hned pouzil aj scale policka
             
     def vytvorKamenolom (self,rand,lavaH,pravaH,typ=None):
@@ -290,17 +291,16 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                 
     #alternativa pre vloz objekt akurat si ten objekt vytvori sam - vhodne ak pri vytvarani nie je jasne ake vykreslovanie vytvarany objekt potrebuje
     #vytvarany objekt sa hned hodi do stage 2
-    def vytvorObjekt(self,id,suradnice,suToSuradniceStredu=False,inf = None,nastaneKontrolaSOkolim = True):
+    def vytvorObjekt(self,id,suradnice,invVyuzitiePredmetov,suToSuradniceStredu=False,inf = None,nastaneKontrolaSOkolim = True):
         if inf == None:
             inf = infObjekty.dajInf(id)
             
-        if isinstance(inf,infObjekty.InfObjScale):
-            obj = objMapa.ObjMapaAktivPrek(self,id,suradnice,suToSuradniceStredu)
-            self.vlozObj(obj)
-        else:
-            obj = objMapa.ObjMapa(self,id,suradnice,suToSuradniceStredu)
-            self.vlozObj(obj,True)
+        if not isinstance(inf, infObjekty.InfNaMape):
+            logging.warning("Policko - vytvor objekt inf objektu nie potomkom InfNaMape")
             
+        trieda = inf.objMapa
+        obj = trieda(self,id,suradnice,invVyuzitiePredmetov,suToSuradniceStredu)
+        self.vlozObj(obj,True)
         
         obj.initStage2()
             
@@ -368,7 +368,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
     def polikujObjekt(self,obj,maSaPrekreslitLinknutePolicko = True):
         for policko in self.okolie:
             if collideTextOblastMapa(policko,obj):
-                obj.linkPolicko(self)
+                obj.linkPolicko(policko)
                 if maSaPrekreslitLinknutePolicko:
                     policko.initImg(True)
                 

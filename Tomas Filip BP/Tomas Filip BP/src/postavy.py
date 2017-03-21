@@ -28,7 +28,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.image = pygame.Surface((sirka,vyska))
         self.rect = self.image.get_rect()
         
-        self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+        self.smer = smerPostavy.SmerPostavy.DOPREDU
         self.imageZaloha = textury
         
 
@@ -143,7 +143,7 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
 
 
     def dajSmerPostavy(self):
-        return self.smerPostavy
+        return self.smer
     
     '''
     def dajSuradnicePreAnimaciu(self):
@@ -181,8 +181,11 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.inventar.vlozPredmet(predmet.Predmet(2000,15))
         self.inventar.vlozPredmet(predmet.Predmet(3001,1))
         self.inventar.vlozPredmet(predmet.Predmet(3000,2))
+
         
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
+        self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(4000,20))
+        self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(3000,1))
         
     def dajInventarRychlyPristup(self):
         return self.inventarRychlyPristup
@@ -350,15 +353,15 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         if self.smerPohybu[0] != 0:
         
             if self.smerPohybu[0] > 0:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+                self.smer = smerPostavy.SmerPostavy.DOPRAVA
                 
             else: 
-                self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+                self.smer = smerPostavy.SmerPostavy.DOLAVA
         else:
             if self.smerPohybu[1] < 0:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+                self.smer = smerPostavy.SmerPostavy.DOZADU
             elif self.smerPohybu[1] > 0:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+                self.smer = smerPostavy.SmerPostavy.DOPREDU
             else:#hrac sa nehybe pozera za myskou
                 pos = pygame.mouse.get_pos()
                 mousePos = [pos[0],pos[1]]
@@ -366,15 +369,15 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                 mousePos[1] -= int(nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]/2)
                 if mousePos[0]*2 >mousePos[1]:#pravo spodna cast
                     if mousePos[0]*2 > -mousePos[1]:#pravohorna
-                        self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+                        self.smer = smerPostavy.SmerPostavy.DOPRAVA
                     else:
-                        self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+                        self.smer = smerPostavy.SmerPostavy.DOZADU
                         
                 else: #lavo horna
                     if mousePos[0]*2 > -mousePos[1]:#pravohorna
-                        self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+                        self.smer = smerPostavy.SmerPostavy.DOPREDU
                     else:
-                        self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+                        self.smer = smerPostavy.SmerPostavy.DOLAVA
                        
                     
                 
@@ -389,16 +392,16 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         if pomVer+self.maxRychlost/5 > pomHor :
             #Vertikalne
             if self.smerPohybu[1]<0:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOZADU
+                self.smer = smerPostavy.SmerPostavy.DOZADU
             else:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOPREDU
+                self.smer = smerPostavy.SmerPostavy.DOPREDU
             
         else:
             #Horizontalne
             if self.smerPohybu[0]<0:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOLAVA
+                self.smer = smerPostavy.SmerPostavy.DOLAVA
             else:
-                self.smerPostavy = smerPostavy.SmerPostavy.DOPRAVA
+                self.smer = smerPostavy.SmerPostavy.DOPRAVA
         '''
         
             
@@ -443,10 +446,10 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
            
         logging.info("Hrac-posunPostavu") 
         
-        zalohaSmeru = self.smerPostavy
+        zalohaSmeru = self.smer
         self.posunPostavu(posun[0],posun[1])
         #print (posun)
-        if zalohaSmeru != self.smerPostavy:
+        if zalohaSmeru != self.smer:
             self.updateImage()
         
         self.topLeftScaleMap[0] = self.rectTextOblastMapa.x*self.hra.mapa.dajNas()
@@ -513,6 +516,9 @@ class Hrac(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
     def stlacena9(self):
         self.zmenVyznacenyPredmet(9)
+        
+    def stlaceneR(self):
+        self.inventarRychlyPristup.stlaceneR()
         
     def vykresliOznacenyPredmet(self,screen):
         self.inventarRychlyPristup.draw(screen)
