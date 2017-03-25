@@ -40,6 +40,9 @@ class ObjScale:
     def updateScreenPosition (self, mapa): 
         mapa.updatniPoziciu(self.topLeftScaleMap,self.rect)
         
+    def updateLayer(self):
+        self.hra.dajAktivBlitGroup().change_layer(self,self.rectTextOblastMapa.y+30)
+        
         
 class ObjScaleViacTextur (ObjScale):
     

@@ -13,6 +13,7 @@ import ObjektyMapa.celoPolObj as celoPolObj
 import logging
 import ObjektyMapa.infObjekty as infObjekty
 from ObjektyMapa.infObjekty import InfObj
+from Postavy.npc import Npc
 
 
 
@@ -373,7 +374,9 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                     policko.initImg(True)
                 
     def initStage2 (self):
-
+        if self.suradnice[0] == 5 and self.suradnice[1]  == -5:
+            surPix = [self.suradnice[0]*64,self.suradnice[1]*64]
+            Npc(self.mapa.hra, surPix, 48, 48, None, self.mapa)
         
         
         

@@ -62,14 +62,14 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         #capSmerPostavy = 4
         
         #MUZ - 0 ZENA - 1
-        capPohlavia = [0,1]
-        capCisloOci = [[0,1],[0,1]]
-        capCisloVlasov = [[0,1],[0,1]]
-        capTypTvare = [0,2]
+        capPohlavia = nastavenia.CAP_POHLAVIE
+        capCisloOci = nastavenia.CAP_TVAR
+        capCisloVlasov = nastavenia.CAP_VLASY
+        capTypTvare = nastavenia.CAP_HLAVA
         
         
         
-        self.farbaTela = [(255,220,100),(255,220,140),(253,210,130),(216,170,130),(200,140,100),(180,110,60),(140,90,50)] 
+        self.farbaTela = nastavenia.FARBA_TELA
         self.indexFarbyTela = [2]
         self.cisloOci = [0]
         self.cisloVlasov = [0]

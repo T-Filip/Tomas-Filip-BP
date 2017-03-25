@@ -6,6 +6,8 @@ Created on 9. 3. 2017
 
 from Textury import textury
 import pygame
+import nastavenia as nastavenia
+import random
 
 '''
     //Abstraktna trieda// ktorej ulohou je vytvaranie textur pre vsetky postavy v hre na zaklade parametrov.
@@ -65,6 +67,17 @@ def vytvorPostavu(jeToHrac, paSmerPostavy,farbaTela,typPostavy,cisloTvare,cisloV
     
     
     return postavaMala
+
+    def vytvorPostavuRandom():
+        #automaticky sa berie ze sa generuje npc#
+        capPohlavia = nastavenia.CAP_POHLAVIE
+        capCisloOci = nastavenia.CAP_TVAR
+        capCisloVlasov = nastavenia.CAP_VLASY
+        capTypTvare = nastavenia.CAP_HLAVA
+        farbaTela = nastavenia.FARBA_TELA
+        
+        #pohlavie = random.sample
+        
 
 
 

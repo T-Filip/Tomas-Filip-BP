@@ -1,15 +1,16 @@
 
 import pygame
 import random
-from random import randint
 import time
 import nastavenia
 import mapa
-import postavy
+from Postavy import hrac
 import ObjektyMapa.infObjekty as infObjekty
 import logging
 import Menu.oknoInventar as oknoInventar
 import Menu.enumOknaHra as enumOknaHra
+import Textury.textury as textury
+import math
 
 
 
@@ -36,12 +37,13 @@ class Hra:
         self.allSprites = pygame.sprite.Group()
         self.aktivBlitObjMapa = pygame.sprite.LayeredUpdates()
         self.postavyGroup = pygame.sprite.Group()
+        self.mobky = pygame.sprite.Group()
         self.polickaSprites = pygame.sprite.RenderPlain()
         
         
         
         
-        self.hrac = postavy.Hrac(self,[2100,-2300],typP,textury,vlastnosti,48,48)
+        self.hrac = hrac.Hrac(self,[0,0],typP,textury,vlastnosti,48,48)
         
         logging.info("Vytvorenie mapy")
         self.mapa = mapa.Mapa(self)
@@ -63,7 +65,7 @@ class Hra:
             test(self,50,50)
         '''
 
-        self.casovanieZoom = 0
+        self.casovanieModulo = 0
         
         self.imagee = pygame.Surface((64,64))
         #self.imagee.fill((100,200,120))
@@ -89,7 +91,9 @@ class Hra:
             '''
             
         self.aktivBlitObjMapa.draw(self.screen)
+        self.updateHluku()
         pygame.display.flip()
+        
         
 
             
@@ -109,6 +113,9 @@ class Hra:
         
     def dajOknoInventarRychlyPristup(self):
         return self.invOknoRychlyPristup
+    
+    def dajGroupPreMobky(self):
+        return self.mobky
 
        
     def initInventarRychlyPristup(self,scale):
@@ -144,22 +151,33 @@ class Hra:
         self.fpsCount +=  1
         #print(len(self.polickaSprites))
         
-        for policko in self.polickaSprites:
-            policko.updatePozicie(self.mapa)
         
         
         
-
+        
+       #iba ak sa hrac pohne? 
+        self.mapa.updateKamera(self.hrac)
+        #self.hrac.updateScreenPosition(self.mapa)
 
         if self.mapa.menilSaZoom:
             #print(self.mapa.zoom)
             nas = self.mapa.scaleNasobitel
             self.mapa.menilSaZoom = False
             for policko in self.polickaSprites:
+                policko.updatePozicie(self.mapa)
                 policko.scale(nas)
+                policko.updateScreenPosition(self.mapa)
+
 
             
-            self.hrac.scale(nas)
+            for postava in self.postavyGroup:
+                postava.scale(nas)
+                postava.updateScreenPosition(self.mapa)
+                try:
+                    postava.updateLayer()
+                except ValueError:
+                    pass
+                
             
             #poscaluje textury
             for infObj in infObjekty.infObjScalovanie:
@@ -168,25 +186,41 @@ class Hra:
             
             for obj in infObjekty.objMapaScalovanie:
                 obj.scale(nas)
-                
-            
-                
-                
-       #iba ak sa hrac pohne? 
-        self.mapa.updateKamera(self.hrac)
-        self.hrac.updateScreenPosition(self.mapa)
-        
-        for sprite in self.aktivBlitObjMapa:
-            try:
-                sprite.dorobit(self.mapa)
-            except:
-                pass
-                
-        for sprite in self.polickaSprites:
-            sprite.updateScreenPosition(self.mapa)
-            
-        for obj in infObjekty.objMapaScalovanie:
                 obj.updateScreenPosition(self.mapa)
+        else:
+            for policko in self.polickaSprites:
+                policko.updatePozicie(self.mapa)
+                policko.updateScreenPosition(self.mapa)
+            
+            for obj in infObjekty.objMapaScalovanie:
+                obj.updateScreenPosition(self.mapa)
+
+            for postava in self.postavyGroup:
+                postava.updateTopLeft(self.mapa.dajNas())
+                postava.updateScreenPosition(self.mapa)
+                try:
+                    postava.updateLayer()
+                except ValueError:
+                    '''
+                    Pri update pozicie sa postavy mozu zmazat ak sa ocitnu mimo nacitanej oblasti
+                    Ak sa tak stane uz nie je mozne menit layer kedze tato postava bola z groupy uz odstranena.
+                    Pri buducom iterovani cez self.postavyGroup uz tento problem nebude kedze sa tato postava odstrani aj z tohto zoznamu
+                    '''
+                    pass 
+            
+                
+                
+
+        
+        #for sprite in self.aktivBlitObjMapa:
+        #    try:
+        #        sprite.dorobit(self.mapa)
+        #    except:
+        #        pass
+                
+
+            
+
         
         
         self.polickaSprites.draw(self.screen)
@@ -217,7 +251,7 @@ class Hra:
         self.hrac.klikButton5()
         
     def vykresliInfoRoh(self):
-        font = nastavenia.FONT_1_16
+        font = textury.dajFont(16)
         
         text = str("x: " + str(self.hrac.suradnice[0]) + "   y: " + str(self.hrac.suradnice[1]))
         textSurf = font.render(text, 10, (255,255,0))#ERROR zero width? rychle spustenie do prava
@@ -242,53 +276,35 @@ class Hra:
         
         
     def update(self):
-        self.casovanieZoom +=1
+        self.casovanieModulo +=1
         self.pocetTickov += 1 
         
-        if self.casovanieZoom % 10 == 0: 
-            self.mapa.updateZoom()
+        
+        zlozitostVKroku = time.time()
+        modulo10 = self.casovanieModulo % 10
         self.hrac.update()
         
         self.tpsCount += 1
-        
         if time.time() > self.timeUP:
             self.timeUP = time.time()+1
             self.pocetFPS = self.fpsCount
             self.pocetTPS = self.tpsCount
             self.tpsCount = 0
             self.fpsCount = 0
+            
+        self.postavyGroup.update()
         
-        #pos = pygame.mouse.get_pos()
-        #sprites_pod_myskou = [s for s in self.layeredSprites if s.rect.collidepoint(pos)]
-        #print(len(sprites_pod_myskou))
+        if modulo10 == 0: 
+            self.mapa.updateZoom()
+            
+        self.riadMobky(modulo10)
         
-        '''
-        bool = True
-        if len(self.zoznamNacitanie) >0:
-            #a = next (iter (self.zoznamNacitanie.values()))
-            b = self.zoznamNacitanie.keys()
-            a = self.zoznamNacitanie.pop(b)
-            a.vytvorPolicko(self.mapa)
-            bool = False
-        if len(self.zoznamNacitanie) >0:
-            a = next (iter (self.zoznamNacitanie.values()))
-            a.vytvorPolicko(self.mapa)
-        if len(self.zoznamNacitanie) >0:
-            a = next (iter (self.zoznamNacitanie.values()))
-            a.vytvorPolicko(self.mapa)
             
             
-        if len(self.zoznamNacitanie) <1 and bool:
-            if len(self.zoznamStage2) > 1:
-                a = next (iter (self.zoznamNacitanie.values()))
-                a.initStage2()
-            if len(self.zoznamStage2) > 1:
-                a = next (iter (self.zoznamNacitanie.values()))
-                a.initStage2()
-            if len(self.zoznamStage2) > 1:
-                a = next (iter (self.zoznamNacitanie.values()))
-                a.initStage2()
-        '''
+
+        #print(time.time()-zlozitostVKroku)
+
+
             
             
             
@@ -296,13 +312,43 @@ class Hra:
         logging.info("hrac-eventy")
         self.hrac.eventy()
         
-        #nah = randint(0,99)
-        #if nah<20:
-        #    self.layeredSprites.update()
         
+        #iba raz za cas napr raz za 2 sec mozno viac
+    def updateHluku(self):
+        self.hlukoveCentra = {}
+        self.hodnotyHlukovychCentier = {}
+        id = 0
+        for postava in self.postavyGroup:
+            esteTrebaUlozit = True
+            for hlukCentrum in self.hlukoveCentra.values():
+                vzdialenost = hlukCentrum[0].dajVzdialenostOdPostavy(postava)
+                if vzdialenost < 200:
+                    hlukCentrum[postava] = postava
+                    self.hodnotyHlukovychCentier[hlukCentrum[0]] += postava.dajHodnotuHluku()
+                    esteTrebaUlozit = False
+                    break
+            if esteTrebaUlozit:
+                self.hlukoveCentra[postava] = {0:postava}#nove hlukove centrum
+                self.hodnotyHlukovychCentier[postava] = postava.dajHodnotuHluku()#leader ako kluc do dic pre hodnoty
+                 
+        #self.pocetHlukovychCentrier = id-1
         
-        
-        #self.polickaSprites.update(self.mapa) # nic tam nie je 
+    def dajHlukoveCentra(self):
+        return self.hlukoveCentra
+    def dajHodnotyHlukovychCentrier(self):
+        return self.hodnotyHlukovychCentier
+
+    def riadMobky(self,modulo10):
+        if modulo10 == 5:
+            samp = random.sample(list(self.postavyGroup),int(len(self.mobky)/10))
+            for mob in samp:
+                mob.updateZmenStav(samp)
+                
+        elif modulo10 > 1: # ak je 0 vykonava sa zoom co je operacia zlozita na vypocet preto mu nebudeme pridavat 1 do istoty aby sa tam spravil frame
+            poc = math.ceil(len(self.mobky)/10)
+            samp = random.sample(list(self.mobky),poc)
+            for mob in samp:
+                mob.updateCinnostStavu()
         
     def stlacena0(self):
         self.hrac.stlacena0()

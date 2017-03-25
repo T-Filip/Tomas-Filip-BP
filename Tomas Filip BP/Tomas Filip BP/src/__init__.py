@@ -7,6 +7,7 @@ import time
 import itertools
 import logging
 import ObjektyMapa.infObjekty as infObjekty
+import random
 
 
 
@@ -37,13 +38,31 @@ except IndexError:
      
 ''' 
 
-#log = open("log.txt", "w")
+'''
+pocetTrafiliSa = 0
+for i in range (1000000):
+    a = False
+    aC = random.randint(0,99)
+    b = False
+    bC = random.randint(0,99)
+    for j in range(10):
+        c = random.randint(0,99)
+        if c == aC:
+            a = True
+        if c == bC:
+            b = True
+    if a and b:
+        pocetTrafiliSa+=1
+        
+print(pocetTrafiliSa)
+print("percenta: " + str(pocetTrafiliSa/1000000))
+'''       
+    
 
 
 
 
-
-
+        
 
 
 logging.basicConfig(level=logging.DEBUG,

@@ -22,8 +22,8 @@ DEBUG = False
 
 
 
-MAP_SIZE_X = 18
-MAP_SIZE_Y = 18
+MAP_SIZE_X = 25
+MAP_SIZE_Y = 15
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -35,6 +35,10 @@ YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
 
+
+
+
+
 #3 typy pre kazdy postavu ine vlastnosti
 #Zdravie Sila Rychlost vytrvalost
 #mala postava fit a silna
@@ -42,10 +46,20 @@ VLASTNOSTI_POSTAVY = ["Zdravie", "Sila", "Rychlost", "Vytrvalost"]
 VLASTNOSTI_POSTAVY_TYP_POSTAVY = [[3,3,5,5,],[4,4,4,4],[6,5,3,2]]
 VLASTNOSTI_POSTAVY_POHLAVIE = [[0,1,0,0],[0,0,0,1]]
 
+FARBA_TELA = [(255,220,100),(255,220,140),(253,210,130),(216,170,130),(200,140,100),(180,110,60),(140,90,50)]
+CAP_POHLAVIE  = [0,1]
+CAP_TVAR = [[0,1],[0,1]]#2d koli pohlaviam - kazde pohlavie moze mat inu tvar naprd zena ma namalovane pery ale muz nie
+CAP_VLASY = [[0,1],[0,1]]
+CAP_HLAVA = [0,2]
 
-SEED = 123456
 
 
+
+
+SEED = 2
+
+POLOVICNE_ROZLISENIA_X = [640, 800, 960, 1280, 1600]
+POLOVICNE_ROZLISENIA_Y = [360,0, 540, 720, 900]
 ROZLISENIA_X = [1280, 1600, 1920, 2560, 3200]
 ROZLISENIA_Y = [720, 900, 1080, 1440, 1800]
 vybrateRozlisenie = 0

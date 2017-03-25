@@ -11,6 +11,7 @@ import random
 import ObjektyMapa.infObjekty as infObjekty
 import mapa as mapa
 import logging
+from threading import Thread
 
 SINGLETON_MAPA = None #prva mapa .... 
 
@@ -20,6 +21,7 @@ class vytvoreniePolicka:
         self.y=y
         self.xCoord = xCoord
         self.yCoord = yCoord
+        
     
     def vytvorPolicko(self,mapa):
         mapa.mapa[self.x][self.y] = mapa.vytvorPolickoNa(self.xCoord,self.yCoord)
@@ -41,6 +43,7 @@ class Mapa:
 
         self.hra=hra
         self.hrac = hra.hrac
+        self.thread = Thread()
         
         logging.info("init pola mapy")
         self.mapa = [[0 for xPos in range(nastavenia.MAP_SIZE_Y)] for yPos in range(nastavenia.MAP_SIZE_X)] 
@@ -77,9 +80,9 @@ class Mapa:
         pos = pygame.mouse.get_pos()
 
         nacitanaMapa = self.dajNacitanuMapu()
-        rectTopLeftPolicka = self.dajTopLeftPolicko().dajRect()
-        relatMysX= pos[0] - rectTopLeftPolicka.x + rectTopLeftPolicka.width
-        relatMysY= pos[1] - rectTopLeftPolicka.y + rectTopLeftPolicka.height
+        rectTopLeftPolicka = self.dajTopLeftMin2Policko().dajRect()
+        relatMysX= pos[0] - rectTopLeftPolicka.x + rectTopLeftPolicka.width 
+        relatMysY= pos[1] - rectTopLeftPolicka.y + rectTopLeftPolicka.height 
 
         relatMysX = relatMysX/scale
         relatMysY = relatMysY/scale
@@ -116,7 +119,7 @@ class Mapa:
             self.zoomZotrvacnost = 0
             
 
-    def dajTopLeftPolicko(self):
+    def dajTopLeftMin2Policko(self):
         sur = self.mapa[self.topLeftMapa[0]][self.topLeftMapa[1]].dajSuradnice()
         surRoh = [0,0]
         surRoh[0] = sur[0] + 1
@@ -171,27 +174,40 @@ class Mapa:
         if rozdiel > 32: 
             i += 1
             logging.info("Mapa-nacitajPolicka Vpravo")
-            self.nacitajPolickaVpravo()
             hrac.suradnice[0]+=1
-            self.nacitanaMapa = self.nacitanaMapa.move(64,0)
+            #if not self.thread.isAlive():
+            #    self.thread=Thread(target = self.nacitajPolickaVpravo)
+            #    self.thread.start()
+            self.nacitajPolickaVpravo()
+                
         elif rozdiel < -32:
             logging.info("Mapa-nacitajPolicka VLavo")
-            self.nacitajPolickaVlavo()
             hrac.suradnice[0]-=1
-            self.nacitanaMapa = self.nacitanaMapa.move(-64,0)
+            #if not self.thread.isAlive():
+            #    self.thread=Thread(target = self.nacitajPolickaVlavo)
+            #    self.thread.start()
+            self.nacitajPolickaVlavo()
+
+            
         rozdiel2 = hrac.rectTextOblastMapa.centery - self.nacitanaMapa.centery 
         if rozdiel2 > 32:
             logging.info("Mapa-nacitajPolicka Dole")
-            self.nacitajPolickaDole()
-            self.nacitanaMapa = self.nacitanaMapa.move(0,64)
             hrac.suradnice[1]+=1
+            #if not self.thread.isAlive():
+            #    self.thread=Thread(target = self.nacitajPolickaDole)
+            #    self.thread.start()
+            self.nacitajPolickaDole()
+
 
             
         elif rozdiel2 < -32:
             logging.info("Mapa-nacitajPolicka Hore")
-            self.nacitajPolickaHore()
-            self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
             hrac.suradnice[1]-=1
+            #if not self.thread.isAlive():
+            #    self.thread=Thread(target = self.nacitajPolickaHore)
+            #    self.thread.start()
+            self.nacitajPolickaHore()
+
 
 
             
@@ -259,6 +275,8 @@ class Mapa:
        
         for x in range (0,self.topLeftMapa[0]-1):
             self.mapa[x][yStage2].initStage2()
+            
+        self.nacitanaMapa = self.nacitanaMapa.move(0,64)
  
             
 
@@ -299,7 +317,7 @@ class Mapa:
         for x in range (0,self.topLeftMapa[0]-1):
             self.mapa[x][yStage2].initStage2()
 
-            
+        self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
 
 
 
@@ -340,6 +358,8 @@ class Mapa:
        
         for y in range (0,self.topLeftMapa[1]-1):
             self.mapa[xStage2][y].initStage2()
+            
+        self.nacitanaMapa = self.nacitanaMapa.move(-64,0)
 
 
     def nacitajPolickaVpravo(self):
@@ -399,7 +419,7 @@ class Mapa:
             #a =  initStage2Task(self.mapa[xStage2][y])
             #self.hra.zoznamStage2[a] = a 
             
-        logging.info("Mapa - nacitanie dokoncene")
+        self.nacitanaMapa = self.nacitanaMapa.move(64,0)
 
             
 
@@ -509,7 +529,7 @@ class Mapa:
         rect.x = topLeftScaleMap[0] - self.kamera.x
         #rect.y = self.kamera.y - topLeftScaleMap[1] # menim smer y suradnice hore sa znizuje
         rect.y = topLeftScaleMap[1] -self.kamera.y
-        
+                
     def dajOkolie (self, surNaMape):
         #vrati 8 policok naokolo policka v parametri
         #nekontroluje fazu policka
