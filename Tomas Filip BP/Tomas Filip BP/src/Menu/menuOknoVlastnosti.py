@@ -9,7 +9,7 @@ import Menu.menuOkno as menuOkno
 import Menu.objMenu as objMenu
 
 class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
-    def __init__(self,manazerOkien,scale, sirkaCast = 0.5,vyskaCast = 0.5):
+    def __init__(self,manazerOkien,scale, sirkaCast = 0.5,vyskaCast = 0.55):
         super().__init__(manazerOkien, scale, sirkaCast, vyskaCast)
         
         
@@ -39,6 +39,7 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         self.hrac.reinitVlastnosti()
         
         
+    
         
         
     def vykresliVlastnosti(self,screen):
@@ -65,6 +66,15 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
         y= self.rect.y + self.rect.height - int(45*self.scaleRes)
         screen.blit(textSurf,(x,y))
+        
+    def vykresliLevel(self,screen):
+        font = textury.dajFont(int(20*self.scaleRes))
+        text = "Level: " + str(self.hrac.dajLevel()) + "    Skusenosti: " + str(self.hrac.dajSkusenosti()) + "/" + str(self.hrac.dajDalsiLevelNaSkusenostiach())                                  
+        textSurf = font.render(text,1, nastavenia.BLACK)
+        x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
+        y= self.rect.y + self.rect.height - int(70*self.scaleRes)
+        screen.blit(textSurf,(x,y))
+        
 
                 
                 
@@ -73,6 +83,7 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         self.vykresliNadpis(screen,"vlastnosti")
         self.vykresliVlastnosti(screen)
         self.vykresliVolneVlastnosti(screen)
+        self.vykresliLevel(screen)
                 
                 
                 

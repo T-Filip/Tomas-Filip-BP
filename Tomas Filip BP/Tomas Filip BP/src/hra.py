@@ -10,7 +10,9 @@ import logging
 import Menu.oknoInventar as oknoInventar
 import Menu.enumOknaHra as enumOknaHra
 import Textury.textury as textury
+from generator import Generator
 import math
+from Textury import enumTextura
 
 
 
@@ -40,6 +42,8 @@ class Hra:
         self.mobky = pygame.sprite.Group()
         self.polickaSprites = pygame.sprite.RenderPlain()
         
+
+        
         
         
         
@@ -55,7 +59,7 @@ class Hra:
         logging.info("inicializacia mapy")
         self.hrac.update()
         
-        self.initInventarRychlyPristup(scale)
+        self.initInformacieOHracovi(scale)
         self.invOknoRychlyPristup.reinit(self.hrac.dajInventarRychlyPristup())
         self.manazerOkien.dajOknoHra(enumOknaHra.EnumOknaHra.INVENTAR).vlozOkno(self.invOknoRychlyPristup)
         
@@ -94,7 +98,7 @@ class Hra:
         self.updateHluku()
         pygame.display.flip()
         
-        
+        self.casNextUpdateStavNpc = 0
 
             
         self.initTime = time.time()
@@ -118,13 +122,54 @@ class Hra:
         return self.mobky
 
        
-    def initInventarRychlyPristup(self,scale):
+    def initInformacieOHracovi(self,scale):
         width= int(640*scale)
         posX = int(320*scale)
-        posY = int(635*scale)
-        height = int(64*scale)
-        self.invOknoRychlyPristup = oknoInventar.OknoInventar(pygame.Rect(posX,posY,width,height))
+        posY = int(630*scale)
+        height = int(80*scale)
+        self.invOknoRychlyPristup = oknoInventar.OknoInventar(pygame.Rect(posX,posY,width,height),64)
+        posX = int(390*scale)
+        posY = int(610*scale)
+        sirka= int(500*scale)
+        vyska = int(20*scale)
+        self.healthBar = textury.dajTexturu(enumTextura.EnumTextura.HEALTH_BAR, sirka, vyska)
+        self.sirkaHpBaru = sirka
+        self.sirkaUkazovatelaZdravia = sirka
+        self.updateUkazovatelZdravia()
+        
+    def skontrolujAktualnostZdravia(self):
+        #koli efektu - taktiez uz nebude nutne updatovat zdravie hracovi toto to skontroluje
+        #vzhladom na to ze ide o destinne cila tak porovnavam vzdialenosti 2 bodov od realneho a ktory je na tom lepsie ten sa stane novym
+        nas = self.hrac.dajHp()/self.hrac.dajMaxHp()
+        nasGraf = self.sirkaUkazovatelaZdravia/self.sirkaHpBaru
+        if nas<nasGraf:
+            nasGrafNew = self.sirkaUkazovatelaZdravia - 1/self.sirkaHpBaru
+            prip = -1
+        else:
+            nasGrafNew = self.sirkaUkazovatelaZdravia + 1/self.sirkaHpBaru
+            prip = 1
+              
+        vzdialenostStary = math.fabs(nas-nasGraf)
+        vzdialenostNovy = math.fabs(nas-nasGrafNew)
+        if vzdialenostNovy < vzdialenostStary:
+            self.sirkaUkazovatelaZdravia += prip
+            self.updateUkazovatelZdravia()
+        else:
+            return # vsetko ostava po starom
+
+            
+            
+        
        
+    def updateUkazovatelZdravia(self):
+        print("UPDATE")
+        scale = self.mapa.dajScaleNas()
+        nas = self.hrac.dajHp()/self.hrac.dajMaxHp()
+        #sirka= int(500*scale*nas)
+        vyska = int(20*scale)
+        posX = int(390*scale)
+        posY = int(610*scale)
+        self.umiestnenieHp = [[posX+1,posY+1],[posX+1,posY+vyska-1],[posX+self.sirkaUkazovatelaZdravia-1,posY+vyska-1],[posX+self.sirkaUkazovatelaZdravia-1,posY+1]]
         
         
     def addAktivBlit(self,sprite):
@@ -235,6 +280,13 @@ class Hra:
         if not self.manazerOkien.jeVykresleneNejakeMenu():
                 self.hrac.vykresliOznacenyPredmet(self.screen)
         self.invOknoRychlyPristup.draw(self.screen)
+        self.vykresliHpBar(self.screen)
+        
+    def vykresliHpBar(self,screen):
+        pygame.draw.polygon(screen,nastavenia.RED,self.umiestnenieHp)
+        screen.blit(self.healthBar,(self.umiestnenieHp[0][0],self.umiestnenieHp[0][1]))
+
+        
         
     def dajMapu(self):
         return self.mapa
@@ -282,7 +334,7 @@ class Hra:
         
         zlozitostVKroku = time.time()
         modulo10 = self.casovanieModulo % 10
-        self.hrac.update()
+        modulo100 = self.casovanieModulo % 100
         
         self.tpsCount += 1
         if time.time() > self.timeUP:
@@ -292,12 +344,12 @@ class Hra:
             self.tpsCount = 0
             self.fpsCount = 0
             
-        self.postavyGroup.update()
+        self.postavyGroup.update([modulo100])#tu uz je aj hrac
         
         if modulo10 == 0: 
             self.mapa.updateZoom()
             
-        self.riadMobky(modulo10)
+        self.riadMobky(modulo100,modulo10)
         
             
             
@@ -311,7 +363,7 @@ class Hra:
         
         logging.info("hrac-eventy")
         self.hrac.eventy()
-        
+        self.skontrolujAktualnostZdravia()
         
         #iba raz za cas napr raz za 2 sec mozno viac
     def updateHluku(self):
@@ -335,17 +387,29 @@ class Hra:
         
     def dajHlukoveCentra(self):
         return self.hlukoveCentra
-    def dajHodnotyHlukovychCentrier(self):
+    def dajHodnotyHlukovychCentier(self):
         return self.hodnotyHlukovychCentier
 
-    def riadMobky(self,modulo10):
-        if modulo10 == 5:
-            samp = random.sample(list(self.postavyGroup),int(len(self.mobky)/10))
-            for mob in samp:
-                mob.updateZmenStav(samp)
+    def riadMobky(self,modulo100,modulo10):
+        poc = math.ceil(len(self.mobky)/10)
+        
+        if poc == 0:
+            return
+        
+        if modulo100 == 75:
+            self.updateHluku()
+
+
+        if modulo10 == 7:
+            if self.casNextUpdateStavNpc < time.time():
+                self.casNextUpdateStavNpc = time.time() + 1/len(self.mobky)
+                samp = random.sample(list(self.mobky),poc)
+                for mob in samp:
+                    mob.updateZmenStav()
                 
-        elif modulo10 > 1: # ak je 0 vykonava sa zoom co je operacia zlozita na vypocet preto mu nebudeme pridavat 1 do istoty aby sa tam spravil frame
-            poc = math.ceil(len(self.mobky)/10)
+        
+                
+        elif modulo10 == 4: # ak je 0 vykonava sa zoom co je operacia zlozita na vypocet preto mu nebudeme pridavat 1 do istoty aby sa tam spravil frame
             samp = random.sample(list(self.mobky),poc)
             for mob in samp:
                 mob.updateCinnostStavu()

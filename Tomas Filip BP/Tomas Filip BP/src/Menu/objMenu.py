@@ -101,6 +101,9 @@ class objMenu(pygame.sprite.Sprite):
     def nastalaZmena(self): #nastavZmenu
         self.trebaUpdate = True
 
+    def vlozDoGroup(self,group):
+        self.add(group)
+
     def nutnyUpdate(self):
             self.lastUpdate = LastUpdate.UPDATE
             self.trebaUpdate = False

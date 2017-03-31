@@ -6,7 +6,7 @@ Created on 4. 3. 2017
 import pygame
 import logging
 import nastavenia
-import manazerOkien
+#import manazerOkien
 from Textury import textury
 
 

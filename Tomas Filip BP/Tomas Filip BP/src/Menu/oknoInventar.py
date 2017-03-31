@@ -6,12 +6,14 @@ Created on 10. 3. 2017
 import logging
 
 class OknoInventar():
-    def __init__(self,rect):
+    def __init__(self,rect,hranica = 256):
+        self.hranica = hranica
         self.rect = rect
         self.inventar = None
         self.nastalReinit = False
         
     def reinit(self,inventar,hranica = 256):
+        self.hranica = hranica
         self.nastalReinit = True
         self.inventar = inventar
         
@@ -23,7 +25,7 @@ class OknoInventar():
         medzera = 4
         pocX = 0
         pocY = 0
-        scale = 0.2
+        #scale = 0.2
         sirka = self.rect.width
         vyska = self.rect.height
         esteNieJeVysledok = True
@@ -33,7 +35,7 @@ class OknoInventar():
             pocetNaSirku = int((sirka - medzera) / (velkostStrany + medzera))
             pocetNaVysku = int((vyska - medzera) / (velkostStrany + medzera))
             pocetMoznychFlekov = pocetNaSirku * pocetNaVysku
-            if pocetMoznychFlekov < pocetPotrebnychFlekov or velkostStrany > hranica:
+            if pocetMoznychFlekov < pocetPotrebnychFlekov or velkostStrany > self.hranica:
                 esteNieJeVysledok = False
                 velkostStrany -= 1
                 

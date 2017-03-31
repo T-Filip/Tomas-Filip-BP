@@ -51,7 +51,7 @@ CAP_POHLAVIE  = [0,1]
 CAP_TVAR = [[0,1],[0,1]]#2d koli pohlaviam - kazde pohlavie moze mat inu tvar naprd zena ma namalovane pery ale muz nie
 CAP_VLASY = [[0,1],[0,1]]
 CAP_HLAVA = [0,2]
-
+CAP_TYP_POSTAVY = [0,2]
 
 
 

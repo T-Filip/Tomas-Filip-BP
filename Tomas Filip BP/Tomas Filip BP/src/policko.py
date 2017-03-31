@@ -374,8 +374,13 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                     policko.initImg(True)
                 
     def initStage2 (self):
-        if self.suradnice[0] == 5 and self.suradnice[1]  == -5:
-            surPix = [self.suradnice[0]*64,self.suradnice[1]*64]
+        surPix = [self.suradnice[0]*64,self.suradnice[1]*64]
+        n = self.mapa.dajNoiseMobkaNa(surPix[0],surPix[1])
+        if n > 1:
+            n -= 1
+            if random.random() < n:
+                Npc(self.mapa.hra, surPix, 48, 48, None, self.mapa)
+        elif random.random() < 0.01:
             Npc(self.mapa.hra, surPix, 48, 48, None, self.mapa)
         
         

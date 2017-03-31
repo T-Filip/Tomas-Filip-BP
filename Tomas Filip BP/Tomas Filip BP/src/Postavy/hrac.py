@@ -12,6 +12,8 @@ from Postavy.enumTypPostavy import EnumTypPostavy
 from Postavy.smerPostavy import SmerPostavy
 import nastavenia
 from Postavy import postava
+from Textury import textury
+from Textury import enumTextura
 
 
 
@@ -19,44 +21,52 @@ from Postavy import postava
 class Hrac(postava.Postava):
     def __init__(self,hra,surPix, typP,textury,vlastnosti,sirka,vyska):
         self.typPostavy = typP[0]
-        super().__init__(hra,surPix,sirka,vyska,True,textury,None)
+        super().__init__(hra,surPix,sirka,vyska,True,textury,None,vlastnosti)
         
         
+        #LEVEL
+        self.skusenosti = 0
+        self.dalsiLevelNaSkusenostiach = 1000
+        self.levelHraca = 1
+        #
+        #HP
+        self.zdravie = 100
+        self.maxZdravie = 100
+        #
+        
+        #SKUSENOSTI
+        #SKUSENOSTI VYROBA: 0-SEKERA, 1-KRUMPAC, 2-MEC, VYUZIVANIE: 3-SEKERA, 4-KRUMPAC, 5-MEC...
+        self.skusenosti = [0,0,0,0,0,0]
         
 
-        
         
         self.inventar = inventar.Inventar(20)
         self.inventarRychlyPristup = invVyuzPredmetu.InvVyuzPredmetu(9,self)
         
         self.vlozPredmety()
         
-    def initObjOblast(self,sirka,vyska):
 
-        if self.typPostavy == EnumTypPostavy.UZKA:
-            x = int(sirka*0.375)
-            y = int(vyska*0.85)
-            w = int(sirka*0.25)
-            h = int(vyska*0.25)
-            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
-        elif self.typPostavy == EnumTypPostavy.FIT:
-            x = int(sirka*0.35)
-            y = int(vyska*0.8)
-            w = int(sirka*0.3)
-            h = int(vyska*0.3)
-            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
-        elif self.typPostavy == EnumTypPostavy.SILNA:
-            x = int(sirka*0.325)
-            y = int(vyska*0.75)
-            w = int(sirka*0.35)
-            h = int(vyska*0.35)
-            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
-        else:
-            logging.warning("vytvaranie objektovej oblasti hraca -> Neznamy typ postavy: " + str(self.typPostavy))
 
         
 
+    def zvysSkusenosti(self,oKolko):
+        self.skusenosti +=oKolko
+        if self.skusenosti > self.dalsiLevelNaSkusenostiach:
+            self.levelHraca += 1
+            self.skusenosti -= self.dalsiLevelNaSkusenostiach
+            self.dalsiLevelNaSkusenostiach = int(self.dalsiLevelNaSkusenostiach * 1.4)
+            self.maxZdravie += 1 
+            
+
     
+    def dajLevel(self):
+        return self.levelHraca
+    
+    def dajSkusenosti(self):
+        return self.skusenosti
+    
+    def dajDalsiLevelNaSkusenostiach(self):
+        return self.dalsiLevelNaSkusenostiach
     
     def linkMapa(self,mapa):
         self.mapa = mapa
@@ -64,7 +74,6 @@ class Hrac(postava.Postava):
         
     def dajVlastnosti(self):
         return self.vlastnosti
-        
 
     
     def vlozPredmet(self,predmet):
@@ -76,9 +85,9 @@ class Hrac(postava.Postava):
         self.inventar.vlozPredmet(predmet.Predmet(12,50))
         self.inventar.vlozPredmet(predmet.Predmet(13,2))
         self.inventar.vlozPredmet(predmet.Predmet(13,36))
-        self.inventar.vlozPredmet(predmet.Predmet(2000,15))
+        self.inventar.vlozPredmet(predmet.Predmet(2000,50))
         self.inventar.vlozPredmet(predmet.Predmet(3001,1))
-        self.inventar.vlozPredmet(predmet.Predmet(3000,2))
+        self.inventar.vlozPredmet(predmet.Predmet(3000,1))
 
         
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
@@ -87,6 +96,12 @@ class Hrac(postava.Postava):
         
     def dajInventarRychlyPristup(self):
         return self.inventarRychlyPristup
+    
+    def dajHp(self):
+        return self.zdravie
+    
+    def dajMaxHp(self):
+        return self.maxZdravie
 
 
 
@@ -101,7 +116,7 @@ class Hrac(postava.Postava):
         
 
     def update(self, *args):
-        super().update()
+        super().update(args)
         self.inventarRychlyPristup.update()
         
 
@@ -134,11 +149,10 @@ class Hrac(postava.Postava):
            
         logging.info("Hrac-posunPostavu") 
         
-        zalohaSmeru = self.smer
+        
         self.posunPostavu(posun[0],posun[1])
         #print (posun)
-        if zalohaSmeru != self.smer:
-            self.updateImage()
+
         
         self.topLeftScaleMap[0] = self.rectTextOblastMapa.x*self.hra.mapa.dajNas()
         self.topLeftScaleMap[1] = self.rectTextOblastMapa.y*self.hra.mapa.dajNas()

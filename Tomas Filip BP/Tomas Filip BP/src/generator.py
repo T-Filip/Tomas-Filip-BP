@@ -8,15 +8,18 @@ from random import seed
 
 
 class Generator:
-    def __init__(self, seed):
-        self.simplexNoise = SimplexNoise(300,0.4,seed)
+    def __init__(self, seed, a = 300, b = 0.4):
+        self.simplexNoise = SimplexNoise(a,b,seed)
         
     def noise(self,x,y):
         return (self.simplexNoise.getNoise(x, y)/2)+0.5
     
-class GeneratorRozsireny (Generator):
+class GeneratorNescalovany (Generator):
     def __init__(self, seed, a, b):
-        self.simplexNoise = SimplexNoise(a,b,seed)
+        super().__init__(seed, a, b)
+        
+    def noise(self,x,y):
+        return self.simplexNoise.getNoise(x, y)
         
 
 
@@ -28,7 +31,7 @@ class SimplexNoise:
         self.listOktav = [None]*self.pocetOktav
         self.poleFrekvencii = [0]*self.pocetOktav
         self.poleAmplitud = [0]*self.pocetOktav
-        random.seed(self.seed)
+        #random.seed(self.seed)
         for i in range(0,self.pocetOktav):
             #self.listOktav.insert(i,SimplexNoiseOctave(self.seed))
             self.listOktav[i] = SimplexNoiseOctava(self.seed);

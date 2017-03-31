@@ -54,6 +54,17 @@ class Inf():
     def dajImgNaInitPredmet(self):
         return None
     
+    def dajStackKapacitu(self):
+        return self.stackKapacita
+    
+
+class InfPozivatelne(Inf):
+    def __init__(self,metoda, imgPredmet = None, stackKapacita = 64):
+        self.zjedzPredmet = metoda
+        
+    def zjedzPredmet(self,hrac):
+        self.zjedzPredmet(hrac)
+    
     
 class InfNastroje(Inf):
     def __init__(self,animacia,imgAnimacia = None,imgPredmet = None, stackKapacita = 64):
@@ -553,6 +564,11 @@ def nacitajTexturyObjMapa():
     predmText.blit(predmety,(0,0),(64,64,64,64))
     vlozInf(Inf(predmText,64))
     
+    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+    predmText.blit(predmety,(0,0),(192,0,64,64))
+    vlozInf(Inf(predmText,64))
+    
+    
             #---------------SUTRE--------------
     nextID = 2100
     predmText = pygame.Surface((64,64),pygame.SRCALPHA)
@@ -580,17 +596,24 @@ def nacitajTexturyObjMapa():
 #------------------------------NASTROJE------------------
 
     nextID = 3000
-    #SEKERA1
-    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
-    predmText.blit(predmety,(0,0),(0,128,64,64))
-    vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+    #SEKERA
+    for i in range (4):
+        predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+        predmText.blit(predmety,(0,0),(64*i,128,64,64))
+        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
     
     
     
-    #KRUMPAC1
-    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
-    predmText.blit(predmety,(0,0),(0,192,64,64))
-    vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+    #KRUMPAC
+    for i in range (4):
+        predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+        predmText.blit(predmety,(0,0),(i*64,192,64,64))
+        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+        
+    for i in range (4):
+        predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+        predmText.blit(predmety,(0,0),(i*64,256,64,64))
+        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
     
     
     
@@ -599,7 +622,7 @@ def nacitajTexturyObjMapa():
     
     
     
-    #--------------------------------DVERE-----------------
+    #--------------------------------DVERE-----------------#4000
     texturaObjektov = pygame.image.load('img/objektyMapa/objekty.png').convert_alpha()
     nextID = 4000
     
@@ -618,6 +641,43 @@ def nacitajTexturyObjMapa():
     rect = [pygame.Rect(1,28,50,8),pygame.Rect(6,10,6,50)]
     vlozInf(InfObjScaleViacImg([vpravo,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,metodyPredmety.zmenSmerDveri))
     
+    
+    #----------------------BARIKADA # 4001
+    vertikalne = pygame.Surface((33,70),pygame.SRCALPHA)
+    horizontalne = pygame.Surface((70,33),pygame.SRCALPHA)
+
+    vertikalne.blit(texturaObjektov,(0,0),(0,96,33,70))
+    horizontalne.blit(texturaObjektov,(0,0),(38,37,70,33))
+    
+    #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+    
+    rect = [pygame.Rect(5,15,21,52),pygame.Rect(7,6,52,21)]
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
+    
+    
+    #dreveny mur 4002
+    vertikalne = pygame.Surface((12,80),pygame.SRCALPHA)
+    horizontalne = pygame.Surface((60,49),pygame.SRCALPHA)
+
+    vertikalne.blit(texturaObjektov,(0,0),(36,73,12,80))
+    horizontalne.blit(texturaObjektov,(0,0),(50,70,60,49))
+    
+    #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+    
+    rect = [pygame.Rect(1,28,10,51),pygame.Rect(0,36,60,12)]
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
+    
+        #kamenny mur 4003 ---------------------------------------------------------------------------------------
+    vertikalne = pygame.Surface((18,80),pygame.SRCALPHA)
+    horizontalne = pygame.Surface((60,46),pygame.SRCALPHA)
+
+    vertikalne.blit(texturaObjektov,(0,0),(111,1,18,80))
+    horizontalne.blit(texturaObjektov,(0,0),(133,2,60,46))
+    
+    #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+    
+    rect = [pygame.Rect(0,27,18,53),pygame.Rect(0,27,60,17)]
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.KAMEN,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
     
     
     

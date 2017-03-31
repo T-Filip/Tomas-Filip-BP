@@ -5,22 +5,31 @@ Created on 23. 3. 2017
 '''
 import pygame
 import ObjektyMapa.scale as scale
-import Postavy.smerPostavy as smerPostavy
+from Postavy.smerPostavy import SmerPostavy
 import nastavenia as nastavenia
 import Postavy.tvorcaPostav as tvorcaPostav
+from Postavy.enumTypPostavy import EnumTypPostavy
 import math
+import random
+import logging
 
 class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
-    def __init__(self,hra,surPix,sirka,vyska,jeToHrac,textury = None,mapa = None):
+    def __init__(self,hra,surPix,sirka,vyska,jeToHrac,textury = None,mapa = None,vlastnosti = None):
         self.mapa = mapa #hrac si linkuje mapu neskor
         self.hra = hra
         self.suradnice = [int(surPix[0]/64),int(surPix[1]/64)]
         self.image = pygame.Surface((sirka,vyska))
         self.rect = self.image.get_rect()
-        self.smer = smerPostavy.SmerPostavy.DOPREDU
+        self.smer = SmerPostavy.DOPREDU
         self.imageZaloha = textury
         
-        self.typPostavy = 0 #!!!!!!!
+        self.staryZoznamKolizieSHracmi = []
+
+        
+        
+        self.typPostavy = 0
+        
+        self.vydavanyHluk = 0
         
         self.rectTextOblastMapa = self.image.get_rect()
         self.rectTextOblastMapa = self.rectTextOblastMapa.move(surPix[0],surPix[1])
@@ -34,8 +43,11 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             #obj oblast sa nachadza kvazi pod nohami, vzhladom na styl textur je obj oblast momentalne z casti mimo texturovej oblasti - zo spodnej casti textury pretrcaa
         self.rectObjOblastZaloha = None #fixna poloha voci texturovej oblasti pri pouziti na mapa je potrebne vyuzit aktualizovanu verziu
         self.initObjOblast(sirka, vyska)
-        
-        self.vlastnosti = [[0],[0],[0],[0]] #!!!!!!!!
+        if vlastnosti == None:
+            self.vlastnosti = [[0],[0],[0],[0]]
+        else:
+            self.vlastnosti = [[vlastnosti[0]],[vlastnosti[1]],[vlastnosti[2]],[vlastnosti[3]]] #potrebne ich zaobalit 
+            
         self.volneVlastnosti = [3]
         self.reinitVlastnosti()
         
@@ -52,11 +64,40 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         
         self.vydrz = self.capVydrz # len 1. krat
         if self.mapa != None:
-            self.scale(self.mapa.dajNas())   
+            self.scale(self.mapa.dajNas())  
+            
+            
+    def initObjOblast(self,sirka,vyska):
+
+        if self.typPostavy == EnumTypPostavy.UZKA:
+            x = int(sirka*0.375)
+            y = int(vyska*0.85)
+            w = int(sirka*0.25)
+            h = int(vyska*0.25)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        elif self.typPostavy == EnumTypPostavy.FIT:
+            x = int(sirka*0.35)
+            y = int(vyska*0.8)
+            w = int(sirka*0.3)
+            h = int(vyska*0.3)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        elif self.typPostavy == EnumTypPostavy.SILNA:
+            x = int(sirka*0.325)
+            y = int(vyska*0.75)
+            w = int(sirka*0.35)
+            h = int(vyska*0.35)
+            self.rectObjOblastZaloha = pygame.Rect(x,y,w,h)
+        else:
+            logging.warning("vytvaranie objektovej oblasti hraca -> Neznamy typ postavy: " + str(self.typPostavy)) 
             
             
     def dajHodnotuHluku(self):
-        return 1         
+        return self.vydavanyHluk    
+    
+    def utlmenieHluku(self):
+        self.vydavanyHluk -= 0.1
+        if self.vydavanyHluk < 0:
+            self.vydavanyHluk = 0 
             
             
             
@@ -100,17 +141,31 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajInventar(self):
         return self.inventar
             
-    def initObjOblast(self,sirka,vyska):
-        self.rectObjOblastZaloha = pygame.Rect(0,0,sirka,vyska)
+    #def initObjOblast(self,sirka,vyska):
+    #    self.rectObjOblastZaloha = pygame.Rect(0,0,sirka,vyska)
         
     
     
     def vygenerujTextury(self):
-        self.imageZaloha = [tvorcaPostav.vytvorPostavu(False, 0, 1, 0, 0, 1, 1, 0)
-                            ,tvorcaPostav.vytvorPostavu(False, 1, 1, 0, 0, 1, 1, 0)
-                            ,tvorcaPostav.vytvorPostavu(False, 2, 1, 0, 0, 1, 1, 0)
-                            ,tvorcaPostav.vytvorPostavu(False, 3, 1, 0, 0, 1, 1, 0)
-                            ,tvorcaPostav.vytvorPostavu(False, 4, 1, 0, 0, 1, 1, 0)]
+        cap = random.randint(0,len(nastavenia.FARBA_TELA)-1)
+        farbaTela = nastavenia.FARBA_TELA[cap]
+        cap = nastavenia.CAP_TYP_POSTAVY
+        typPostavy = random.randint(cap[0],cap[1])
+        cap = nastavenia.CAP_POHLAVIE
+        pohlavie = random.randint(cap[0],cap[1])
+        cap = nastavenia.CAP_TVAR[pohlavie]
+        tvar = random.randint(cap[0],cap[1])
+        cap = nastavenia.CAP_VLASY[pohlavie]
+        vlasy = random.randint(cap[0],cap[1])
+        cap = nastavenia.CAP_HLAVA
+        hlava = random.randint(cap[0],cap[1])
+        
+
+        self.imageZaloha = [tvorcaPostav.vytvorPostavu(False, 0, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                            ,tvorcaPostav.vytvorPostavu(False, 1, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                            ,tvorcaPostav.vytvorPostavu(False, 2, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                            ,tvorcaPostav.vytvorPostavu(False, 3, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                            ,tvorcaPostav.vytvorPostavu(False, 4, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)]
             
             
             
@@ -141,8 +196,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajTopLeftNoScaleMap(self):
         return self.topLeftNoScaleMap
     
-    def update(self):
-        pass
+    def update(self,*args):
+        #args [0] = modulo 100
+        self.utlmenieHluku()
+
     
     
     def aktualizujObjOblast(self):
@@ -179,10 +236,14 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                 return True
             else:
                 return False
-        
+            
+    def collidePostavy(self,sprite1,sprite2):
+        return sprite1.dajObjOblastMapa().colliderect(sprite2.dajObjOblastMapa())
+    
             
     def nastalaKoliziaSOkolim(self):
         #zisti koliziu a vypocita koeficien upravy rychlosti
+        
         if self.objMapaNaokolo == None:
             return True
         kolizia = pygame.sprite.spritecollide(self, self.objMapaNaokolo, False, self.collideOkolie)
@@ -192,18 +253,84 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             self.pocKoefRychlosti = 0
         else:
             self.koeficienRychlosti = 1
+
+
         return kolizia
+    
+    
+    
+    
+    def pobuchajPostavy(self,zoznamPostav):
+        #v zozname sa nachadza aj hrac
+        print("pobuchajPostavy-nefunguje spravne - nepouzivat")
+        return
+        for postava in zoznamPostav:
+            if postava == self:
+                continue
+            vzdialenost = self.dajVzdialenostOdPostavy(postava)
+            if vzdialenost == 0:
+                vzdialenost = 1
+            silaOdpudivosti = math.log(vzdialenost/25)#-vzdialenost/20+1
+            objOblastPostavy = postava.dajObjOblastMapa()
+            vektorOdstrknutia = [objOblastPostavy.centerx-self.rectObjOblast.centerx,objOblastPostavy.centery-self.rectObjOblast.centery]
+            suc = math.fabs(vektorOdstrknutia[0])+math.fabs(vektorOdstrknutia[1])
+            if suc == 0:
+                suc = 1
+            vektorOdstrknutia[0] = vektorOdstrknutia[0]/suc*silaOdpudivosti*3#vektor uz ma aj silu taktiez vzhladom na vzdialenost
+            vektorOdstrknutia[1] = vektorOdstrknutia[1]/suc*silaOdpudivosti*3
+            postava.pozmenSmerPohybu(vektorOdstrknutia)
+            
+            
+    def pozmenSmerPohybu(self,smer):
+        self.smerPohybu[0] += smer[0]
+        self.smerPohybu[0] += smer[1]
+        
+
+        
+    def dajPotencialnuSiluBuchnutia(self):
+        if self.typPostavy == EnumTypPostavy.UZKA:
+            return [self.smerPohybu[0]*0.1,self.smerPohybu[1]*0.1]
+        elif self.typPostavy == EnumTypPostavy.FIT:
+            return [self.smerPohybu[0]*0.2,self.smerPohybu[1]*0.2]
+        elif self.typPostavy == EnumTypPostavy.SILNA:
+            return [self.smerPohybu[0]*0.3,self.smerPohybu[1]*0.3]
+        
+        
+        #usetri zlozitost budem iterovat cez zoznam iba raz inak by som musel raz a potom este jeden krat v podzozname
+    def odstrcBlizkePostavy(self):
+        postavy = self.hra.dajPostavyGroup()
+        for postava in postavy:
+            if postava == self:
+                continue
+            vzdialenost = self.dajVzdialenostOdPostavy(postava)
+            if vzdialenost > 55:
+                continue
+            if vzdialenost == 0:
+                vzdialenost = 1
+                
+            silaOdpudivosti = math.log(vzdialenost/56)#-vzdialenost/20+1
+            objOblastPostavy = postava.dajObjOblastMapa()
+            vektorOdstrknutia = [objOblastPostavy.centerx-self.rectObjOblast.centerx,objOblastPostavy.centery-self.rectObjOblast.centery]
+            suc = math.fabs(vektorOdstrknutia[0])+math.fabs(vektorOdstrknutia[1])
+            if suc == 0:
+                suc = 1
+            vektorOdstrknutia[0] = vektorOdstrknutia[0]/suc*silaOdpudivosti*5#vektor uz ma aj silu taktiez vzhladom na vzdialenost
+            vektorOdstrknutia[1] = vektorOdstrknutia[1]/suc*silaOdpudivosti*5
+            postava.pozmenSmerPohybu(vektorOdstrknutia)
+            
+        
     
     def dajObjOblastMapa(self):
         return self.rectObjOblast
         
 
-    def posunPostavu(self, vertical, horizontal):
+    def posunPostavu(self,horizontal,vertical):
+        zalohaSmer = self.smer
         self.aktualizujObjOblast()
         
-        nastalaKolizia = self.nastalaKoliziaSOkolim()
+        nastalaKoliziaSOkolim = self.nastalaKoliziaSOkolim()
         
-        if vertical == 0:
+        if horizontal == 0:
             if self.smerPohybu[0] > 0:
                 self.smerPohybu[0] -= self.spomalovanie
                 if self.smerPohybu[0]<0:
@@ -214,7 +341,7 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                 if self.smerPohybu[0]>0:
                     self.smerPohybu[0]=0
                     
-        if horizontal == 0:
+        if vertical == 0:
             if self.smerPohybu[1] > 0:
                 self.smerPohybu[1] -= self.spomalovanie
                 if self.smerPohybu[1]<0:
@@ -226,39 +353,54 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                     self.smerPohybu[1]=0
             
         
-        #print ("koef:" + str(self.koeficienRychlosti))
-        if nastalaKolizia:
-            #print("nastala kolizia")
+        
+
+        if nastalaKoliziaSOkolim:#ak je zoznam vobec niecim naplneny
+            
+            #self.stare
             if not self.jeKoliznyStav:
                 self.jeKoliznyStav=True
-                #self.koliznySmerPohybu = [self.smerPohybu[0],self.smerPohybu[1]]
-                if self.smerPohybu[0]>0:
-                    self.koliznySmerPohybu[0] = -1
-                else:
-                    self.koliznySmerPohybu[0] = 1
-                    
-                if self.smerPohybu[1]>0:
-                    self.koliznySmerPohybu[1] = -1
-                else:
-                    self.koliznySmerPohybu[1] = 1
+                self.koliznySmerPohybu[0] = self.smerPohybu[0]*-0.1
+                self.koliznySmerPohybu[1] = self.smerPohybu[1]*-0.1
                 
                 
-            self.smerPohybu[0] = self.koliznySmerPohybu[0]*0.35
-            self.smerPohybu[1] = self.koliznySmerPohybu[1]*0.35
+            self.smerPohybu[0] = self.koliznySmerPohybu[0]+horizontal*0.05
+            self.smerPohybu[1] = self.koliznySmerPohybu[1]+vertical*0.05
         else:
             self.jeKoliznyStav=False
+            self.odstrcBlizkePostavy()
+            #postavyGroup = self.hra.dajPostavyGroup()
+            #zoznamBuchnutych = pygame.sprite.spritecollide(self, postavyGroup, False,self.collidePostavy)
+            #if len(zoznamBuchnutych)>1:
+                #nastala kolizia s hracmi
+                #self.pobuchajPostavy(zoznamBuchnutych)
+            '''
+            if not self.jeKoliznyStavSHracom:
+                self.jeKoliznyStavSHracom = True
+                self.koliznySmerPohybu[0] = self.smerPohybu[0]*-0.1
+                self.koliznySmerPohybu[1] = self.smerPohybu[1]*-0.1
             
+            self.smerPohybu[0] = self.koliznySmerPohybu[0]+horizontal*0.05
+            self.smerPohybu[1] = self.koliznySmerPohybu[1]+vertical*0.05
+            '''
+                
+
             capRychlosti = self.zvysRychlostPohybu(horizontal,vertical) 
                 
             if self.smerPohybu[0] > capRychlosti[0] * self.koeficienRychlosti:
                 self.smerPohybu[0] = capRychlosti[0] * self.koeficienRychlosti
+                #self.smerPohybu[0] -= self.spomalovanie*3 #nebude sa to zarovnavat do capu ale bude miesto toho spomalovat
             if self.smerPohybu[0] < -capRychlosti[0] * self.koeficienRychlosti:
                 self.smerPohybu[0] = -capRychlosti[0]  * self.koeficienRychlosti
+                #self.smerPohybu[0] += self.spomalovanie*3
                 
             if self.smerPohybu[1] > capRychlosti[1] * self.koeficienRychlosti:
                 self.smerPohybu[1] = capRychlosti[1]* self.koeficienRychlosti
+                #self.smerPohybu[1] -= self.spomalovanie*3
             if self.smerPohybu[1] < -capRychlosti[1] * self.koeficienRychlosti:
                 self.smerPohybu[1] = -capRychlosti[1]* self.koeficienRychlosti
+                #self.smerPohybu[1] += self.spomalovanie*3
+                     
             
         if self.smerPohybu[0]>self.smerPohybu[1]:
             maxSmerPohybu = self.smerPohybu[0]
@@ -283,26 +425,48 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         #if nastalaKolizia:
         #print("smer pohybu:" + str(self.smerPohybu))
         
-        pomHor = abs(self.smerPohybu[0])
-        pomVer = abs(self.smerPohybu[1])
+        #pomHor = abs(self.smerPohybu[0])
+        #pomVer = abs(self.smerPohybu[1])
         
-        
-        if self.smerPohybu[0] != 0:
-        
-            if self.smerPohybu[0] > 0:
-                self.smer = smerPostavy.SmerPostavy.DOPRAVA
-                
-            else: 
-                self.smer = smerPostavy.SmerPostavy.DOLAVA
-        else:
-            if self.smerPohybu[1] < 0:
-                self.smer = smerPostavy.SmerPostavy.DOZADU
-            elif self.smerPohybu[1] > 0:
-                self.smer = smerPostavy.SmerPostavy.DOPREDU
-            else:#hrac sa nehybe pozera za myskou
-                self.smerPostavyPriStati()
-                        
+        if self.smerPohybu[0] >= 0.2:
             
+            if self.smerPohybu[1] >= 0.2:
+                #++
+                if self.smerPohybu[0]*2 > self.smerPohybu[1]:
+                    self.smer = SmerPostavy.DOPRAVA
+                else:
+                    self.smer = SmerPostavy.DOPREDU
+            
+            elif self.smerPohybu[1] <= 0.2:
+                #+-
+                if self.smerPohybu[0]*2 > math.fabs(self.smerPohybu[1]):
+                    self.smer = SmerPostavy.DOPRAVA
+                else:
+                    self.smer = SmerPostavy.DOZADU
+            
+        elif self.smerPohybu[0] <= 0.2:
+            
+            if self.smerPohybu[1] >= 0.2:
+                #-+
+                if math.fabs(self.smerPohybu[0])*2 > self.smerPohybu[1]:
+                    self.smer = SmerPostavy.DOLAVA
+                else:
+                    self.smer = SmerPostavy.DOPREDU
+            
+            
+            elif self.smerPohybu[1] <= 0.2:
+                #--
+                if math.fabs(self.smerPohybu[0])*2 > math.fabs(self.smerPohybu[1]):
+                    self.smer = SmerPostavy.DOLAVA
+                else:
+                    self.smer = SmerPostavy.DOZADU
+            
+        
+        
+
+                      
+        #print("smer pohybu")  
+        #print(self.smerPohybu)
         self.topLeftDouble[0] += self.smerPohybu[0] 
         self.topLeftDouble[1] += self.smerPohybu[1] 
         self.rectTextOblastMapa= self.rectTextOblastMapa.move(int(self.topLeftDouble[0] - self.rectTextOblastMapa.x), int(self.topLeftDouble[1] - self.rectTextOblastMapa.y))
@@ -323,6 +487,26 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                 self.posunObjNaokoloHore()   
             self.suradnice[1] = y
             
+        if self.smer != zalohaSmer:
+            self.updateImage()
+            
+            #ak dycha nahlas vydava hluk ktory pritahuje npc
+        self.vydavanyHluk += 0.05
+        if self.vydrz < self.capVydrz/4:
+            self.vydavanyHluk += 0.05
+        elif self.vydrz < self.capVydrz/8:
+            self.vydavanyHluk += 0.1
+        elif self.vydrz < self.capVydrz/12:
+            self.vydavanyHluk += 0.2
+        
+            # velkost postavy ovplyvnuje vydavany zvuk pri behani
+        if self.typPostavy == EnumTypPostavy.FIT:
+            self.vydavanyHluk += 0.05
+        elif self.typPostavy == EnumTypPostavy.SILNA:
+            self.vydavanyHluk += 0.1
+            
+            
+
             
     def smerPostavyPriStati(self):
         pass
@@ -330,13 +514,13 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def zvysRychlostPohybu(self,horizontal,vertical):
         if self.mozeSprintovat() and self.jeSprintPovoleny:
             capRychlosti = [self.maxRychlostSprint, self.maxRychlostSprint]
-            self.smerPohybu[0] += self.zrychlenieSprint * vertical 
-            self.smerPohybu[1] += self.zrychlenieSprint * horizontal 
+            self.smerPohybu[0] += self.zrychlenieSprint * horizontal
+            self.smerPohybu[1] += self.zrychlenieSprint * vertical 
             
         else:
             capRychlosti = [self.maxRychlost, self.maxRychlost]
-            self.smerPohybu[0] += self.zrychlenie * vertical 
-            self.smerPohybu[1] += self.zrychlenie * horizontal
+            self.smerPohybu[0] += self.zrychlenie * horizontal
+            self.smerPohybu[1] += self.zrychlenie * vertical
             
         return capRychlosti
         

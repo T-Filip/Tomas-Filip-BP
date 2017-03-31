@@ -32,6 +32,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          pracaSPredmetmi.PracaSPredmetmi.__init__(self)
          predmet.MiestoPrePredmet.__init__(self, None)
          krajnaMedzera = 30*scale
+         self.receptyTlacidla = pygame.sprite.Group()
          
 
          
@@ -68,21 +69,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          #init__(self,Menu,imgs,text,font,sirka,vyska,zmenRecept,scaler = 1,scale = 1,args):
          #objMenu.Tlacidlo(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],)
          #objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[3],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
-         x = int(self.topLeftXPredScale + 50)
-         y = int(self.topLeftYPredScale + 85)
-         medzera = int(30)
-         poradie = 1
 
-         
-         for key, value in recepty.ZOZNAM_RECEPTOV.items():
-             tlac = objMenu.Tlacidlo(self,[textury.CRAFT_ITEM,textury.CRAFT_ITEM_OZN,textury.CRAFT_ITEM_LOCK],value.nazov,13,x,y,zmenRecept,self.scaleRes,1,[value])
-             if not value.jeNauceny:
-                 tlac.setLock(True)
-             poradie +=1
-             y += medzera
-             if poradie == 11:
-                 x = int(self.topLeftXPredScale + 50 + 120)
-                 y = int(self.topLeftYPredScale + 85)
                  
              
          self.craftCheck()
@@ -126,6 +113,26 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         menuOkno.MenuOknoHra.reinit(self, hrac)
         self.oknoInventar.reinit(hrac.dajInventar())
         pracaSPredmetmi.PracaSPredmetmi.reinit(self,hrac)
+        
+        for recept in self.receptyTlacidla:
+            recept.kill()
+        
+        recepty.skontrolujOtvorenieReceptov(hrac)
+        x = int(self.topLeftXPredScale + 50)
+        y = int(self.topLeftYPredScale + 85)
+        medzera = 30
+        poradie = 1
+        
+        for key, value in recepty.ZOZNAM_RECEPTOV.items():
+             tlac = objMenu.Tlacidlo(self,[textury.CRAFT_ITEM,textury.CRAFT_ITEM_OZN,textury.CRAFT_ITEM_LOCK],value.nazov,12,x,y,zmenRecept,self.scaleRes,1,[value])
+             tlac.vlozDoGroup(self.receptyTlacidla)
+             if not value.jeNauceny:
+                 tlac.setLock(True)
+             poradie +=1
+             y += medzera
+             if poradie == 11:
+                 x = int(self.topLeftXPredScale + 50 + 120)
+                 y = int(self.topLeftYPredScale + 85)
         
     def update(self):
         menuOkno.MenuOknoHra.update(self)

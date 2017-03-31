@@ -58,7 +58,7 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         
         
                 #vcetne
-        capTypPostavy = [0,2]
+        capTypPostavy = nastavenia.CAP_TYP_POSTAVY
         #capSmerPostavy = 4
         
         #MUZ - 0 ZENA - 1

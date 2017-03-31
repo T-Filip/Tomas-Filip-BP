@@ -2,12 +2,13 @@
 import pygame
 import uvodneNastavenia
 import manazerOkien
-from generator import SimplexNoiseOctava
+import generator as generator
 import time 
 import itertools
 import logging
 import ObjektyMapa.infObjekty as infObjekty
 import random
+
 
 
 
@@ -59,9 +60,24 @@ print("percenta: " + str(pocetTrafiliSa/1000000))
 '''       
     
 
-
-
-
+'''
+generatorPreMobky = generator.Generator(14,150,0.95)
+pocet = 0
+for i in range (0,40):
+    print()
+    for j in range (0,200):
+        n = generatorPreMobky.noise(i,j)
+        if n > 1 or n<0:
+            print("A",end='')
+            pocet += 1
+        else:
+            print(" ",end='')
+        #print("%.2f" % round(n,2),end='  ')
+        
+        
+print("aaaaa")
+print(pocet)
+'''
         
 
 

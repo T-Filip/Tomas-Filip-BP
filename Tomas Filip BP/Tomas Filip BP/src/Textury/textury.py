@@ -68,6 +68,15 @@ def init():
     miestoPredmetOznacene.blit(textury.PREDMETY,(0,0),(128,0,64,64))
     vlozTexturuScaleBezId(miestoPredmetOznacene, enumTextura.EnumTextura.MIESTO_PREDMET_OZNACENY )
     
+    #HPBAR
+    hp = pygame.image.load('img/uvodneNastavenia/HealthBar.png').convert_alpha()
+    hpBar = pygame.Surface((600,20),pygame.SRCALPHA)
+    hpBar.blit(hp,(0,0),(0,0,600,20))
+    vlozTexturuScaleBezId(hpBar, enumTextura.EnumTextura.HEALTH_BAR)
+    
+    
+    
+    
     textury.PREDMET_BEZ_TEXTURY =  pygame.Surface((64,64),pygame.SRCALPHA)
     textury.PREDMET_BEZ_TEXTURY.blit(textury.PREDMETY,(0,0),(0,0,64,64))
     

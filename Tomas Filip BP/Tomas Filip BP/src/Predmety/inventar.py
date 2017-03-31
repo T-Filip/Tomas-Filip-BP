@@ -24,17 +24,28 @@ class Inventar():
         
     def vlozPredmet(self,predmet):
         pred = predmet
+        pocKusovPred = pred.dajPocetKusov()
         for slot in self.sloty:
             if slot.predmet == None:
                 continue
             if slot.predmet.id == pred.id: 
-                slot.predmet.zmenPocetKusovO(pred.dajPocetKusov())
+                #slot.predmet.zmenPocetKusovO(pred.dajPocetKusov())
+                kolkoZobralo = slot.predmet.zmenPocetKusovO(pocKusovPred)
+                pocKusovPred -= kolkoZobralo
+                if pocKusovPred <= 0:
+                    pred.kill()
+                    return 0
+                
+                '''
                 pred.setPocetKusov(0,False)
-                if slot.predmet.dajPocetKusov() > 64:
-                    pred.zmenPocetKusovO(slot.predmet.dajPocetKusov() - 64)
+                stackKapacita = slot.predmet.dajStackKapacitu()
+                if slot.predmet.dajPocetKusov() > stackKapacita:
+                    pred.zmenPocetKusovO(slot.predmet.dajPocetKusov() - stackKapacita)
                 else:
                     return pred.dajPocetKusov()
-                    
+                '''
+                  
+        pred.setPocetKusov(pocKusovPred,False)  
         for slot in self.sloty:
             if slot.predmet == None:
                 slot.vlozPredmet(pred)

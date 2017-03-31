@@ -138,7 +138,12 @@ class Mapa:
         self.generatorBiom = [0 for x in range (0,6)]
         for b in range (0,6):
             self.generatorBiom[b] = generator.Generator(self.random.random())#*9223372036854775807
-        self.noiseGen = generator.GeneratorRozsireny(self.random.random(),800,0.4)
+        self.noiseGen = generator.Generator(self.random.random(),800,0.4)
+        
+        self.generatorPreMobky = generator.Generator(self.random.random(),150,0.95)
+        
+    def dajNoiseMobkaNa(self,x,y):
+        return self.generatorPreMobky.noise(x, y)
         
     def dajZoom(self):
         return self.zoom
@@ -225,6 +230,8 @@ class Mapa:
     
     def dajObjektNaMyske(self):
         okolieMysky = self.dajOkolieMysky()
+        if okolieMysky == None:
+            return
         pos = self.dajMyskuNaMape()
         for obj in okolieMysky:
             if obj.dajTextOblastMapa().collidepoint(pos[0],pos[1]):
