@@ -46,7 +46,11 @@ VLASTNOSTI_POSTAVY = ["Zdravie", "Sila", "Rychlost", "Vytrvalost"]
 VLASTNOSTI_POSTAVY_TYP_POSTAVY = [[3,3,5,5,],[4,4,4,4],[6,5,3,2]]
 VLASTNOSTI_POSTAVY_POHLAVIE = [[0,1,0,0],[0,0,0,1]]
 
+ZRUCNOSTI = ["Vyroba objektov","vyroba sekier","vyrova krumpacov","vyroba mecov","pouzivanie sekery","pouzivanie krumpaca","pouzivanie meca"]
+
 FARBA_TELA = [(255,220,100),(255,220,140),(253,210,130),(216,170,130),(200,140,100),(180,110,60),(140,90,50)]
+FARBA_TELA_NPC = [(120,120,120),(100,100,100),(150,150,150),(140,100,100),(125,125,100),(125,125,90)]
+
 CAP_POHLAVIE  = [0,1]
 CAP_TVAR = [[0,1],[0,1]]#2d koli pohlaviam - kazde pohlavie moze mat inu tvar naprd zena ma namalovane pery ale muz nie
 CAP_VLASY = [[0,1],[0,1]]

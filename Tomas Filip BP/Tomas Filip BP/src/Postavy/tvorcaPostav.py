@@ -68,15 +68,42 @@ def vytvorPostavu(jeToHrac, paSmerPostavy,farbaTela,typPostavy,cisloTvare,cisloV
     
     return postavaMala
 
-    def vytvorPostavuRandom():
-        #automaticky sa berie ze sa generuje npc#
-        capPohlavia = nastavenia.CAP_POHLAVIE
-        capCisloOci = nastavenia.CAP_TVAR
-        capCisloVlasov = nastavenia.CAP_VLASY
-        capTypTvare = nastavenia.CAP_HLAVA
-        farbaTela = nastavenia.FARBA_TELA
+
         
-        #pohlavie = random.sample
+def vytvorPostavuRandom(jeToHrac,postava):
+    
+    if jeToHrac:
+        cap = random.randint(0,len(nastavenia.FARBA_TELA)-1)
+        farbaTela = nastavenia.FARBA_TELA[cap]
+    else:
+        cap = random.randint(0,len(nastavenia.FARBA_TELA_NPC)-1)
+        print(cap)
+        farbaTela = nastavenia.FARBA_TELA_NPC[cap]
+        
+    cap = nastavenia.CAP_TYP_POSTAVY
+    typPostavy = random.randint(cap[0],cap[1])
+    vlastnosti = nastavenia.VLASTNOSTI_POSTAVY_TYP_POSTAVY[typPostavy].copy()
+    
+    postava.setTypPostavy(typPostavy)
+    cap = nastavenia.CAP_POHLAVIE
+    pohlavie = random.randint(cap[0],cap[1])
+    vlpoh = nastavenia.VLASTNOSTI_POSTAVY_POHLAVIE[pohlavie]
+    cap = nastavenia.CAP_TVAR[pohlavie]
+    tvar = random.randint(cap[0],cap[1])
+    cap = nastavenia.CAP_VLASY[pohlavie]
+    vlasy = random.randint(cap[0],cap[1])
+    cap = nastavenia.CAP_HLAVA
+    hlava = random.randint(cap[0],cap[1])
+    
+    vlastnostiNovejPostavy = [[vlastnosti[0] + vlpoh[0]],[vlastnosti[1] + vlpoh[1]],[vlastnosti[2] + vlpoh[2]],[vlastnosti[3] + vlpoh[3]]]
+    postava.setVlastnosti(vlastnostiNovejPostavy)
+
+    imageZaloha = [vytvorPostavu(False, 0, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                        ,vytvorPostavu(False, 1, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                        ,vytvorPostavu(False, 2, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                        ,vytvorPostavu(False, 3, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
+                        ,vytvorPostavu(False, 4, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)]
+    return imageZaloha
         
 
 

@@ -23,9 +23,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.smer = SmerPostavy.DOPREDU
         self.imageZaloha = textury
         
-        self.staryZoznamKolizieSHracmi = []
+        self.jeMrtvy = False
 
-        
+
+
         
         self.typPostavy = 0
         
@@ -35,7 +36,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.rectTextOblastMapa = self.rectTextOblastMapa.move(surPix[0],surPix[1])
         
         if not jeToHrac and textury == None:
-            self.vygenerujTextury()#!!!!
+            self.vygenerujTextury()
+            
+        
             
         pygame.sprite.Sprite.__init__(self,self.hra.dajAktivBlitGroup(),self.hra.dajPostavyGroup())
         
@@ -43,10 +46,15 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             #obj oblast sa nachadza kvazi pod nohami, vzhladom na styl textur je obj oblast momentalne z casti mimo texturovej oblasti - zo spodnej casti textury pretrcaa
         self.rectObjOblastZaloha = None #fixna poloha voci texturovej oblasti pri pouziti na mapa je potrebne vyuzit aktualizovanu verziu
         self.initObjOblast(sirka, vyska)
-        if vlastnosti == None:
-            self.vlastnosti = [[0],[0],[0],[0]]
-        else:
+
+        if vlastnosti != None:
             self.vlastnosti = [[vlastnosti[0]],[vlastnosti[1]],[vlastnosti[2]],[vlastnosti[3]]] #potrebne ich zaobalit 
+            
+        #HP
+        zd = 80 + 5*self.typPostavy + 5*self.vlastnosti[0][0]
+        self.zdravie = zd
+        self.maxZdravie = zd
+        #
             
         self.volneVlastnosti = [3]
         self.reinitVlastnosti()
@@ -66,6 +74,18 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         if self.mapa != None:
             self.scale(self.mapa.dajNas())  
             
+            
+    def setTypPostavy(self,enumTyp):
+        self.typPostavy = enumTyp
+        
+    def setVlastnosti(self,vlastnosti):
+        self.vlastnosti = vlastnosti
+            
+    def dajHp(self):
+        return self.zdravie
+    
+    def dajMaxHp(self):
+        return self.maxZdravie
             
     def initObjOblast(self,sirka,vyska):
 
@@ -112,10 +132,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def reinitVlastnosti(self):
         self.capVydrz = self.vlastnosti[3][0]*50+100
         
-        self.maxRychlostSprint = 1.5+self.vlastnosti[2][0]*0.25
-        self.maxRychlost = 1+self.vlastnosti[2][0]*0.2
-        self.zrychlenie = self.maxRychlost/10
-        self.zrychlenieSprint = self.maxRychlostSprint/8
+        self.maxRychlostSprint = 1.3+self.vlastnosti[2][0]*0.2
+        self.maxRychlost = 0.8+self.vlastnosti[2][0]*0.15
+        self.zrychlenie = self.maxRychlost/20
+        self.zrychlenieSprint = self.maxRychlostSprint/15
         
         self.spomalovanie = 0.15 # ako rychlo clovek brzdi 
         if self.typPostavy == 0:
@@ -138,6 +158,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajVolneVlastnosti(self):
         return self.volneVlastnosti
     
+    def dajVlastnosti(self):
+        return self.vlastnosti
+    
     def dajInventar(self):
         return self.inventar
             
@@ -147,6 +170,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     
     
     def vygenerujTextury(self):
+        
+        self.imageZaloha = tvorcaPostav.vytvorPostavuRandom(False,self)
+        '''
         cap = random.randint(0,len(nastavenia.FARBA_TELA)-1)
         farbaTela = nastavenia.FARBA_TELA[cap]
         cap = nastavenia.CAP_TYP_POSTAVY
@@ -166,7 +192,7 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                             ,tvorcaPostav.vytvorPostavu(False, 2, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
                             ,tvorcaPostav.vytvorPostavu(False, 3, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)
                             ,tvorcaPostav.vytvorPostavu(False, 4, farbaTela, typPostavy, hlava, vlasy, tvar, pohlavie)]
-            
+        '''
             
             
     def dajVzdialenostOdPostavy(self,postava):
@@ -285,7 +311,32 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.smerPohybu[0] += smer[0]
         self.smerPohybu[0] += smer[1]
         
-
+    def udelPoskodenie(self,poskodenie):
+        self.zdravie -= poskodenie
+        if self.zdravie <= 0:
+            self.jeMrtvy = True
+            self.upravSpecialMrtvy()
+            self.smer = SmerPostavy.SPECIAL
+            self.updateImage()
+            self.kill()
+            self.pocetTickovVymazania = random.triangular(1000,4000,2500) + self.hra.dajPocetTickov()
+            mpg = self.hra.dajMrtvePostavy()
+            self.add(mpg)
+            self.vydavanyHluk = 0
+            self.hra.zrusNahananie(self)
+            
+            
+    def upravSpecialMrtvy(self):
+        #upravi texturu postavy special na mrtvu postavu
+        pass#doimplementovat!!!!!!!!!!!
+        
+    def cekniVymazaniePostavy(self):
+        if self.jeMrtvy and self.pocetTickovVymazania < self.hra.dajPocetTickov():
+            self.kill()
+    
+    
+    def jePostavaMrtva(self):
+        return self.jeMrtvy
         
     def dajPotencialnuSiluBuchnutia(self):
         if self.typPostavy == EnumTypPostavy.UZKA:
@@ -299,28 +350,33 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         #usetri zlozitost budem iterovat cez zoznam iba raz inak by som musel raz a potom este jeden krat v podzozname
     def odstrcBlizkePostavy(self):
         postavy = self.hra.dajPostavyGroup()
+        #ret = False
         for postava in postavy:
             if postava == self:
                 continue
             vzdialenost = self.dajVzdialenostOdPostavy(postava)
-            if vzdialenost > 55:
+            if vzdialenost > 30:
                 continue
-            if vzdialenost == 0:
+            if vzdialenost <= 0:
                 vzdialenost = 1
                 
-            silaOdpudivosti = math.log(vzdialenost/56)#-vzdialenost/20+1
+            silaOdpudivosti = -math.log(vzdialenost/31)#-vzdialenost/20+1
+            self.aktualizujObjOblast()
             objOblastPostavy = postava.dajObjOblastMapa()
             vektorOdstrknutia = [objOblastPostavy.centerx-self.rectObjOblast.centerx,objOblastPostavy.centery-self.rectObjOblast.centery]
             suc = math.fabs(vektorOdstrknutia[0])+math.fabs(vektorOdstrknutia[1])
             if suc == 0:
                 suc = 1
-            vektorOdstrknutia[0] = vektorOdstrknutia[0]/suc*silaOdpudivosti*5#vektor uz ma aj silu taktiez vzhladom na vzdialenost
-            vektorOdstrknutia[1] = vektorOdstrknutia[1]/suc*silaOdpudivosti*5
+                
+            #print(silaOdpudivosti)
+            vektorOdstrknutia[0] = vektorOdstrknutia[0]/suc*silaOdpudivosti#vektor uz ma aj silu taktiez vzhladom na vzdialenost
+            vektorOdstrknutia[1] = vektorOdstrknutia[1]/suc*silaOdpudivosti
             postava.pozmenSmerPohybu(vektorOdstrknutia)
             
         
     
     def dajObjOblastMapa(self):
+        self.aktualizujObjOblast()
         return self.rectObjOblast
         
 
@@ -360,12 +416,13 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             #self.stare
             if not self.jeKoliznyStav:
                 self.jeKoliznyStav=True
-                self.koliznySmerPohybu[0] = self.smerPohybu[0]*-0.1
-                self.koliznySmerPohybu[1] = self.smerPohybu[1]*-0.1
+                self.koliznySmerPohybu[0] = -self.smerPohybu[0]*0.2
+                self.koliznySmerPohybu[1] = -self.smerPohybu[1]*0.2
                 
-                
-            self.smerPohybu[0] = self.koliznySmerPohybu[0]+horizontal*0.05
-            self.smerPohybu[1] = self.koliznySmerPohybu[1]+vertical*0.05
+            self.smerPohybu[0] = self.koliznySmerPohybu[0]
+            self.smerPohybu[1] = self.koliznySmerPohybu[1]
+            self.smerPohybu[0] += horizontal*0.03
+            self.smerPohybu[1] += vertical*0.03
         else:
             self.jeKoliznyStav=False
             self.odstrcBlizkePostavy()
@@ -428,25 +485,61 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         #pomHor = abs(self.smerPohybu[0])
         #pomVer = abs(self.smerPohybu[1])
         
-        if self.smerPohybu[0] >= 0.2:
+        #self.smer = SmerPostavy.DOPREDU
+        if horizontal >= 0:
             
-            if self.smerPohybu[1] >= 0.2:
+            if vertical >= 0:
+                #++
+                if horizontal*2 > vertical:
+                    self.smer = SmerPostavy.DOPRAVA
+                else:
+                    self.smer = SmerPostavy.DOPREDU
+            
+            elif self.smerPohybu[1] <= 0:
+                #+-
+                if horizontal*2 > math.fabs(vertical):
+                    self.smer = SmerPostavy.DOPRAVA
+                else:
+                    self.smer = SmerPostavy.DOZADU
+            
+        elif horizontal <= 0:
+            
+            if self.smerPohybu[1] >= 0:
+                #-+
+                if math.fabs(horizontal)*2 > vertical:
+                    self.smer = SmerPostavy.DOLAVA
+                else:
+                    self.smer = SmerPostavy.DOPREDU
+            
+            
+            elif self.smerPohybu[1] <= 0:
+                #--
+                if math.fabs(horizontal)*2 > math.fabs(vertical):
+                    self.smer = SmerPostavy.DOLAVA
+                else:
+                    self.smer = SmerPostavy.DOZADU
+        else:
+            self.smerPostavyPriStati()
+        '''
+        if self.smerPohybu[0] >= 0.3:
+            
+            if self.smerPohybu[1] >= 0.3:
                 #++
                 if self.smerPohybu[0]*2 > self.smerPohybu[1]:
                     self.smer = SmerPostavy.DOPRAVA
                 else:
                     self.smer = SmerPostavy.DOPREDU
             
-            elif self.smerPohybu[1] <= 0.2:
+            elif self.smerPohybu[1] <= -0.3:
                 #+-
                 if self.smerPohybu[0]*2 > math.fabs(self.smerPohybu[1]):
                     self.smer = SmerPostavy.DOPRAVA
                 else:
                     self.smer = SmerPostavy.DOZADU
             
-        elif self.smerPohybu[0] <= 0.2:
+        elif self.smerPohybu[0] <= -0.3:
             
-            if self.smerPohybu[1] >= 0.2:
+            if self.smerPohybu[1] >= 0.3:
                 #-+
                 if math.fabs(self.smerPohybu[0])*2 > self.smerPohybu[1]:
                     self.smer = SmerPostavy.DOLAVA
@@ -454,13 +547,15 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                     self.smer = SmerPostavy.DOPREDU
             
             
-            elif self.smerPohybu[1] <= 0.2:
+            elif self.smerPohybu[1] <= -0.3:
                 #--
                 if math.fabs(self.smerPohybu[0])*2 > math.fabs(self.smerPohybu[1]):
                     self.smer = SmerPostavy.DOLAVA
                 else:
                     self.smer = SmerPostavy.DOZADU
-            
+        else:
+            self.smerPostavyPriStati()
+        '''
         
         
 
@@ -500,10 +595,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             self.vydavanyHluk += 0.2
         
             # velkost postavy ovplyvnuje vydavany zvuk pri behani
-        if self.typPostavy == EnumTypPostavy.FIT:
-            self.vydavanyHluk += 0.05
-        elif self.typPostavy == EnumTypPostavy.SILNA:
-            self.vydavanyHluk += 0.1
+
+        self.vydavanyHluk += self.typPostavy * 0.05
+
             
             
 

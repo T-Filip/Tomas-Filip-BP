@@ -11,3 +11,4 @@ from enum import IntEnum
 class EnumOknaMenu(IntEnum):
     ZAKLADNE_MENU = 0
     VYBER_POSTAVY = 1
+    

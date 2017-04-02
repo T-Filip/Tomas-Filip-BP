@@ -217,7 +217,9 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
                 kolkoOstalo = okno.dajInventar().vlozPredmet(predmet)
                 if kolkoOstalo <= 0:
                     break
+        self.recept.vykonajAkciuPoCrafte(self.hrac)
         self.zmenCraft(self.recept)
+        
         
         
         

@@ -5,7 +5,7 @@ Created on 30. 3. 2017
 '''
 from enum import IntEnum
 
-class EnumSkusenosti(IntEnum):
+class EnumZrucnosti(IntEnum):
     #SKUSENOSTI VYROBA: 0-SEKERA, 1-KRUMPAC, 2-MEC, VYUZIVANIE: 3-SEKERA, 4-KRUMPAC, 5-MEC...
     VYROBA_STAVEBNYCH_OBJEKTOV = 0
     VYROBA_SEKERA = 1

@@ -17,10 +17,25 @@ def ukonci(self):
         
 def novaHra(self):
     self.menu.prepniMenu(enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY)
+    
+def navratDoHry(self):
+    self.menu.manazerOkien.prepniMenu(None)
 
 class MenuOknoZakladMenu(menuOkno.MenuOkno):
         def __init__(self,manazerOkien,scale):
             super().__init__(manazerOkien,scale)
-            objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"Nova hra",16,540,120,novaHra,scale,1.75)
-            objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"Close",16,540,210,ukonci,scale,1.75)
+            objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE],"Nova hra",16,460,120,novaHra,scale,2)
+            self.tlacidloNavratDoHry = objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE,textury.MENU_TLACIDLO_LOCKNUTE],"Navrat do hry",16,460,210,navratDoHry,scale,2)
+            objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE],"Exit",16,460,300,ukonci,scale,2)
+            
+            self.tlacidloNavratDoHry.setLock(True)
+            
+        def reinit(self):
+            if self.manazerOkien.dajHru() != None:
+                self.tlacidloNavratDoHry.setLock(False)
+            else:
+                self.tlacidloNavratDoHry.setLock(True)
+            
+            
+        
         

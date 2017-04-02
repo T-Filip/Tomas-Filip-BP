@@ -12,3 +12,4 @@ from enum import IntEnum
 class EnumOknaHra(IntEnum):
     INVENTAR = 0
     VLASTNOSTI = 1
+    ZRUCNOSTI = 2

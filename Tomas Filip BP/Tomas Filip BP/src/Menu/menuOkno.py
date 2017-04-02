@@ -16,9 +16,10 @@ class MenuOkno():
             self.rect = pygame.Rect(0,0,nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie],nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie])
         else:
             self.rect = rect
-        print ("menuOkno rect:")
-        print (self.rect)
+        #print ("menuOkno rect:")
+        #print (self.rect)
         self.initPozadie()
+        self.nastalReinit = False
         self.manazerOkien = manazerOkien
         self.scaleRes =scale
         self.allSprites = pygame.sprite.RenderUpdates()
@@ -34,9 +35,6 @@ class MenuOkno():
         self.pozadie = pygame.transform.scale(textury.MENU_OKNO,(self.rect.width,self.rect.height))
        
        
-    '''
-    zmenRecept sa vola vzdy po zmiznuti okna v hre (nie v menu)
-    ''' 
     def close(self):
         pass
         
@@ -93,12 +91,14 @@ class MenuOkno():
         
     def refresh(self):
         pass
+    
+    def reinit(self):
+        self.nastalReinit = True
         
         
         
 class MenuOknoHra(MenuOkno):
     def __init__(self,manazerOkien, scale, sirka = 0.5, vyska = 0.5):
-        self.nastalReinit = False
         x = nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]
         y = nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]
         self.sirkaPodiel = sirka
@@ -115,8 +115,9 @@ class MenuOknoHra(MenuOkno):
         super().__init__(manazerOkien, scale, rect)
         
     def reinit(self,hrac):
+        super().reinit()
         self.hrac = hrac
-        self.nastalReinit = True
+        
         
     def draw(self, screen):
         if self.nastalReinit:

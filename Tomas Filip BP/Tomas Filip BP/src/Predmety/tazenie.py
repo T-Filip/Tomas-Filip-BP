@@ -22,13 +22,6 @@ def vypocitajDlzkuTazenia(tazenyObjekt,nastroj,hrac):
 
 
 
-'''
-vstup pole s prvkami poctu dropu 
-kamen
-zelezo
-zlato
-
-'''
 def dropVelkyKamen(args,hrac):
     hrac.vlozPredmet(Predmet(2100,5)) 
     hrac.vlozPredmet(Predmet(2101,1)) 

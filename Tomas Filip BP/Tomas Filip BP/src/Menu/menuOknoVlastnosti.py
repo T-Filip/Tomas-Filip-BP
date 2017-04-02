@@ -46,7 +46,6 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         
         font = textury.dajFont(int(25*self.scaleRes))  
         vlastnosti = nastavenia.VLASTNOSTI_POSTAVY # text
-        pocetVlastnosti = 4
         x= (self.topLeftXPredScale + 150)*self.scaleRes
         y= (self.topLeftYPredScale + 55)*self.scaleRes
         zvKonst = (50*self.scaleRes)

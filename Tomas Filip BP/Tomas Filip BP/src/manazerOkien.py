@@ -19,6 +19,7 @@ import Menu.enumOknaMenu as enumOknaMenu
 import Menu.enumOknaHra as enumOknaHra
 import Menu.menuOknoInventar as menuOknoInventar
 from Textury import  texturyPolicka
+from Menu.MenuOknoZrucnosti import MenuOknoZrucnosti
 
 import ObjektyMapa.infObjekty
 from Menu import menuOknoVlastnosti
@@ -83,6 +84,10 @@ class ManazerOkien:
         veberPostavy
         zakladneMenu
         '''
+    def dajHru(self):
+        return self.hra
+   
+   
     def initMenuOkna(self):
         sc =nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
 
@@ -94,6 +99,7 @@ class ManazerOkien:
         self.zoznamOkienHra = {}
         self.zoznamOkienHra[enumOknaHra.EnumOknaHra.INVENTAR] = menuOknoInventar.MenuOknoInventar(self,sc)
         self.zoznamOkienHra[enumOknaHra.EnumOknaHra.VLASTNOSTI] = menuOknoVlastnosti.MenuOknoVlastnosti(self,sc,0.4,0.5)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.ZRUCNOSTI] = MenuOknoZrucnosti(self,sc,0.4,0.7)
        
         self.oknoMenu = self.zakladneMenu
         self.oknoVHre = None
@@ -112,9 +118,7 @@ class ManazerOkien:
     def dajPressedMouse(self):
         return self.pressedMouse
         
-        
-    def dajHru (self) :
-        return self.hra
+
 
     def run(self):
         
@@ -164,6 +168,7 @@ class ManazerOkien:
             self.oknoMenu = None
         else:
             self.oknoMenu = self.zoznamOkienMenu[enumLink]
+            self.oknoMenu.reinit()
             
     def prepniMenuVHre (self, enum):
         if self.oknoMenu != None:
@@ -203,13 +208,15 @@ class ManazerOkien:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     if self.oknoMenu != None:
-                        self.oknoMenu = None
+                        self.prepniMenu(None)
                     else:
-                        self.oknoMenu = self.zakladneMenu
+                        self.prepniMenu(enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU)
                 elif event.key == pygame.K_i :
                     self.prepniMenuVHre(enumOknaHra.EnumOknaHra.INVENTAR)
                 elif event.key == pygame.K_v :
                     self.prepniMenuVHre(enumOknaHra.EnumOknaHra.VLASTNOSTI)
+                elif event.key == pygame.K_b :
+                    self.prepniMenuVHre(enumOknaHra.EnumOknaHra.ZRUCNOSTI)
                 elif event.key == pygame.K_0:
                     self.hra.stlacena0()
                 elif event.key == pygame.K_1:

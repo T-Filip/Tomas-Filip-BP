@@ -13,6 +13,8 @@ from Postavy.smerPostavy import SmerPostavy
 import math
 import time
 from generator import GeneratorNescalovany
+from Postavy.enumTypPostavy import EnumTypPostavy
+
 
 
 
@@ -22,6 +24,7 @@ class Npc(postava.Postava):
         self.add(self.hra.dajGroupPreMobky())
         self.initStavMobky()
         
+        self.moduloKusanie = random.randint(0,99)#sanca na kusnutie sa odohrava raz za sekundu .. aby sa kazda mobka nesnazila o kusnutie naraz 
         
         self.spomalovanie = 0.02#v postave sa to inicializuje tu sa tomu len meni hodnota
         
@@ -34,6 +37,7 @@ class Npc(postava.Postava):
         self.posunPostavyY = 0
         
         
+        
         #Prechadzka
         self.casPrechadzania = 0
         self.tickPrechadzania = 9999
@@ -41,6 +45,11 @@ class Npc(postava.Postava):
         self.b = random.random()/2+0.25
         self.initGeneratoraPreChodenie()
         ##########
+        
+        
+    def prestanNahanat(self,postava):
+        if self.nahananaPostava == postava:
+            self.stavMobky = StavMobky.STOJI
         
     def initGeneratoraPreChodenie(self):
         self.generatorPohybu = GeneratorNescalovany(random.random(),self.a,self.b)
@@ -58,12 +67,36 @@ class Npc(postava.Postava):
             self.stavMobky = StavMobky.STOJI
         
         
+    def reinitVlastnosti(self):
+        self.capVydrz = self.vlastnosti[3][0]*20+100
         
+        self.maxRychlostSprint = 0.2+self.vlastnosti[2][0]*0.1
+        self.maxRychlost = 0.1+self.vlastnosti[2][0]*0.05
+        self.zrychlenie = self.maxRychlost/16
+        self.zrychlenieSprint = self.maxRychlostSprint/12
+        
+        self.spomalovanie = 0.15 # ako rychlo clovek brzdi 
+        if self.typPostavy == EnumTypPostavy.SILNA:
+            self.spomalovanie = 0.2
+        elif self.typPostavy == EnumTypPostavy.FIT:
+            self.spomalovanie = 0.18
+        elif self.typPostavy == EnumTypPostavy.UZKA:
+            self.spomalovanie = 0.16
+        
+        self.smerPohybu=[0,0]
+        self.jeSprintPovoleny = True
+        self.jeKoliznyStav = False
+        self.obnovovanieVydrze = 0.2+self.vlastnosti[3][0]*0.1
+        self.koliznySmerPohybu = [0,0]
+        self.koeficienRychlosti = 1
+        
+        self.priemSucKoefRychl = 0
+        self.pocKoefRychlosti = 0
         
     def update(self,*args):
-        #print(self.posunPostavyX)
         super().update(args)
-        self.posunPostavu(self.posunPostavyX, self.posunPostavyY)
+        if not self.jeMrtvy:
+            self.posunPostavu(self.posunPostavyX, self.posunPostavyY)
         
 
             
@@ -150,6 +183,9 @@ class Npc(postava.Postava):
             self.stavMobky = StavMobky.SLEDUJE_HLUK
             self.nasledovatel = self.nahananaPostava
             self.cekniHraca()
+            if self.stavMobky != StavMobky.NAHANA_HRACA:
+                group = self.hra.dajGroupMobkyNahanajuceHraca()
+                group.remove(self)
     
     
     
@@ -231,6 +267,10 @@ class Npc(postava.Postava):
                     self.nahananaPostava = hrac
                     self.stavMobky = StavMobky.NAHANA_HRACA
                     
+        group = self.hra.dajGroupMobkyNahanajuceHraca()
+        self.add(group)
+        
+                    
                     
     def smerPostavyPriStati(self):
         if self.stavMobky == StavMobky.SPI:
@@ -259,8 +299,8 @@ class Npc(postava.Postava):
         elif self.stavMobky == StavMobky.PRECHADZA_SA:
             self.cinnostPrechadzka()
             #print("prech")
-        elif self.stavMobky == StavMobky.NAHANA_HRACA:
-            self.cinnostNahanaHraca()
+        #elif self.stavMobky == StavMobky.NAHANA_HRACA:
+            #self.cinnostNahanaHraca()  ## cinnost hraca ked nahana sa vykonava pravidelne v kazdom update nakolko je nuttne aby jeho pohyb bol updatovany casto
             #print("nahana")
         elif self.stavMobky == StavMobky.SPI:
             self.cinnostSpi()
@@ -291,8 +331,8 @@ class Npc(postava.Postava):
 
             
         self.tickPrechadzania += 1
-        self.posunPostavyX = self.generatorPohybu.noise(self.tickPrechadzania, 0)/2
-        self.posunPostavyY = self.generatorPohybu.noise(0, self.tickPrechadzania)/2
+        self.posunPostavyX = self.generatorPohybu.noise(self.tickPrechadzania, 0)/3
+        self.posunPostavyY = self.generatorPohybu.noise(0, self.tickPrechadzania)/3
         
         #print("---------------")
         #print(self.posunPostavyX)
@@ -305,15 +345,26 @@ class Npc(postava.Postava):
 
         
 
-    def cinnostNahanaHraca(self):
+    def cinnostNahanaHraca(self,modulo100):
+        if self.nahananaPostava == None:
+            return
         ret = self.dajSmerNaPostavu(self.nahananaPostava)
-        self.posunPostavyX = ret[0]
-        self.posunPostavyY = ret[1]
+        vzdialenost = self.dajVzdialenostOdPostavy(self.nahananaPostava)
+        if vzdialenost>70:
+            self.posunPostavyX = ret[0]
+            self.posunPostavyY = ret[1]
+        else:
+            koef = vzdialenost/70
+            self.posunPostavyX = ret[0]*koef
+            self.posunPostavyY = ret[1]*koef
+            if self.moduloKusanie == modulo100:
+                if random.random() > koef:
+                    self.nahananaPostava.udelPoskodenie(int(random.gauss(10,5)))
         
+    def ublizNahananejPostave(self,postava):
+        pass
         
     def dajSmerNaPostavu(self,postava):
-        if postava == None:
-            return (0,0)
         objNasl = postava.dajObjOblastMapa()
         xDir = objNasl.centerx - self.dajObjOblastMapa().centerx
         yDir = objNasl.centery - self.dajObjOblastMapa().centery
@@ -322,7 +373,6 @@ class Npc(postava.Postava):
             ret = (0,0)
         else:
             ret =  (xDir/suc,yDir/suc)
-        #print(ret)
         return ret
 
         

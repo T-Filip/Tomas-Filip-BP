@@ -10,6 +10,8 @@ import math
 from ObjektyMapa import objMapa
 import logging
 from ObjektyMapa.infObjekty import InfObjScale, InfNaMape, InfNastroje
+from Predmety.enumTypMaterialu import EnumTypMaterialu
+import random
 
 import Predmety.tazenie as tazenie
 from Predmety.animacia import Animacia
@@ -78,6 +80,8 @@ class InvVyuzPredmetu(inventar.Inventar):
             #print(self.beziAnimacia)
         
         
+    def dajOznacenyPredmet(self):
+        return self.polePredmetov[self.oznacenyIndex]
         
     def updateTexturyOznPredmetu(self):
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
@@ -342,8 +346,30 @@ class InvVyuzPredmetu(inventar.Inventar):
         #print("left click")
 
         
+        #utoci hrac na postavu v parametri kedze mobky funguju inak ich combat je implementovany v triede npc
+        #kvazi utok ale na predmety funguje trosku inak a metody na vypocitanie tazenia predmetov su v module tazenie
     def zautocNaPostavu(self,postava):
-        print("UTOK na postavu doimplementovat!!")
+        infPred = self.dajOznacenyPredmet().dajPredmet().dajInf()
+        if isinstance(infPred, InfNastroje):
+            vhodneNaMaterial = infPred.dajVhodneNaMaterial()
+            try:
+                koeficienPredmetu = vhodneNaMaterial[EnumTypMaterialu.MASO]
+            except:    
+                koeficienPredmetu = 0
+        else:
+            koeficienPredmetu = 0
+            
+        koeficienSilyHraca = self.hrac.dajVlastnosti()[3][0]/10
+        
+        dmg = int(((koeficienPredmetu + koeficienSilyHraca)/2)*random.gauss(40,8))
+        postava.udelPoskodenie(dmg)
+
+            
+
+            
+        
+        
+        
     
             
         

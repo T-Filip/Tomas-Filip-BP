@@ -66,9 +66,14 @@ class InfPozivatelne(Inf):
         self.zjedzPredmet(hrac)
     
     
+    
+    
+    #vhodneNaMaterial je dic ktory obsahuje ako kluc typ materialu a ako hodnotu cislo medzi 0-1 ktore indikuje ako velmi vie pomoct pri tazeni daneho materialu
+    #ak sa typ materialu v tomto zozname nenachadza tak je to 0
 class InfNastroje(Inf):
-    def __init__(self,animacia,imgAnimacia = None,imgPredmet = None, stackKapacita = 64):
+    def __init__(self,animacia,vhodneNa,imgAnimacia = None,imgPredmet = None, stackKapacita = 1):
         self.animacia = animacia
+        self.vhodneNaMaterial = vhodneNa
 
         super().__init__(imgPredmet, stackKapacita)
         if imgAnimacia == None: # ak nema specialny img pre animaciu pouzije sa imgPredmet alebo default textura
@@ -76,6 +81,8 @@ class InfNastroje(Inf):
         else:
             self.imgAnimacia = imgAnimacia
             
+    def dajVhodneNaMaterial(self):
+        return self.vhodneNaMaterial
             
     def dajAnimaciu(self):
         return self.animacia
@@ -597,23 +604,37 @@ def nacitajTexturyObjMapa():
 
     nextID = 3000
     #SEKERA
+    vhodnost = [{EnumTypMaterialu.DREVO:0.4,EnumTypMaterialu.MASO:0.15},
+                {EnumTypMaterialu.DREVO:0.6,EnumTypMaterialu.MASO:0.3},
+                {EnumTypMaterialu.DREVO:0.8,EnumTypMaterialu.MASO:0.45},
+                {EnumTypMaterialu.DREVO:1,EnumTypMaterialu.MASO:0.6}]
     for i in range (4):
         predmText = pygame.Surface((64,64),pygame.SRCALPHA)
         predmText.blit(predmety,(0,0),(64*i,128,64,64))
-        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+        vlozInf(InfNastroje(animacia.rotacia360,vhodnost[i],None,predmText,1))
     
     
     
     #KRUMPAC
+    vhodnost = [{EnumTypMaterialu.KAMEN:0.25},
+                {EnumTypMaterialu.KAMEN:0.50},
+                {EnumTypMaterialu.KAMEN:0.75},
+                {EnumTypMaterialu.KAMEN:1}]
     for i in range (4):
         predmText = pygame.Surface((64,64),pygame.SRCALPHA)
         predmText.blit(predmety,(0,0),(i*64,192,64,64))
-        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+        vlozInf(InfNastroje(animacia.rotacia360,vhodnost[i],None,predmText,1))
         
+        
+    #MEC 
+    vhodnost = [{EnumTypMaterialu.MASO:0.4},
+                {EnumTypMaterialu.MASO:0.6,EnumTypMaterialu.DREVO:0.1},
+                {EnumTypMaterialu.MASO:0.8,EnumTypMaterialu.DREVO:0.25},
+                {EnumTypMaterialu.MASO:1,EnumTypMaterialu.DREVO:0.45}]   
     for i in range (4):
         predmText = pygame.Surface((64,64),pygame.SRCALPHA)
         predmText.blit(predmety,(0,0),(i*64,256,64,64))
-        vlozInf(InfNastroje(animacia.rotacia360,None,predmText,1))
+        vlozInf(InfNastroje(animacia.rotacia360,vhodnost[i],None,predmText,1))
     
     
     

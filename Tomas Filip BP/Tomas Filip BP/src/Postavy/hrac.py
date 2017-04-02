@@ -29,14 +29,13 @@ class Hrac(postava.Postava):
         self.dalsiLevelNaSkusenostiach = 1000
         self.levelHraca = 1
         #
-        #HP
-        self.zdravie = 100
-        self.maxZdravie = 100
-        #
+
         
         #SKUSENOSTI
         #SKUSENOSTI VYROBA: 0-SEKERA, 1-KRUMPAC, 2-MEC, VYUZIVANIE: 3-SEKERA, 4-KRUMPAC, 5-MEC...
-        self.skusenosti = [0,0,0,0,0,0]
+        self.zrucnosti = [[0],[0],[0],[0],[0],[0],[0]]#zaobalene v poli aby som sa na to mohol odkazovat ako na objekt
+        self.volneZrucnosti = [10]
+        
         
 
         
@@ -45,7 +44,14 @@ class Hrac(postava.Postava):
         
         self.vlozPredmety()
         
-
+    def dajSkusenosti(self):
+        return self.skusenosti
+    
+    def dajZrucnosti(self):
+        return self.zrucnosti
+    
+    def dajVolneZrucnosti(self):
+        return self.volneZrucnosti
 
         
 
@@ -56,14 +62,15 @@ class Hrac(postava.Postava):
             self.skusenosti -= self.dalsiLevelNaSkusenostiach
             self.dalsiLevelNaSkusenostiach = int(self.dalsiLevelNaSkusenostiach * 1.4)
             self.maxZdravie += 1 
+            self.volneVlastnosti[0] += 1
+            self.volneZrucnosti[0] += 5
             
 
     
     def dajLevel(self):
         return self.levelHraca
     
-    def dajSkusenosti(self):
-        return self.skusenosti
+
     
     def dajDalsiLevelNaSkusenostiach(self):
         return self.dalsiLevelNaSkusenostiach
@@ -72,8 +79,6 @@ class Hrac(postava.Postava):
         self.mapa = mapa
         self.inventarRychlyPristup.linkMapa(self.mapa)
         
-    def dajVlastnosti(self):
-        return self.vlastnosti
 
     
     def vlozPredmet(self,predmet):
@@ -93,15 +98,12 @@ class Hrac(postava.Postava):
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(5,36))
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(4000,20))
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(3000,1))
+        self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(3011,1))
         
     def dajInventarRychlyPristup(self):
         return self.inventarRychlyPristup
     
-    def dajHp(self):
-        return self.zdravie
-    
-    def dajMaxHp(self):
-        return self.maxZdravie
+
 
 
 
@@ -118,6 +120,7 @@ class Hrac(postava.Postava):
     def update(self, *args):
         super().update(args)
         self.inventarRychlyPristup.update()
+        print(self.zdravie)
         
 
 
@@ -132,25 +135,26 @@ class Hrac(postava.Postava):
         
         
     def eventy(self):
-        posun = [0,0]
         
-        klavesy = self.hra.manazerOkien.dajKlavesy()
-        if klavesy[pygame.K_UP] or klavesy[pygame.K_w]:
-            posun[1] +=-1
-            
-        if klavesy[pygame.K_DOWN] or klavesy[pygame.K_s]:
-            posun[1] +=1
-            
-        if klavesy[pygame.K_LEFT] or klavesy[pygame.K_a]:
-            posun[0] +=-1
-            
-        if klavesy[pygame.K_RIGHT] or klavesy[pygame.K_d]:
-            posun[0] +=1
-           
-        logging.info("Hrac-posunPostavu") 
+        if not self.jeMrtvy:
+            posun = [0,0]
+            klavesy = self.hra.manazerOkien.dajKlavesy()
+            if klavesy[pygame.K_UP] or klavesy[pygame.K_w]:
+                posun[1] +=-1
+                
+            if klavesy[pygame.K_DOWN] or klavesy[pygame.K_s]:
+                posun[1] +=1
+                
+            if klavesy[pygame.K_LEFT] or klavesy[pygame.K_a]:
+                posun[0] +=-1
+                
+            if klavesy[pygame.K_RIGHT] or klavesy[pygame.K_d]:
+                posun[0] +=1
+               
+            logging.info("Hrac-posunPostavu") 
         
         
-        self.posunPostavu(posun[0],posun[1])
+            self.posunPostavu(posun[0],posun[1])
         #print (posun)
 
         
@@ -165,7 +169,6 @@ class Hrac(postava.Postava):
         
 
 
-        
         
 
 
@@ -184,6 +187,8 @@ class Hrac(postava.Postava):
     def klikButton5(self):
         pass 
         
+    def dajPredmetVRuke(self):
+        return self.inventarRychlyPristup.dajOznacenyPredmet()
         
 
 

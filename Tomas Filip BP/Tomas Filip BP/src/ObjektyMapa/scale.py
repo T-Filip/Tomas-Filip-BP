@@ -48,7 +48,7 @@ class ObjScaleViacTextur (ObjScale):
     
     def updateImage(self):
         self.image = pygame.transform.smoothscale(self.imageZaloha[self.smer],(self.rect.width, self.rect.height))    
-        #print((self.rect.width, self.rect.height))
+
         
         
         

@@ -12,4 +12,5 @@ class EnumTypMaterialu(IntEnum):
     KAMEN = 1
     KVIETOK = 2
     VODA = 3
+    MASO = 4 #hrac,postava atd
     

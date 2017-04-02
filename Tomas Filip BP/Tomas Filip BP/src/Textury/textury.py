@@ -59,6 +59,9 @@ def init():
     textury.FRAME = pygame.image.load('img/Postavy/frame.png').convert_alpha()
     
     textury.PREDMETY = pygame.image.load('img/Predmety/predmety.png').convert_alpha()
+    textury.MENU_TLACIDLO = pygame.image.load('img/uvodneNastavenia/TlacidloMenu.png').convert_alpha()
+    textury.MENU_TLACIDLO_OZNACENE = pygame.image.load('img/uvodneNastavenia/TlacidloMenuOznacene.png').convert_alpha()
+    textury.MENU_TLACIDLO_LOCKNUTE = pygame.image.load('img/uvodneNastavenia/TlacidloMenuLocknute.png').convert_alpha()
     
     miestoPredmet = pygame.Surface((64,64),pygame.SRCALPHA)
     miestoPredmet.blit(textury.PREDMETY,(0,0),(64,0,64,64))

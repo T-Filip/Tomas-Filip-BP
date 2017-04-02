@@ -13,6 +13,7 @@ import Textury.textury as textury
 from generator import Generator
 import math
 from Textury import enumTextura
+import Crafting.recepty as recepty
 
 
 
@@ -40,7 +41,9 @@ class Hra:
         self.aktivBlitObjMapa = pygame.sprite.LayeredUpdates()
         self.postavyGroup = pygame.sprite.Group()
         self.mobky = pygame.sprite.Group()
+        self.mobkyNahanajuceHraca = pygame.sprite.Group()
         self.polickaSprites = pygame.sprite.RenderPlain()
+        self.mrtvePostavy = pygame.sprite.Group()
         
 
         
@@ -53,6 +56,8 @@ class Hra:
         self.mapa = mapa.Mapa(self)
         
         self.hrac.linkMapa(self.mapa)
+        
+        recepty.initRecepty(self.hrac)
         
         
         
@@ -103,6 +108,14 @@ class Hra:
             
         self.initTime = time.time()
         
+        
+    def dajMrtvePostavy(self):
+        return self.mrtvePostavy
+        
+        
+    def dajGroupMobkyNahanajuceHraca(self):
+        return self.mobkyNahanajuceHraca
+        
     def dajPostavyGroup(self):
         return self.postavyGroup
         
@@ -121,6 +134,7 @@ class Hra:
     def dajGroupPreMobky(self):
         return self.mobky
 
+
        
     def initInformacieOHracovi(self,scale):
         width= int(640*scale)
@@ -128,32 +142,32 @@ class Hra:
         posY = int(630*scale)
         height = int(80*scale)
         self.invOknoRychlyPristup = oknoInventar.OknoInventar(pygame.Rect(posX,posY,width,height),64)
-        posX = int(390*scale)
-        posY = int(610*scale)
+        #posX = int(390*scale)
+        #posY = int(610*scale)
         sirka= int(500*scale)
         vyska = int(20*scale)
         self.healthBar = textury.dajTexturu(enumTextura.EnumTextura.HEALTH_BAR, sirka, vyska)
         self.sirkaHpBaru = sirka
         self.sirkaUkazovatelaZdravia = sirka
-        self.updateUkazovatelZdravia()
+        self.updateUkazovatelZdravia(scale)
         
-    def skontrolujAktualnostZdravia(self):
+    def skontrolujAktualnostZdravia(self,scale):
         #koli efektu - taktiez uz nebude nutne updatovat zdravie hracovi toto to skontroluje
         #vzhladom na to ze ide o destinne cila tak porovnavam vzdialenosti 2 bodov od realneho a ktory je na tom lepsie ten sa stane novym
         nas = self.hrac.dajHp()/self.hrac.dajMaxHp()
         nasGraf = self.sirkaUkazovatelaZdravia/self.sirkaHpBaru
         if nas<nasGraf:
-            nasGrafNew = self.sirkaUkazovatelaZdravia - 1/self.sirkaHpBaru
+            nasGrafNew = (self.sirkaUkazovatelaZdravia - 1)/self.sirkaHpBaru
             prip = -1
         else:
-            nasGrafNew = self.sirkaUkazovatelaZdravia + 1/self.sirkaHpBaru
+            nasGrafNew = (self.sirkaUkazovatelaZdravia + 1)/self.sirkaHpBaru
             prip = 1
               
         vzdialenostStary = math.fabs(nas-nasGraf)
         vzdialenostNovy = math.fabs(nas-nasGrafNew)
         if vzdialenostNovy < vzdialenostStary:
             self.sirkaUkazovatelaZdravia += prip
-            self.updateUkazovatelZdravia()
+            self.updateUkazovatelZdravia(scale)
         else:
             return # vsetko ostava po starom
 
@@ -161,9 +175,8 @@ class Hra:
             
         
        
-    def updateUkazovatelZdravia(self):
-        print("UPDATE")
-        scale = self.mapa.dajScaleNas()
+    def updateUkazovatelZdravia(self,scale):
+        #print("UPDATE")
         nas = self.hrac.dajHp()/self.hrac.dajMaxHp()
         #sirka= int(500*scale*nas)
         vyska = int(20*scale)
@@ -213,6 +226,9 @@ class Hra:
                 policko.scale(nas)
                 policko.updateScreenPosition(self.mapa)
 
+            for postava in self.mrtvePostavy:
+                postava.scale(nas)
+                postava.updateScreenPosition(self.mapa)
 
             
             for postava in self.postavyGroup:
@@ -239,6 +255,10 @@ class Hra:
             
             for obj in infObjekty.objMapaScalovanie:
                 obj.updateScreenPosition(self.mapa)
+                
+            for postava in self.mrtvePostavy:
+                postava.updateScreenPosition(self.mapa)
+
 
             for postava in self.postavyGroup:
                 postava.updateTopLeft(self.mapa.dajNas())
@@ -269,7 +289,9 @@ class Hra:
         
         
         self.polickaSprites.draw(self.screen)
+        self.mrtvePostavy.draw(self.screen)
         self.aktivBlitObjMapa.draw(self.screen)
+        
         #self.polickaSpritesTEST.draw(self.screen)
         '''
         if self.fpsCount == 20:
@@ -283,8 +305,13 @@ class Hra:
         self.vykresliHpBar(self.screen)
         
     def vykresliHpBar(self,screen):
-        pygame.draw.polygon(screen,nastavenia.RED,self.umiestnenieHp)
+        if self.sirkaUkazovatelaZdravia > 0:
+            pygame.draw.polygon(screen,nastavenia.RED,self.umiestnenieHp)
         screen.blit(self.healthBar,(self.umiestnenieHp[0][0],self.umiestnenieHp[0][1]))
+        
+    def zrusNahananie(self,postava):
+        for mobka in self.mobkyNahanajuceHraca:
+            mobka.prestanNahanat(postava)
 
         
         
@@ -329,12 +356,15 @@ class Hra:
         
     def update(self):
         self.casovanieModulo +=1
-        self.pocetTickov += 1 
+        self.pocetTickov += 1
+        scale = nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
         
         
         zlozitostVKroku = time.time()
         modulo10 = self.casovanieModulo % 10
         modulo100 = self.casovanieModulo % 100
+        
+        
         
         self.tpsCount += 1
         if time.time() > self.timeUP:
@@ -351,6 +381,8 @@ class Hra:
             
         self.riadMobky(modulo100,modulo10)
         
+        for npc in self.mobkyNahanajuceHraca:
+            npc.cinnostNahanaHraca(modulo100)
             
             
 
@@ -363,7 +395,7 @@ class Hra:
         
         logging.info("hrac-eventy")
         self.hrac.eventy()
-        self.skontrolujAktualnostZdravia()
+        self.skontrolujAktualnostZdravia(scale)
         
         #iba raz za cas napr raz za 2 sec mozno viac
     def updateHluku(self):
@@ -398,7 +430,10 @@ class Hra:
         
         if modulo100 == 75:
             self.updateHluku()
-
+        
+        if modulo100 == 96:
+            for postava in self.mrtvePostavy:
+                postava.cekniVymazaniePostavy()
 
         if modulo10 == 7:
             if self.casNextUpdateStavNpc < time.time():
@@ -451,119 +486,4 @@ class Hra:
     
     
         
-        
-class test(pygame.sprite.Sprite):
-    def __init__(self, hra,xPos,yPos):
-        self.hra = hra
-        pygame.sprite.Sprite.__init__(self, self.hra.polickaSpritesTEST)
-        self.image = pygame.Surface((64,64))
-        #self.image.set_colorkey((255,0,255))
-        #self.image = image
-        #self.image.convert()
-        self.image.fill((255,0,255))
-        #self.image.blit(image,(0,0))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = xPos
-        self.rect.y = yPos
-        
-        
-        
-class test2(pygame.sprite.Sprite):
-    def __init__(self, hra,xPos,yPos):
-        self.hra = hra
-        pygame.sprite.Sprite.__init__(self, self.hra.layeredSprites)
-        #self.image = pygame.Surface((64,64), pygame.SRCALPHA )
-        #self.image.set_colorkey((255,0,255))
-        #self.zdroj = image
-        self.image = pygame.Surface((64,64), pygame.SRCALPHA)
-        #self.image.blit(self.zdroj,(0,0))                         
-        #self.image.convert()
-        self.image.fill((255,0,255))
-        #self.image.blit(image,(0,0))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = xPos
-        self.rect.y = yPos
-        
-    def update(self):
-        self.rect = self.rect.inflate(1,1)
-        self.image = pygame.transform.scale(self.zdroj,(self.rect.width,self.rect.height))
-            
-        
-
-
-
-
-
-
-'''
-class Hra:
-    # The Game object will initialize the game, run the game loop,
-    # and display start/end screens
-
-    def __init__(self):
-
-        pg.init()
-        # initialize sound - uncomment if you're using sound
-        # pygame.mixer.init()
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-        pg.display.set_caption(TITLE)
-        # start the clock
-        self.clock = pg.time.Clock()
-        self.load_data()
-        self.running = True
-
-    def new(self):
-        # initialize all your variables and do all the setup for a new game
-        self.run()
-
-    def load_data(self):
-        # load all your assets (sounds, images, etc.)
-        pass
-
-    def run(self):
-        # The Game loop - set self.running to False to end the game
-        self.playing = True
-        while self.playing:
-            self.clock.tick(FPS)
-            self.events()
-            self.update()
-            self.draw()
-
-    def update(self):
-        # the update part of the game loop
-        pass
-
-    def draw(self):
-        # draw everything to the screen
-        self.screen.fill(BGCOLOR)
-        pg.display.flip()
-
-    def events(self):
-        # catch all events here
-        for event in pg.event.get():
-            # this one checks for the window being closed
-            if event.type == pg.QUIT:
-                if self.playing:
-                    self.playing = False
-                self.running = False
-            # add any other events here (keys, mouse, etc.)
-
-    def show_start_screen(self):
-        # show the start screen
-        pass
-
-    def show_go_screen(self):
-        # show the game over screen
-        pass
-
-# create the game object
-g = Game()
-g.show_start_screen()
-while g.running:
-    g.new()
-    g.show_go_screen()
-
-pg.quit()
-'''
+ 
