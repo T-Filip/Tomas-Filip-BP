@@ -16,7 +16,7 @@ import Predmety.tazenie as tazenie
 
 class CeloPolObj():
     def __init__(self,policko,id):
-        self.random = random.Random(policko.noise)
+        self.random = random.Random(policko.noise[1])
         self.id = id
         self.policko = policko
         self.inf = infObjekty.INF_OBJ_MAPA[self.id]
@@ -57,14 +57,13 @@ class CeloPolObj():
              #   print()
               #  for y in range (4):
                #     print(" " + str(indexyTvaru[y][x]),end='')
-            self.vytvorObjekty(indexyTvaru)
-        else:
-           self.zmenStavPolicka()#policko je obklopene rovnakym typom celopol obj
-           print("NONE")
+               self.vytvorObjekty(indexyTvaru)
+        #else:
+         #  self.zmenStavPolicka()#policko je obklopene rovnakym typom celopol obj
+
            
-    def zmenStavPolicka(self):
-        #ak vsade dookola je rovnake celo polickove objekty tak sa len zmeni textura na hlboku vodu
-        print("celoPolObj zmenStavPolicka doimplementovat")
+    #def zmenStavPolicka(self):
+    #    pass
                 
                 
     def h0(self):
@@ -228,6 +227,9 @@ class CeloPolObj():
             for y in range (0,4):   
                 obj = self.vytvorObjekt(x,y,indexy)
                 obj.vlozDo(self.zoznamObj)
+                
+
+                
                     
                     
     def vytvorObjekt(self,x,y,indexy):
@@ -240,7 +242,9 @@ class CeloPolObj():
         return self.id
         
         
-   
+    def kill(self):
+        for obj in self.zoznamObj:
+            obj.kill()
         
         
         
@@ -260,7 +264,7 @@ class CeloPolObjPoz(CeloPolObj):
         if indexy[x][y]< 0:
             surf = pygame.Surface(self.inf.infObjekty[0][0].img.get_size(), pygame.SRCALPHA)
             rect = pygame.Rect(0,0,surf.get_width(),surf.get_height())
-            infobj = infObjekty.InfObj(surf,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.4)
+            infobj = infObjekty.InfObj(surf,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.4)
             return objMapa.ObjMapaVlastInfPozadie(self.policko, self.id,(x*16,y*16),infobj,self.inf.pozadie)#pozadie sa nedava - kreslene v plnej velkosti ako default
         else:
             #podobne ako v rodicovy akurat sa vytvara potomok ObjMapy s fukciou pre kreslenie pozadia
@@ -270,7 +274,8 @@ class CeloPolObjPoz(CeloPolObj):
                                                           self.inf.pozadie,
                                                              self.inf.rectPozadia[indexy[x][y]][index])# rectPozadia predstavuje pole viacerych rect 
 
-    
+
+            
     
     
     

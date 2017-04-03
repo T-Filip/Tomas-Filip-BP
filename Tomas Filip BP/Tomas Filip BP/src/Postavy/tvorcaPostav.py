@@ -68,6 +68,10 @@ def vytvorPostavu(jeToHrac, paSmerPostavy,farbaTela,typPostavy,cisloTvare,cisloV
     
     return postavaMala
 
+def upravSpecialNaKrv(textura):
+    num = random.randint(nastavenia.CAP_KRVAVE_SKVRNY[0],nastavenia.CAP_KRVAVE_SKVRNY[1])
+    textura.blit(textury.KRVAVE_SKVRNY,(0,0),(64*num,0,64,64))
+
 
         
 def vytvorPostavuRandom(jeToHrac,postava):

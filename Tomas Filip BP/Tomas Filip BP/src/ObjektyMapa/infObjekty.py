@@ -60,10 +60,16 @@ class Inf():
 
 class InfPozivatelne(Inf):
     def __init__(self,metoda, imgPredmet = None, stackKapacita = 64):
-        self.zjedzPredmet = metoda
+        self.zjedzPredmetMetoda = metoda
+        super().__init__(imgPredmet, stackKapacita)
         
     def zjedzPredmet(self,hrac):
-        self.zjedzPredmet(hrac)
+        self.zjedzPredmetMetoda(hrac)
+
+
+#def metoda na zjedenie predmetu - mimo triedy koli predpokladu potreby roznym podobnych metod    
+def zvysHpHracovi(hrac):
+    hrac.zvysZdravie(25)
     
     
     
@@ -129,8 +135,7 @@ class InfObj(InfNaMape):
         
     def dajImgNaInitPredmet(self):
         return self.img
-        
-        
+  
         
     def initImg(self,img):
         self.img = img
@@ -321,7 +326,7 @@ def nacitajTexturyObjMapa():
     for x in range (0,6):
         for y in range (0,3):
             texturaStromov[id].blit(stromy,(0,0),(48*x,64*y,48,64))
-            vlozInf(InfObjScale(texturaStromov[id],rectStromov,0.5,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]]))
+            vlozInf(InfObjScale(texturaStromov[id],rectStromov,0.5,EnumTypMaterialu.DREVO,250,[tazenie.dropStrom,[10,4,1]]))
             id+=1
 
 
@@ -331,9 +336,10 @@ def nacitajTexturyObjMapa():
     kvietky = pygame.image.load('img/objektyMapa/kvietky.png').convert_alpha()
     rect = pygame.Rect(4,10,8,6)
     texturaKvietkov = [pygame.Surface((16,16),pygame.SRCALPHA) for i in range (0,6)]
+    metody = [tazenie.dropKvietokBiom0,tazenie.dropKvietokBiom1,tazenie.dropKvietokBiom2,tazenie.dropKvietokBiom3,tazenie.dropKvietokBiom4,tazenie.dropKvietokBiom5]
     for y in range (0,6):
         texturaKvietkov[y].blit(kvietky,(0,0),(0,16*y,16,16))
-        vlozInf(InfObj(texturaKvietkov[y],EnumTypMaterialu.KVIETOK,20,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.95))
+        vlozInf(InfObj(texturaKvietkov[y],EnumTypMaterialu.KVIETOK,20,[metody[y],[10,4,1]],rect,0.95))
 
     
 
@@ -344,7 +350,7 @@ def nacitajTexturyObjMapa():
     #zacinaju sutre
      
     nextID = 100
-    
+    metody = [[tazenie.dropVelkyKamenTyp0,tazenie.dropVelkyKamenTyp1],[tazenie.dropStrednyKamenTyp0,tazenie.dropStrednyKamenTyp1],[tazenie.dropMalyKamenTyp0,tazenie.dropMalyKamenTyp1]]
     for druh in range(0,2):
     
         posun = 76*druh
@@ -352,71 +358,71 @@ def nacitajTexturyObjMapa():
         rect = pygame.Rect(6,20,50,23)
         surf = pygame.Surface((63,45),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(0,30+posun,63,45))
-        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[tazenie.dropVelkyKamen,[10,4,1]]))
+        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[metody[0][druh],[10,4,1]]))
         
         rect = pygame.Rect(10,10,45,30)
         surf = pygame.Surface((60,43),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(67,26+posun,60,43))
-        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[tazenie.dropVelkyKamen,[10,4,1]]))
+        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[metody[0][druh],[10,4,1]]))
         
         rect = pygame.Rect(8,30,18,27)
         surf = pygame.Surface((29,49),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(128,26+posun,29,49))
-        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[tazenie.dropVelkyKamen,[10,4,1]]))
+        vlozInf(InfObjScale(surf,rect,0,EnumTypMaterialu.KAMEN,300,[metody[0][druh],[10,4,1]]))
         
         #stredna1
         rect = pygame.Rect(3,13,25,10)
         surf = pygame.Surface((30,30),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(1,1+posun,30,30))
-        vlozInf(InfObjScale(surf,rect,0.2,EnumTypMaterialu.KAMEN,250,[tazenie.dropVelkyKamen,[10,4,1]]))
+        vlozInf(InfObjScale(surf,rect,0.2,EnumTypMaterialu.KAMEN,250,[metody[1][druh],[10,4,1]]))
         #stred 2
         
         rect = pygame.Rect(6,11,23,12)
         surf = pygame.Surface((33,24),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(32,0+posun,33,24))
-        vlozInf(InfObjScale(surf,rect,0.35,EnumTypMaterialu.KAMEN,200,[tazenie.dropVelkyKamen,[10,4,1]]))
+        vlozInf(InfObjScale(surf,rect,0.35,EnumTypMaterialu.KAMEN,200,[metody[1][druh],[10,4,1]]))
         
         #male
         rect = pygame.Rect(2,5,13,7)
         surf = pygame.Surface((17,13),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(64,0+posun,17,13))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,160,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.65))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,160,[metody[2][druh],[10,4,1]],rect,0.65))
         
         rect = pygame.Rect(1,3,9,5)
         surf = pygame.Surface((13,8),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(64,13+posun,13,8))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,140,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,140,[metody[2][druh],[10,4,1]],rect,0.75))
         
         rect = pygame.Rect(5,3,6,5)
         surf = pygame.Surface((12,9),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(80,0+posun,12,9))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,140,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,140,[metody[2][druh],[10,4,1]],rect,0.75))
 
         
         rect = pygame.Rect(2,3,7,6)
         surf = pygame.Surface((11,9),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(80,8+posun,11,9))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,150,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.7))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,150,[metody[2][druh],[10,4,1]],rect,0.7))
         
         rect = pygame.Rect(2,4,9,5)
         surf = pygame.Surface((13,9),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(91,0+posun,13,9))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,160,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.65))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,160,[metody[2][druh],[10,4,1]],rect,0.65))
         
         rect = pygame.Rect(3,2,5,5)
         surf = pygame.Surface((10,7),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(90,8+posun,10,7))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,130,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.9))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,130,[metody[2][druh],[10,4,1]],rect,0.9))
         
         rect = pygame.Rect(1,4,9,5)
         surf = pygame.Surface((13,9),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(76,16+posun,13,9))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,115,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.8))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,115,[metody[2][druh],[10,4,1]],rect,0.8))
         
         rect = pygame.Rect(2,1,6,4)
         surf = pygame.Surface((8,6),pygame.SRCALPHA)
         surf.blit(sutre,(0,0),(89,15+posun,8,6))
-        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,100,[tazenie.dropVelkyKamen,[10,4,1]],rect,1))
+        vlozInf(InfObj(surf,EnumTypMaterialu.KAMEN,100,[metody[2][druh],[10,4,1]],rect,1))
     
     
 
@@ -471,76 +477,76 @@ def nacitajTexturyObjMapa():
     #ROHVODA
     rect = pygame.Rect(10,10,6,6)
     for i in range (0,pocetTexturVType[0]):
-        zoznamInf[0][i] = InfObj(texturyCasti[0][i],EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75)
+        zoznamInf[0][i] = InfObj(texturyCasti[0][i],EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.75)
         zozRect[0][i] = [pygame.Rect(10,10,6,6)]
       
     rect = pygame.Rect(0,10,6,6)
     for i in range (0,pocetTexturVType[0]):
         text = pygame.transform.flip(texturyCasti[0][i],True,False)
-        zoznamInf[1][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75)
+        zoznamInf[1][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.75)
         zozRect[1][i] = [pygame.Rect(0,10,6,6)]
       
     rect = pygame.Rect(10,0,6,6)  
     for i in range (0,pocetTexturVType[0]):
         text = pygame.transform.flip(texturyCasti[0][i],False,True)
-        zoznamInf[2][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75)
+        zoznamInf[2][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.75)
         zozRect[2][i] = [pygame.Rect(10,0,6,6) ]
         
     rect = pygame.Rect(0,0,6,6)
     for i in range (0,pocetTexturVType[0]):
         text = pygame.transform.flip(texturyCasti[0][i],True,True)
-        zoznamInf[3][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.75)
+        zoznamInf[3][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.75)
         zozRect[3][i] = [pygame.Rect(0,0,6,6) ]
         
         
     #ROVNOVODA
     rect = pygame.Rect(0,10,16,6)
     for i in range (0,pocetTexturVType[1]):
-        zoznamInf[4][i] = InfObj(texturyCasti[1][i],EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.6)
+        zoznamInf[4][i] = InfObj(texturyCasti[1][i],EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[4][i] = [pygame.Rect(0,10,16,6) ]
         
     rect = pygame.Rect(10,0,6,16)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],90)
-        zoznamInf[5][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.6)
+        zoznamInf[5][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[5][i] = [pygame.Rect(10,0,6,16) ]
     
     rect = pygame.Rect(0,0,16,6)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],270)
-        zoznamInf[6][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.6)
+        zoznamInf[6][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[6][i] = [pygame.Rect(0,0,16,6) ]
     
     rect = pygame.Rect(0,0,6,16)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],180)
-        zoznamInf[7][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],rect,0.6)
+        zoznamInf[7][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[7][i] = [pygame.Rect(0,0,6,16)]
         
        
     #ROHZEM 
     for i in range (0,pocetTexturVType[2]):
-        zoznamInf[8][i] = InfObj(texturyCasti[2][i],EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],None,0.6)
+        zoznamInf[8][i] = InfObj(texturyCasti[2][i],EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
         zozRect[8][i] = [pygame.Rect(0,0,16,6),pygame.Rect(0,6,6,10),pygame.Rect(6,6,5,5) ]
         
 
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],90)
-        zoznamInf[9][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],None,0.6)
+        zoznamInf[9][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
         zozRect[9][i] = [pygame.Rect(0,10,16,6),pygame.Rect(10,0,6,10),pygame.Rect(5,6,5,5) ]
         #zozRect[9][i] = [pygame.Rect(0,0,16,6),pygame.Rect(10,6,6,10),pygame.Rect(5,6,5,5) ]
     
 
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],270)
-        zoznamInf[10][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],None,0.6)
+        zoznamInf[10][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
         #zozRect[10][i] = [pygame.Rect(0,10,16,6),pygame.Rect(10,0,6,10),pygame.Rect(5,6,5,5) ]
         zozRect[10][i] = [pygame.Rect(0,0,16,6),pygame.Rect(10,6,6,10),pygame.Rect(5,6,5,5) ]
     
 
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],180)
-        zoznamInf[11][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],None,0.6)
+        zoznamInf[11][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
         zozRect[11][i] = [pygame.Rect(0,10,16,6),pygame.Rect(10,0,6,10),pygame.Rect(5,5,5,5) ]
         
     
@@ -549,7 +555,7 @@ def nacitajTexturyObjMapa():
     
         
     
-    celoPolVoda = InfObjCelPolPozadie(EnumTypMaterialu.VODA,500,[tazenie.dropVelkyKamen,[10,4,1]],zoznamInf,hlbokaVoda,voda,zozRect)
+    celoPolVoda = InfObjCelPolPozadie(EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],zoznamInf,hlbokaVoda,voda,zozRect)
     vlozInf(celoPolVoda)
     
     
@@ -576,6 +582,7 @@ def nacitajTexturyObjMapa():
     vlozInf(Inf(predmText,64))
     
     
+    
             #---------------SUTRE--------------
     nextID = 2100
     predmText = pygame.Surface((64,64),pygame.SRCALPHA)
@@ -590,8 +597,28 @@ def nacitajTexturyObjMapa():
     predmText.blit(predmety,(0,0),(256,64,64,64))
     vlozInf(Inf(predmText,64))
     
-
-
+    
+    #----------------------KVIETKY PREDMETY -----------
+    nextID = 2200
+    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+    predmText.blit(predmety,(0,0),(256,0,64,64))
+    vlozInf(Inf(predmText,64))
+    
+    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+    predmText.blit(predmety,(0,0),(320,0,64,64))
+    vlozInf(Inf(predmText,64))
+    
+    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+    predmText.blit(predmety,(0,0),(384,0,64,64))
+    vlozInf(Inf(predmText,64))
+    
+    
+    #----------------------POZIVATINY
+    nextID = 2300
+    #hp potion
+    predmText = pygame.Surface((64,64),pygame.SRCALPHA)
+    predmText.blit(predmety,(0,0),(448,0,64,64))
+    vlozInf(InfPozivatelne(zvysHpHracovi,predmText,64))
 
 
 
@@ -660,7 +687,7 @@ def nacitajTexturyObjMapa():
     #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
     
     rect = [pygame.Rect(1,28,50,8),pygame.Rect(6,10,6,50)]
-    vlozInf(InfObjScaleViacImg([vpravo,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,metodyPredmety.zmenSmerDveri))
+    vlozInf(InfObjScaleViacImg([vpravo,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.passMet,[10,4,1]],None,64,None,metodyPredmety.zmenSmerDveri))
     
     
     #----------------------BARIKADA # 4001
@@ -673,7 +700,7 @@ def nacitajTexturyObjMapa():
     #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
     
     rect = [pygame.Rect(5,15,21,52),pygame.Rect(7,6,52,21)]
-    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.passMet,[10,4,1]],None,64,None,None))
     
     
     #dreveny mur 4002
@@ -686,7 +713,7 @@ def nacitajTexturyObjMapa():
     #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
     
     rect = [pygame.Rect(1,28,10,51),pygame.Rect(0,36,60,12)]
-    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.passMet,[10,4,1]],None,64,None,None))
     
         #kamenny mur 4003 ---------------------------------------------------------------------------------------
     vertikalne = pygame.Surface((18,80),pygame.SRCALPHA)
@@ -698,7 +725,7 @@ def nacitajTexturyObjMapa():
     #(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
     
     rect = [pygame.Rect(0,27,18,53),pygame.Rect(0,27,60,17)]
-    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.KAMEN,250,[tazenie.dropVelkyKamen,[10,4,1]],None,64,None,None))
+    vlozInf(InfObjScaleViacImg([vertikalne,horizontalne],rect,0,EnumTypMaterialu.KAMEN,250,[tazenie.passMet,[10,4,1]],None,64,None,None))
     
     
     

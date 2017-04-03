@@ -312,8 +312,11 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.smerPohybu[0] += smer[1]
         
     def udelPoskodenie(self,poskodenie):
+        if poskodenie <= 0:
+            return 
         self.zdravie -= poskodenie
         if self.zdravie <= 0:
+            self.zdravie = 0
             self.jeMrtvy = True
             self.upravSpecialMrtvy()
             self.smer = SmerPostavy.SPECIAL
@@ -325,10 +328,13 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             self.vydavanyHluk = 0
             self.hra.zrusNahananie(self)
             
+    def zvysZdravie(self,oKolko):
+        self.zdravie += oKolko
+        if self.zdravie > self.maxZdravie:
+            self.zdravie = self.maxZdravie
             
     def upravSpecialMrtvy(self):
-        #upravi texturu postavy special na mrtvu postavu
-        pass#doimplementovat!!!!!!!!!!!
+        tvorcaPostav.upravSpecialNaKrv(self.imageZaloha[3])#len ju upravy bez toho aby robil kopia a pod... kazda postava ma originalne textury
         
     def cekniVymazaniePostavy(self):
         if self.jeMrtvy and self.pocetTickovVymazania < self.hra.dajPocetTickov():

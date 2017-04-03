@@ -46,6 +46,9 @@ class ObjMapa(pygame.sprite.Sprite):
         self.initSprite()
         self.initObjOblast()
         
+    def dajInf(self):
+        return self.inf
+        
     def initInf(self):
         self.inf = infObjekty.INF_OBJ_MAPA[self.id]
         if not isinstance(self.inf, infObjekty.InfObj):

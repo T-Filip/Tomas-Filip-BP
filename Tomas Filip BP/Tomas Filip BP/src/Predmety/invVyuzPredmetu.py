@@ -9,7 +9,8 @@ import pygame
 import math
 from ObjektyMapa import objMapa
 import logging
-from ObjektyMapa.infObjekty import InfObjScale, InfNaMape, InfNastroje
+from ObjektyMapa.infObjekty import InfObjScale, InfNaMape, InfNastroje,\
+    InfPozivatelne
 from Predmety.enumTypMaterialu import EnumTypMaterialu
 import random
 
@@ -242,22 +243,31 @@ class InvVyuzPredmetu(inventar.Inventar):
         if self.rightClickNaObj():
             return # ak sa vykona akcia na nejaky objekt uz sa dalen nestavia 
         else:
-            self.stavaj()
+            self.vyuziPredmet()
         
     def dajCisloTextury(self):
         return self.cisloTexturyOznPredm
         
         
-    def stavaj(self):
+    def vyuziPredmet(self):
         
         if self.jeNacerveno:
             return
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
-        if predmet == None or not isinstance(predmet.dajInf(),InfNaMape):
+        if predmet == None:
             return
-        
-        
         infPredmetu = predmet.dajInf()
+        if isinstance(infPredmetu, InfPozivatelne):
+            infPredmetu.zjedzPredmet(self.hrac)
+            predmet.zmenPocetKusovO(-1)
+            return
+            
+        if not isinstance(infPredmetu,InfNaMape):
+            return
+            #pretoze dalej sa uz zaoberam s pracou s predmetom ako keby to bol infNaMape - klasika ten predmet polozi
+        
+        
+        
         velkostTexObjektu = infPredmetu.dajImgPredm(self.cisloTexturyOznPredm).get_size()
 
         myskaNaMape = self.mapa.dajMyskuNaMape()
@@ -311,7 +321,7 @@ class InvVyuzPredmetu(inventar.Inventar):
             for obj in okolieMysky:
                 col = obj.dajRectTextOblastMapa().collidepoint(myskaNaMape)
                 if col: # ak trafil texturu objektu
-                    print(obj.dajRectTextOblastMapa())
+                    #print(obj.dajRectTextOblastMapa())
                     pocTick = self.hrac.dajHru().dajPocetTickov()
                     #print(pocTick)
                     #print(self.posledneTazenie)
@@ -320,7 +330,7 @@ class InvVyuzPredmetu(inventar.Inventar):
                     self.posledneTazenie = pocTick
                     if self.tazenyObjekt == obj:
                         self.casTazenia +=1
-                        if self.casTazenia >= tazenie.vypocitajDlzkuTazenia(obj, self.oznPredmet, self.hrac):
+                        if self.casTazenia >= tazenie.vypocitajDlzkuTazenia(obj, self.polePredmetov[self.oznacenyIndex].dajPredmet(), self.hrac):
                             obj.dajDrop(self.hrac)
                             obj.kill(True)
                         
@@ -349,12 +359,16 @@ class InvVyuzPredmetu(inventar.Inventar):
         #utoci hrac na postavu v parametri kedze mobky funguju inak ich combat je implementovany v triede npc
         #kvazi utok ale na predmety funguje trosku inak a metody na vypocitanie tazenia predmetov su v module tazenie
     def zautocNaPostavu(self,postava):
-        infPred = self.dajOznacenyPredmet().dajPredmet().dajInf()
-        if isinstance(infPred, InfNastroje):
-            vhodneNaMaterial = infPred.dajVhodneNaMaterial()
-            try:
-                koeficienPredmetu = vhodneNaMaterial[EnumTypMaterialu.MASO]
-            except:    
+        predmet = self.dajOznacenyPredmet().dajPredmet()
+        if predmet != None:
+            infPred = predmet.dajInf()
+            if isinstance(infPred, InfNastroje):
+                vhodneNaMaterial = self.dajOznacenyPredmet().dajPredmet().dajInf().dajVhodneNaMaterial()
+                try:
+                    koeficienPredmetu = vhodneNaMaterial[EnumTypMaterialu.MASO]
+                except:    
+                    koeficienPredmetu = 0
+            else:
                 koeficienPredmetu = 0
         else:
             koeficienPredmetu = 0

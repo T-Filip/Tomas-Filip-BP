@@ -148,8 +148,8 @@ class ManazerOkien:
                 logging.info("ManazerOkien-eventy")
                 self.events()
 
-            #else:
-            if True: # docasne koli debugovaniu
+            else:
+            #if True: # docasne koli debugovaniu
                 if self.oknoMenu != None:
                     logging.info("draw Menu okno")
                     self.oknoMenu.draw(self.screen)

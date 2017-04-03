@@ -13,7 +13,6 @@ import random
 
 
 
-
 '''
 gen = generator.SimplexNoise(300,0.4,123)
 print (gen.getNoise(1,1))

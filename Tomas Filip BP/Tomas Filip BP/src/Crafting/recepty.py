@@ -164,8 +164,8 @@ def initRecepty(hrac):
                                   EnumKwargsRecept.PREMENNA_NA_ODOMKNUTIE:zrucnostiHraca[EnumZrucnosti.VYROBA_STAVEBNYCH_OBJEKTOV],
                                   EnumKwargsRecept.HODNOTA_ODOMKNUTIE:60})
     
-    ZOZNAM_RECEPTOV[19] = Recept(19,[[1,1],[2,5]],[[3,2],[4,2]],"volne",True)
-    ZOZNAM_RECEPTOV[20] = Recept(20,[[1,1],[2,5]],[[3,2],[4,2]],"volne",True)
+    ZOZNAM_RECEPTOV[19] = Recept(19,[[2200,3],[2201,3],[2202,6]],[[2300,1]],"potion zdravia",True)
+    ZOZNAM_RECEPTOV[20] = Recept(20,[[2200,10],[2201,10],[2202,20]],[[2300,4]],"potion zdravia",True)
 
 def skontrolujOtvorenieReceptov(hrac):
     global ZoznamNeotvorenychReceptov

@@ -101,7 +101,7 @@ class Hra:
             
         self.aktivBlitObjMapa.draw(self.screen)
         self.updateHluku()
-        pygame.display.flip()
+        #pygame.display.flip()
         
         self.casNextUpdateStavNpc = 0
 
@@ -121,6 +121,9 @@ class Hra:
         
     def dajManazerOkien(self):
         return self.manazerOkien
+    
+    def dajMobkyNahanajuceHraca(self):
+        return self.mobkyNahanajuceHraca
         
     def dajPocetTickov(self):
         return self.pocetTickov
@@ -150,6 +153,10 @@ class Hra:
         self.sirkaHpBaru = sirka
         self.sirkaUkazovatelaZdravia = sirka
         self.updateUkazovatelZdravia(scale)
+        
+        posX = int(390*scale)
+        posY = int(610*scale)
+        self.poziciaTextHpBar = [posX+sirka/2 -22*scale,posY+2*scale]
         
     def skontrolujAktualnostZdravia(self,scale):
         #koli efektu - taktiez uz nebude nutne updatovat zdravie hracovi toto to skontroluje
@@ -308,6 +315,14 @@ class Hra:
         if self.sirkaUkazovatelaZdravia > 0:
             pygame.draw.polygon(screen,nastavenia.RED,self.umiestnenieHp)
         screen.blit(self.healthBar,(self.umiestnenieHp[0][0],self.umiestnenieHp[0][1]))
+        
+        #vykreslenie textu
+        zdravie = self.hrac.dajHp()
+        maxZdr = self.hrac.dajMaxHp()
+        font = textury.dajFont(16)
+        text = str(str(zdravie) + "/" + str(maxZdr))
+        textSurf = font.render(text, 10, nastavenia.YELLOW)
+        self.screen.blit(textSurf, self.poziciaTextHpBar)
         
     def zrusNahananie(self,postava):
         for mobka in self.mobkyNahanajuceHraca:

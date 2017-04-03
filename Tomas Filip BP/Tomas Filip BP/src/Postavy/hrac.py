@@ -79,6 +79,7 @@ class Hrac(postava.Postava):
         self.mapa = mapa
         self.inventarRychlyPristup.linkMapa(self.mapa)
         
+        
 
     
     def vlozPredmet(self,predmet):
@@ -120,7 +121,7 @@ class Hrac(postava.Postava):
     def update(self, *args):
         super().update(args)
         self.inventarRychlyPristup.update()
-        print(self.zdravie)
+        #print(self.zdravie)
         
 
 

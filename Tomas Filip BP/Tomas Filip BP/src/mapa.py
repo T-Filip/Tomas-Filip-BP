@@ -138,7 +138,7 @@ class Mapa:
         self.generatorBiom = [0 for x in range (0,6)]
         for b in range (0,6):
             self.generatorBiom[b] = generator.Generator(self.random.random())#*9223372036854775807
-        self.noiseGen = generator.Generator(self.random.random(),800,0.4)
+        self.noiseGen = [generator.Generator(self.random.random(),500,0.3),generator.Generator(self.random.random(),800,0.4),generator.Generator(self.random.random(),800,0.4)]
         
         self.generatorPreMobky = generator.Generator(self.random.random(),150,0.95)
         
@@ -483,8 +483,8 @@ class Mapa:
             noise[biom] = self.generatorBiom[biom].noise(x,y)
             
         index = self.najdiIndexNajvacsieho(noise)
-         
-        return policko.Policko(self,(x,y),self.noiseGen.noise(x, y),index)
+        noise = [self.noiseGen[0].noise(x, y),self.noiseGen[1].noise(x, y),self.noiseGen[2].noise(x, y)]
+        return policko.Policko(self,(x,y),noise,index)
     
     def najdiIndexNajvacsieho(self, list):
         index = 0

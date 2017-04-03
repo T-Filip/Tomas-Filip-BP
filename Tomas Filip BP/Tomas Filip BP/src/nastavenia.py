@@ -22,8 +22,8 @@ DEBUG = False
 
 
 
-MAP_SIZE_X = 25
-MAP_SIZE_Y = 15
+MAP_SIZE_X = 21
+MAP_SIZE_Y = 12
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -56,6 +56,7 @@ CAP_TVAR = [[0,1],[0,1]]#2d koli pohlaviam - kazde pohlavie moze mat inu tvar na
 CAP_VLASY = [[0,1],[0,1]]
 CAP_HLAVA = [0,2]
 CAP_TYP_POSTAVY = [0,2]
+CAP_KRVAVE_SKVRNY = [0,2]
 
 
 

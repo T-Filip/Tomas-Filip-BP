@@ -25,6 +25,10 @@ class Inventar():
     def vlozPredmet(self,predmet):
         pred = predmet
         pocKusovPred = pred.dajPocetKusov()
+        if pocKusovPred <= 0:
+            pred.kill()
+            return
+        
         for slot in self.sloty:
             if slot.predmet == None:
                 continue

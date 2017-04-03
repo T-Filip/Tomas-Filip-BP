@@ -49,7 +49,11 @@ class Npc(postava.Postava):
         
     def prestanNahanat(self,postava):
         if self.nahananaPostava == postava:
-            self.stavMobky = StavMobky.STOJI
+            self.hra.dajMobkyNahanajuceHraca().remove(self)
+            if random.random() <0.25:
+                self.stavMobky = StavMobky.STOJI
+            else:
+                self.stavMobky = StavMobky.PRECHADZA_SA
         
     def initGeneratoraPreChodenie(self):
         self.generatorPohybu = GeneratorNescalovany(random.random(),self.a,self.b)
@@ -231,6 +235,8 @@ class Npc(postava.Postava):
             #ak ma na dohlad hraca prepne stav na nahananie
     def cekniHraca(self):
         hrac = self.hra.dajHraca()
+        if hrac.jePostavaMrtva():
+            return # hrac je sice odstraneny zo vsetkych dolezitych skupin no v atribute ostava ...
         vzdialenost = self.dajVzdialenostOdPostavy(hrac)
         objHrac = hrac.dajObjOblastMapa()
         #print("CEKUJEM HRACA")
