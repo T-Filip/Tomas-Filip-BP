@@ -125,10 +125,10 @@ class ManazerOkien:
         
         
         self.niejeUkoncena = True
-        timeLastTick = time.time()
-        timeNextTick =  timeLastTick + 0.01 # 100 tickov za sekundu
         pocDrawPoUpdate = 0
-        nextTick = 1/100
+        nextTick = 1/nastavenia.RYCHLOST_HRY
+        timeLastTick = time.time()
+        timeNextTick =  timeLastTick + nextTick
         #gc.collect(0)
         while self.niejeUkoncena:
             if time.time() > timeNextTick:
@@ -148,8 +148,8 @@ class ManazerOkien:
                 logging.info("ManazerOkien-eventy")
                 self.events()
 
-            else:
-            #if True: # docasne koli debugovaniu
+            #else:
+            if True: # docasne koli debugovaniu
                 if self.oknoMenu != None:
                     logging.info("draw Menu okno")
                     self.oknoMenu.draw(self.screen)

@@ -18,8 +18,7 @@ DEBUG = False
 
 #VYPIS = True
 
-
-
+RYCHLOST_HRY = 80
 
 
 MAP_SIZE_X = 21

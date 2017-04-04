@@ -112,6 +112,24 @@ def znizVyskuMapy(self):
     if nastavenia.MAP_SIZE_Y < 8:
         nastavenia.MAP_SIZE_Y = 8
     zmenTextVyskyMapy(self.menu.tlacidloVyskaMapy)
+    
+def zmenTextRychlostHry(self):
+    self.text = "Rychlost " + str(nastavenia.RYCHLOST_HRY)
+    self.updateText()
+    self.prekresli()
+    
+def zvysRychlostHry(self):
+    nastavenia.RYCHLOST_HRY += 10
+    if nastavenia.RYCHLOST_HRY > 160:
+        nastavenia.RYCHLOST_HRY = 160
+    zmenTextRychlostHry(self.menu.tlacidloRychlostHry)
+
+def znizRychlostHry(self):
+    nastavenia.RYCHLOST_HRY -= 10
+    if nastavenia.RYCHLOST_HRY < 40:
+        nastavenia.RYCHLOST_HRY = 40
+    zmenTextRychlostHry(self.menu.tlacidloRychlostHry)
+    
         
 
 
@@ -186,6 +204,12 @@ class UvodneNastavenia:
         self.tlacidloVyskaMapy.click()
         objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,120,znizVyskuMapy)
         objMenu.Tlacidlo(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,120,zvysVyskuMapy)
+        
+        #tlacidla rychlost hry
+        self.tlacidloRychlostHry = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,70,zmenTextRychlostHry)
+        self.tlacidloRychlostHry.click()
+        objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,70,znizRychlostHry)
+        objMenu.Tlacidlo(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275,70,zvysRychlostHry)
 
     def dajGroup(self):
         return self.tlacidla_sprites

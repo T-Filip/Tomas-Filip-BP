@@ -45,6 +45,16 @@ class Mapa:
         self.hrac = hra.hrac
         self.thread = Thread()
         
+        
+        #atributy ktore uchovavaju stav nacitania a pomocne informacie pre nacitanie
+        self.stavNacitania = 0
+        self.smerNacitania = 0
+        self.prebiehaNacitavanie = False
+        self.yStage2 = 0
+        self.pomocnaHrana = 0
+
+        
+        
         logging.info("init pola mapy")
         self.mapa = [[0 for xPos in range(nastavenia.MAP_SIZE_Y)] for yPos in range(nastavenia.MAP_SIZE_X)] 
         self.topLeftMapa = [0,0]
@@ -81,8 +91,8 @@ class Mapa:
 
         nacitanaMapa = self.dajNacitanuMapu()
         rectTopLeftPolicka = self.dajTopLeftMin2Policko().dajRect()
-        relatMysX= pos[0] - rectTopLeftPolicka.x + rectTopLeftPolicka.width 
-        relatMysY= pos[1] - rectTopLeftPolicka.y + rectTopLeftPolicka.height 
+        relatMysX= pos[0] - rectTopLeftPolicka.x + rectTopLeftPolicka.width*2
+        relatMysY= pos[1] - rectTopLeftPolicka.y + rectTopLeftPolicka.height*2
 
         relatMysX = relatMysX/scale
         relatMysY = relatMysY/scale
@@ -121,9 +131,11 @@ class Mapa:
 
     def dajTopLeftMin2Policko(self):
         sur = self.mapa[self.topLeftMapa[0]][self.topLeftMapa[1]].dajSuradnice()
+        print("suradnice top left mapa :" + str(self.topLeftMapa))
+        print("suradnice top left mapa policko coord:" + str(sur))
         surRoh = [0,0]
-        surRoh[0] = sur[0] + 1
-        surRoh[1] = sur[1] + 1
+        surRoh[0] = sur[0] + 2
+        surRoh[1] = sur[1] + 2
         return self.dajPolicko(surRoh)
 
         
@@ -173,45 +185,58 @@ class Mapa:
         #hracy =hrac.rectTextOblastMapa.centery
         #mapay = self.nacitanaMapa.centery 
         
-        rozdiel = hrac.rectTextOblastMapa.centerx - self.nacitanaMapa.centerx 
         
-        i = 0
-        if rozdiel > 32: 
-            i += 1
-            logging.info("Mapa-nacitajPolicka Vpravo")
-            hrac.suradnice[0]+=1
-            #if not self.thread.isAlive():
-            #    self.thread=Thread(target = self.nacitajPolickaVpravo)
-            #    self.thread.start()
-            self.nacitajPolickaVpravo()
+        if self.prebiehaNacitavanie:
+            print("A")
+            if self.smerNacitania == 3:
+                self.nacitajPolickaHorePostupne()
+            
+        else:
+            print("B")
+            rozdiel = hrac.rectTextOblastMapa.centerx - self.nacitanaMapa.centerx 
+            i = 0
+            if rozdiel > 32: 
+                i += 1
+                logging.info("Mapa-nacitajPolicka Vpravo")
+                hrac.suradnice[0]+=1
+                #if not self.thread.isAlive():
+                #    self.thread=Thread(target = self.nacitajPolickaVpravo)
+                #    self.thread.start()
+                self.nacitajPolickaVpravo()
+                    
+            elif rozdiel < -32:
+                logging.info("Mapa-nacitajPolicka VLavo")
+                hrac.suradnice[0]-=1
+                #if not self.thread.isAlive():
+                #    self.thread=Thread(target = self.nacitajPolickaVlavo)
+                #    self.thread.start()
+                self.nacitajPolickaVlavo()
+    
                 
-        elif rozdiel < -32:
-            logging.info("Mapa-nacitajPolicka VLavo")
-            hrac.suradnice[0]-=1
-            #if not self.thread.isAlive():
-            #    self.thread=Thread(target = self.nacitajPolickaVlavo)
-            #    self.thread.start()
-            self.nacitajPolickaVlavo()
+            rozdiel2 = hrac.rectTextOblastMapa.centery - self.nacitanaMapa.centery 
+            if rozdiel2 > 32:
+                logging.info("Mapa-nacitajPolicka Dole")
+                hrac.suradnice[1]+=1
+                #if not self.thread.isAlive():
+                #    self.thread=Thread(target = self.nacitajPolickaDole)
+                #    self.thread.start()
+                self.nacitajPolickaDole()
+    
+    
+                
+            elif rozdiel2 < -32:
+                logging.info("Mapa-nacitajPolicka Hore")
+                hrac.suradnice[1]-=1
+                #if not self.thread.isAlive():
+                #    self.thread=Thread(target = self.nacitajPolickaHore)
+                #    self.thread.start()
+                
+                #self.nacitajPolickaHore()
+                self.nacitajPolickaHoreInit()
+                self.nacitajPolickaHorePostupne()
+                #self.nacitajPolickaHorePostupne()
+                
 
-            
-        rozdiel2 = hrac.rectTextOblastMapa.centery - self.nacitanaMapa.centery 
-        if rozdiel2 > 32:
-            logging.info("Mapa-nacitajPolicka Dole")
-            hrac.suradnice[1]+=1
-            #if not self.thread.isAlive():
-            #    self.thread=Thread(target = self.nacitajPolickaDole)
-            #    self.thread.start()
-            self.nacitajPolickaDole()
-
-
-            
-        elif rozdiel2 < -32:
-            logging.info("Mapa-nacitajPolicka Hore")
-            hrac.suradnice[1]-=1
-            #if not self.thread.isAlive():
-            #    self.thread=Thread(target = self.nacitajPolickaHore)
-            #    self.thread.start()
-            self.nacitajPolickaHore()
 
 
 
@@ -285,8 +310,79 @@ class Mapa:
             
         self.nacitanaMapa = self.nacitanaMapa.move(0,64)
  
+    def nacitajPolickaHoreInit(self):
+        self.yStage2 = self.topLeftMapa[1]
+        self.prebiehaNacitavanie = True
+        self.topLeftMapa[1] -= 1
+        self.topLeftCoord[1] -=1
+        self.yCoord = self.topLeftCoord[1]
+        self.xCoord = self.topLeftCoord[0]
+        if self.topLeftMapa[1] < 0:
+            #nastavenie na dol ak by bola mimo pole
+            self.topLeftMapa[1] = nastavenia.MAP_SIZE_Y-1
             
+        self.indexNacitania = self.topLeftMapa[0]
+        self.stavNacitania = 0
+        self.smerNacitania = 3
 
+    def nacitajPolickaHorePostupne(self):
+        print(self.indexNacitania)
+        if self.stavNacitania == 0:
+            
+            
+            if self.indexNacitania >= nastavenia.MAP_SIZE_X:
+                self.indexNacitania = 0
+                self.stavNacitania = 1
+            else:
+                self.nacitajPolicko(self.indexNacitania,self.topLeftMapa[1])
+                self.indexNacitania += 1
+                self.xCoord += 1
+        elif self.stavNacitania == 1:
+            if self.indexNacitania >= self.topLeftMapa[0]:
+                self.indexNacitania = self.topLeftMapa[0]+1
+                self.stavNacitania = 2
+                self.pomocnaHrana = nastavenia.MAP_SIZE_X
+                if self.topLeftMapa[0] == 0:
+                    self.pomocnaHrana -= 1
+                    print("AAAA")
+                    print(self.indexNacitania)
+                    print(self.pomocnaHrana)
+            else:
+                self.nacitajPolicko(self.indexNacitania,self.topLeftMapa[1])
+                self.indexNacitania += 1
+                self.xCoord +=1
+        
+                    
+        elif self.stavNacitania == 2:
+            
+            if self.indexNacitania >= self.pomocnaHrana:
+                self.indexNacitania = 0
+                self.stavNacitania = 3
+            else:
+                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                self.mapa[self.indexNacitania][self.yStage2].initStage2() 
+                self.indexNacitania += 1
+
+        else:
+            
+            if self.indexNacitania >= self.topLeftMapa[0]-1:
+                self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
+                self.prebiehaNacitavanie = False
+            else:
+                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                self.mapa[self.indexNacitania][self.yStage2].initStage2() 
+                self.indexNacitania += 1
+                
+                
+                
+                
+    #operacia ktora sa casto opakuje na roznych miestach 
+    #koli tomu ze to prebieha postupne mnozstvo udajov sa uklada do pamate triedy preto netreba parametre
+    def nacitajPolicko(self,xPole,yPole):
+        self.mapa[xPole][yPole].uloz()
+        self.mapa[xPole][yPole] = self.vytvorPolickoNa(self.xCoord ,self.yCoord)
+
+                
         
     def nacitajPolickaHore(self):
 
@@ -573,10 +669,11 @@ class Mapa:
             
     def dajPolicko(self, surNaMape ):
         sur = [surNaMape[0],surNaMape[1]]
+        print("suradnice top left coord:" + str(self.topLeftCoord))
         sur[0] -= self.topLeftCoord[0]
         sur[1] -= self.topLeftCoord[1]
-        if sur[0]>=nastavenia.MAP_SIZE_X or sur[1] >= nastavenia.MAP_SIZE_Y or sur[0]<0 or sur[1]<0:
-            #print("NONE")
+        if sur[0]<0 or sur[1]<0 or sur[0]>=nastavenia.MAP_SIZE_X or sur[1] >= nastavenia.MAP_SIZE_Y :
+            print("NONE")
             return None
         
         sur[0] += self.topLeftMapa[0]
