@@ -42,7 +42,7 @@ class Hra:
         self.postavyGroup = pygame.sprite.Group()
         self.mobky = pygame.sprite.Group()
         self.mobkyNahanajuceHraca = pygame.sprite.Group()
-        self.polickaSprites = pygame.sprite.RenderPlain()
+        self.polickaSprites = pygame.sprite.Group()
         self.mrtvePostavy = pygame.sprite.Group()
         
 
@@ -218,7 +218,7 @@ class Hra:
         
         
         
-        
+        self.postavyGroup.draw(self.screen)
         
        #iba ak sa hrac pohne? 
         self.mapa.updateKamera(self.hrac)

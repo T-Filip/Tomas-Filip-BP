@@ -48,6 +48,8 @@ class ManazerOkien:
             mode += pygame.FULLSCREEN + pygame.HWSURFACE
         elif nastavenia.borderIndex == 0:
             mode += pygame.NOFRAME
+            
+        
 
         logging.info("init screen")
         self.screen = pygame.display.set_mode((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]),
@@ -118,6 +120,13 @@ class ManazerOkien:
     def dajPressedMouse(self):
         return self.pressedMouse
         
+    def ukazkaBAK(self):
+        hodinky = pygame.time.Clock()
+        while self.jeSpustenaHra:
+            hodinky.tick(60)
+            self.aktualizuj()
+            self.vykresli()
+
 
 
     def run(self):
@@ -129,7 +138,7 @@ class ManazerOkien:
         nextTick = 1/nastavenia.RYCHLOST_HRY
         timeLastTick = time.time()
         timeNextTick =  timeLastTick + nextTick
-        #gc.collect(0)
+        
         while self.niejeUkoncena:
             if time.time() > timeNextTick:
                 timeNextTick += nextTick
@@ -148,8 +157,8 @@ class ManazerOkien:
                 logging.info("ManazerOkien-eventy")
                 self.events()
 
-            #else:
-            if True: # docasne koli debugovaniu
+            else:
+            #if True: # docasne koli debugovaniu
                 if self.oknoMenu != None:
                     logging.info("draw Menu okno")
                     self.oknoMenu.draw(self.screen)

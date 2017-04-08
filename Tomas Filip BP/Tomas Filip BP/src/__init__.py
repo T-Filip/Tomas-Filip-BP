@@ -12,8 +12,54 @@ import random
 
 
 
+# prints recursive count of lines of python source code from current directory
+# includes an ignore_list. also prints total sloc
+
+import os
+cur_path = os.getcwd()
+ignore_set = set(["__init__.py", "count_sourcelines.py"])
+
+loclist = []
+
+for pydir, _, pyfiles in os.walk(cur_path):
+    for pyfile in pyfiles:
+        if pyfile.endswith(".py") and pyfile not in ignore_set:
+            totalpath = os.path.join(pydir, pyfile)
+            loclist.append( ( len(open(totalpath, "r").read().splitlines()),
+                               totalpath.split(cur_path)[1]) )
+
+for linenumbercount, filename in loclist: 
+    print ("%05d lines in %s" % (linenumbercount, filename))
+
+print ("\nTotal: %s lines (%s)" %(sum([x[0] for x in loclist]), cur_path))
+
+
+
 
 '''
+
+pygame.init()
+screen = pygame.display.set_mode((500,500 ),pygame.NOFRAME,24)
+screen.fill((255,0,0))
+
+tex = pygame.image.load('img/Test8.png')
+#tex2 = pygame.image.load('img/Test8.png').convert()
+print(tex.get_bitsize())
+tim = time.time()
+#screen.blit(tex,(0,0))
+#screen.blit(tex2,(60,0))
+for i in range (10000):
+    screen.blit(tex,(0,0))
+    #pygame.display.flip()
+    
+print(time.time() - tim)
+pygame.display.flip()
+time.sleep(3)
+
+'''
+
+'''
+
 gen = generator.SimplexNoise(300,0.4,123)
 print (gen.getNoise(1,1))
 for i in range (-300,300):
@@ -80,7 +126,6 @@ print("aaaaa")
 print(pocet)
 '''
         
-
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',

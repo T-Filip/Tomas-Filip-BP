@@ -47,7 +47,8 @@ class ObjScale:
 class ObjScaleViacTextur (ObjScale):
     
     def updateImage(self):
-        self.image = pygame.transform.smoothscale(self.imageZaloha[self.smer],(self.rect.width, self.rect.height))    
+        self.image = pygame.transform.smoothscale(self.imageZaloha[self.smer],(self.rect.width, self.rect.height))  
+        #self.image = pygame.transform.scale(self.imageZaloha[self.smer],(self.rect.width, self.rect.height))   #testovanie menej ako 24 bit grafiky 
 
         
         
