@@ -16,6 +16,7 @@ import random
 
 import Predmety.tazenie as tazenie
 from Predmety.animacia import Animacia
+from Postavy.enumZrucnosti import EnumZrucnosti
 
 
 class InvVyuzPredmetu(inventar.Inventar):
@@ -281,6 +282,7 @@ class InvVyuzPredmetu(inventar.Inventar):
             return
         
         predmet.zmenPocetKusovO(-1)
+        self.hrac.zvysSkusenosti(10)
         #_(self,policko,id,pixSurPolickoCenter,suToSuradniceCenter = False):
         
         topLeft = (myskaNaMape[0]-suradnicePolicka[0]*64,myskaNaMape[1]-suradnicePolicka[1]*64)
@@ -314,6 +316,20 @@ class InvVyuzPredmetu(inventar.Inventar):
                 if col:
                     self.zakazUtokuDo = aktualnyTick + 180#1.8 sek pri normalnej rychlosti
                     self.zautocNaPostavu(postava)
+                    self.hrac.zvysSkusenosti(int(random.triangular(15,200,50)))
+                    
+                    idNastroja = self.polePredmetov[self.oznacenyIndex].dajPredmet().dajId()
+                    if idNastroja >= 3000 and idNastroja <=3003:
+                        indexZrucnosti = EnumZrucnosti.VYUZITIE_SEKERA
+                    elif idNastroja <= 3007:
+                        indexZrucnosti = EnumZrucnosti.VYUZITIE_KRUMPAC
+                    elif idNastroja <= 3011:
+                        indexZrucnosti = EnumZrucnosti.VYUZITIE_MEC
+
+                        
+                    if indexZrucnosti >= 0:
+                        self.hrac.zvysZrucnosti(indexZrucnosti,1)
+                    
                     return
             
         okolieMysky = self.mapa.dajOkolieMysky()
@@ -332,6 +348,7 @@ class InvVyuzPredmetu(inventar.Inventar):
                         self.casTazenia +=1
                         if self.casTazenia >= tazenie.vypocitajDlzkuTazenia(obj, self.polePredmetov[self.oznacenyIndex].dajPredmet(), self.hrac):
                             obj.dajDrop(self.hrac)
+                            self.hrac.zvysSkusenosti(15)
                             obj.kill(True)
                         
                     else:

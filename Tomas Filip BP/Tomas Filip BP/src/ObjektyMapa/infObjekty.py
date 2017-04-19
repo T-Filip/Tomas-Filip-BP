@@ -504,25 +504,28 @@ def nacitajTexturyObjMapa():
     for i in range (0,pocetTexturVType[1]):
         zoznamInf[4][i] = InfObj(texturyCasti[1][i],EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[4][i] = [pygame.Rect(0,10,16,6) ]
+
         
     rect = pygame.Rect(10,0,6,16)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],90)
         zoznamInf[5][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
         zozRect[5][i] = [pygame.Rect(10,0,6,16) ]
+
     
     rect = pygame.Rect(0,0,16,6)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],270)
         zoznamInf[6][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
-        zozRect[6][i] = [pygame.Rect(0,0,16,6) ]
+        #zozRect[6][i] = [pygame.Rect(0,0,16,6) ]
+        zozRect[6][i] = [pygame.Rect(0,0,6,16)]
     
     rect = pygame.Rect(0,0,6,16)
     for i in range (0,pocetTexturVType[1]):
         text = pygame.transform.rotate(texturyCasti[1][i],180)
         zoznamInf[7][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],rect,0.6)
-        zozRect[7][i] = [pygame.Rect(0,0,6,16)]
-        
+        #zozRect[7][i] = [pygame.Rect(0,0,6,16)]
+        zozRect[7][i] = [pygame.Rect(0,0,16,6) ]
        
     #ROHZEM 
     for i in range (0,pocetTexturVType[2]):

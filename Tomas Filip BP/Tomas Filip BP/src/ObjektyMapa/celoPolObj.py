@@ -243,6 +243,7 @@ class CeloPolObj():
         
         
     def kill(self):
+        #return
         for obj in self.zoznamObj:
             obj.kill()
         

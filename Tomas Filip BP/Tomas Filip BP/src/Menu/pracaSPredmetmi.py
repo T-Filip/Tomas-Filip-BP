@@ -41,9 +41,9 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
             pos = pygame.mouse.get_pos()
             stlacenySlot = self.dajPrvySlotNa(pos)
             if stlacenySlot != None: # ak sme neklikli mimo slotu
-                if stlacenySlot.predmet == None: # iba ak slot nema predmet .. ak by mal tak ako? maximalne vymenit by sa dalo ale dat jeden asi nije teda iba ak su idecka rovnake
+                if stlacenySlot.predmet == None: # iba ak slot nema predmet .. ak by mal tak ako? maximalne vymenit by sa dalo ale dat jeden asi nie teda iba ak su idecka rovnake
                     stlacenySlot.vlozPredmet(predmet.Predmet(self.predmet.dajId(),1))
-                    self.predmet.pocetKusov -= 1
+                    self.predmet.zmenPocetKusovO(-1)
                     if self.predmet.pocetKusov < 1:
                         self.predmet = None # predmet sa maze dali sme posledny kus
                     

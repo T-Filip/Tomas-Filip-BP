@@ -278,7 +278,9 @@ class Npc(postava.Postava):
         
                     
                     
-    def smerPostavyPriStati(self):
+    def smerPostavyPriStati(self,horizontal,vertical):
+        if (horizontal < 0.5 or horizontal > -0.5) or (vertical < 0.5 or vertical > -0.5):
+            return
         if self.stavMobky == StavMobky.SPI:
             self.smer = SmerPostavy.SPECIAL
             

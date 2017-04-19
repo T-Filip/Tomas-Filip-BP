@@ -524,50 +524,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                     self.smer = SmerPostavy.DOLAVA
                 else:
                     self.smer = SmerPostavy.DOZADU
-        else:
-            self.smerPostavyPriStati()
-        '''
-        if self.smerPohybu[0] >= 0.3:
-            
-            if self.smerPohybu[1] >= 0.3:
-                #++
-                if self.smerPohybu[0]*2 > self.smerPohybu[1]:
-                    self.smer = SmerPostavy.DOPRAVA
-                else:
-                    self.smer = SmerPostavy.DOPREDU
-            
-            elif self.smerPohybu[1] <= -0.3:
-                #+-
-                if self.smerPohybu[0]*2 > math.fabs(self.smerPohybu[1]):
-                    self.smer = SmerPostavy.DOPRAVA
-                else:
-                    self.smer = SmerPostavy.DOZADU
-            
-        elif self.smerPohybu[0] <= -0.3:
-            
-            if self.smerPohybu[1] >= 0.3:
-                #-+
-                if math.fabs(self.smerPohybu[0])*2 > self.smerPohybu[1]:
-                    self.smer = SmerPostavy.DOLAVA
-                else:
-                    self.smer = SmerPostavy.DOPREDU
-            
-            
-            elif self.smerPohybu[1] <= -0.3:
-                #--
-                if math.fabs(self.smerPohybu[0])*2 > math.fabs(self.smerPohybu[1]):
-                    self.smer = SmerPostavy.DOLAVA
-                else:
-                    self.smer = SmerPostavy.DOZADU
-        else:
-            self.smerPostavyPriStati()
-        '''
-        
-        
 
-                      
-        #print("smer pohybu")  
-        #print(self.smerPohybu)
+        self.smerPostavyPriStati(horizontal, vertical)
+
         self.topLeftDouble[0] += self.smerPohybu[0] 
         self.topLeftDouble[1] += self.smerPohybu[1] 
         self.rectTextOblastMapa= self.rectTextOblastMapa.move(int(self.topLeftDouble[0] - self.rectTextOblastMapa.x), int(self.topLeftDouble[1] - self.rectTextOblastMapa.y))
@@ -608,7 +567,7 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             
 
             
-    def smerPostavyPriStati(self):
+    def smerPostavyPriStati(self,horizontal,vertical):
         pass
             
     def zvysRychlostPohybu(self,horizontal,vertical):

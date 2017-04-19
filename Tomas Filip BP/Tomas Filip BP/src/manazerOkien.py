@@ -120,12 +120,7 @@ class ManazerOkien:
     def dajPressedMouse(self):
         return self.pressedMouse
         
-    def ukazkaBAK(self):
-        hodinky = pygame.time.Clock()
-        while self.jeSpustenaHra:
-            hodinky.tick(60)
-            self.aktualizuj()
-            self.vykresli()
+
 
 
 

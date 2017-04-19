@@ -196,8 +196,12 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
     def kill(self,trebaPrekreslit = False):
         pygame.sprite.Sprite.kill(self)
         
+        
+        '''
+        Objekt vyuziva zdielanu texturu. Pri zmene priblizenia je potrebne adresu novej textury.
+        '''
     def newRefImg (self):
-        self.image = self.inf.img
+        self.image = self.inf.img#zaobalit lepsie ale pygame pracuje s self.image takze tazko
         
     def updateRectSize(self, nasobitel):
         pass

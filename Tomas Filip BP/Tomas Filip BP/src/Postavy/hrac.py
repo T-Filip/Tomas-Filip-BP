@@ -39,7 +39,7 @@ class Hrac(postava.Postava):
         
 
         
-        self.inventar = inventar.Inventar(20)
+        self.inventar = inventar.Inventar(21)
         self.inventarRychlyPristup = invVyuzPredmetu.InvVyuzPredmetu(9,self)
         
         self.vlozPredmety()
@@ -49,6 +49,12 @@ class Hrac(postava.Postava):
     
     def dajZrucnosti(self):
         return self.zrucnosti
+    
+    def zvysZrucnosti(self,index,oKolko):
+        zrucnost = self.zrucnosti[index]
+        zrucnost[0] += oKolko
+        if zrucnost[0] > 100:
+            zrucnost[0] = 100
     
     def dajVolneZrucnosti(self):
         return self.volneZrucnosti
@@ -229,7 +235,11 @@ class Hrac(postava.Postava):
     def vykresliOznacenyPredmet(self,screen):
         self.inventarRychlyPristup.draw(screen)
         
-    def smerPostavyPriStati(self):
+    def smerPostavyPriStati(self, horizontal, vertical):
+
+        if (horizontal > 0.5 or horizontal < -0.5) or (vertical > 0.5 or vertical < -0.5):
+            return
+        
         pos = pygame.mouse.get_pos()
         mousePos = [pos[0],pos[1]]
         mousePos[0] -= nastavenia.POLOVICNE_ROZLISENIA_X[nastavenia.vybrateRozlisenie]

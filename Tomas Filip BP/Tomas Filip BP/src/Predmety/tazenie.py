@@ -34,14 +34,23 @@ def vypocitajDlzkuTazenia(tazenyObjekt,nastroj,hrac):
         idNastroja = nastroj.dajId()
         #cez id asi zdlhave lepsie by bolo asi mat atribut pre typ zbrane ...
         #lepsie by bolo pytat zrucnost cez hraca alebo pod co ak pridam nastroj? vhodne prerobit
+        indexZrucnosti = -1
         if idNastroja >= 3000 and idNastroja <=3003:
-            zrucnosti = vlastnosti[EnumZrucnosti.VYUZITIE_SEKERA][0]
+            indexZrucnosti = EnumZrucnosti.VYUZITIE_SEKERA
+            zrucnosti = vlastnosti[indexZrucnosti][0]
         elif idNastroja <= 3007:
-            zrucnosti = vlastnosti[EnumZrucnosti.VYUZITIE_KRUMPAC][0]
-        elif idNastroja <= 3007:
-            zrucnosti = vlastnosti[EnumZrucnosti.VYUZITIE_MEC][0]
+            indexZrucnosti = EnumZrucnosti.VYUZITIE_KRUMPAC
+            zrucnosti = vlastnosti[indexZrucnosti][0]
+        elif idNastroja <= 3011:
+            print("MEC")
+            indexZrucnosti = EnumZrucnosti.VYUZITIE_MEC
+            zrucnosti = vlastnosti[indexZrucnosti][0]
         else:
             zrucnosti = 0  
+            
+        if indexZrucnosti >= 0 and random.random() < 0.01:
+            print("ZVYSUJEM")
+            hrac.zvysZrucnosti(indexZrucnosti,1)
             
         if koeficientNastroja == 0:
             zrucnost = zrucnosti/2 
