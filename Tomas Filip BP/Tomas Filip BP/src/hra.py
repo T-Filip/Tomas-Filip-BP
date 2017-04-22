@@ -2,18 +2,18 @@
 import pygame
 import random
 import time
-import nastavenia
-import mapa
+from Nastavenia import nastavenia
+from ObjektyMapa import mapa
 from Postavy import hrac
 import ObjektyMapa.infObjekty as infObjekty
 import logging
 import Menu.oknoInventar as oknoInventar
 import Menu.enumOknaHra as enumOknaHra
 import Textury.textury as textury
-from generator import Generator
 import math
 from Textury import enumTextura
 import Crafting.recepty as recepty
+from Menu.enumOknaHra import EnumOknaHra
 
 
 
@@ -29,10 +29,10 @@ class Hra:
         #nacitat mapu a tak
         self.timeUP = time.time()+1
         
-        self.pocetFPS = 0
+        self.pocetFPS = 60
         self.fpsCount = 0
         
-        self.pocetTPS = 0
+        self.pocetTPS = nastavenia.RYCHLOST_HRY
         self.tpsCount = 0
         
         self.pocetTickov = 0
@@ -65,6 +65,8 @@ class Hra:
         
         logging.info("inicializacia mapy")
         self.hrac.update()
+        
+
         
         self.initInformacieOHracovi(scale)
         self.invOknoRychlyPristup.reinit(self.hrac.dajInventarRychlyPristup())
@@ -312,6 +314,11 @@ class Hra:
                 self.hrac.vykresliOznacenyPredmet(self.screen)
         self.invOknoRychlyPristup.draw(self.screen)
         self.vykresliHpBar(self.screen)
+        
+    def dajFPS(self):
+        return self.pocetFPS
+    def dajTPS(self):
+        return self.pocetTPS
         
     def vykresliHpBar(self,screen):
         if self.sirkaUkazovatelaZdravia > 0:

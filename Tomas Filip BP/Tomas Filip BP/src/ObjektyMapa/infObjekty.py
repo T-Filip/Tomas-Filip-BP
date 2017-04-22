@@ -5,7 +5,7 @@ Created on 15. 2. 2017
 '''
 
 import pygame
-import mapa
+from ObjektyMapa import mapa
 from ObjektyMapa import scale
 import copy
 from Textury import textury

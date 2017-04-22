@@ -7,7 +7,7 @@ Created on 9. 3. 2017
 import pygame
 #import ObjektyMapa.infObjekty as infObjekty
 from Textury import textury
-import nastavenia
+from Nastavenia import nastavenia
 #from _operator import pos
 from Textury import enumTextura
 

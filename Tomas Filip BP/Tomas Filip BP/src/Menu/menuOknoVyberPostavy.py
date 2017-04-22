@@ -4,9 +4,9 @@ Created on 4. 3. 2017
 @author: T.Filip
 '''
 import Menu.menuOkno as menuOkno
-import uvodneNastavenia 
+from Nastavenia import uvodneNastavenia 
 from Textury import textury 
-import nastavenia
+from Nastavenia import nastavenia
 import pygame
 import Menu.objMenu as objMenu
 from enum import IntEnum
@@ -40,34 +40,23 @@ def startHry(self):
     self.menu.prepniMenu(None)
     self.menu.manazerOkien.vytvorHru(self.menu.postavyHrac,self.menu.vlastnosti,self.menu.typPostavy)
     
-    
-    
-
 class MenuOknoVyberPostavy(menuOkno.MenuOkno):
     def __init__(self,manazerOkien,scale):
 
         super().__init__(manazerOkien,scale)
         
         
-        
-
-        
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,525,600,startHry,scale)
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"BACK",16,655,600,back,scale)
         self.vlastnosti = [0,0,0,0]
         
-        
-                #vcetne
         capTypPostavy = nastavenia.CAP_TYP_POSTAVY
-        #capSmerPostavy = 4
         
         #MUZ - 0 ZENA - 1
         capPohlavia = nastavenia.CAP_POHLAVIE
         capCisloOci = nastavenia.CAP_TVAR
         capCisloVlasov = nastavenia.CAP_VLASY
         capTypTvare = nastavenia.CAP_HLAVA
-        
-        
         
         self.farbaTela = nastavenia.FARBA_TELA
         self.indexFarbyTela = [2]
@@ -79,7 +68,6 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         self.typPostavy = [EnumTypPostavy.SILNA]
         
         self.postavyHrac = [0,0,0,0,0]
-        
         
         
         kraj = 200
@@ -97,7 +85,7 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         medzera = 85
         tlacidla = 220
         
-        #TYP POSTAVY init__(self,Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,cap,scale = 1):
+        #TYP POSTAVY
         self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"Typ postavy",16,140+kraj,yPixTlacidla,scale)
         self.tlacidloSirkaMapy.click()
         objMenu.TlacidloIncDecVal(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85+kraj,yPixTlacidla,False,True,self.typPostavy,capTypPostavy,scale)

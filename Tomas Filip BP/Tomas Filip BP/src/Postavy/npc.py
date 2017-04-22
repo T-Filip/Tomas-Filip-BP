@@ -8,11 +8,11 @@ import pygame
 import random
 from Postavy.stavMobky import StavMobky
 from Postavy import stavMobky
-import nastavenia
+from Nastavenia import nastavenia
 from Postavy.smerPostavy import SmerPostavy
 import math
 import time
-from generator import GeneratorNescalovany
+from ObjektyMapa.generator import GeneratorNescalovany
 from Postavy.enumTypPostavy import EnumTypPostavy
 
 

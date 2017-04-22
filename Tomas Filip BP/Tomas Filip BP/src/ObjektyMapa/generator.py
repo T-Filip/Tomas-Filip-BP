@@ -3,7 +3,7 @@
 # and open the template in the editor.
 import math
 import random
-import nastavenia
+from Nastavenia import nastavenia
 from random import seed
 
 

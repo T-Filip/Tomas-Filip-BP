@@ -5,7 +5,7 @@ Created on 4. 3. 2017
 '''
 import pygame
 import logging
-import nastavenia
+from Nastavenia import nastavenia
 #import manazerOkien
 from Textury import textury
 
@@ -36,9 +36,13 @@ class MenuOkno():
        
        
     def close(self):
+        #print("Close")
         pass
         
-        
+     
+    '''
+    pri stlaceni laveho tlacidla na myske zisti na ktore tlacidlo v okne bolo kliknute a nasledne v tychto oknach vola metody pre stlacenie
+    '''   
     def updateClickLeft(self):
         pos = pygame.mouse.get_pos()
         sprites_pod_myskou = [s for s in self.allSprites if s.rect.collidepoint(pos)]
@@ -47,6 +51,9 @@ class MenuOkno():
     def updateClickRight(self):
         pass
         
+    '''
+    zistuje ci nie je myska na nejakom tlacidla ak ano vola metody v tychto tlacidla ktore sa o tuto situaciu postaraju
+    '''
     def updateHover(self):
         pos = pygame.mouse.get_pos()
         sprites_pod_myskou = [s for s in self.allSprites if s.rect.collidepoint(pos)]
@@ -65,6 +72,9 @@ class MenuOkno():
         self.allSprites.update()
         self.updateHover()
         
+    '''
+    vracia boolean ci bolo kliknute na nejake tlacidlo
+    '''
     def klikolNaOkno(self, pos):
         return self.rect.collidepoint(pos)
         

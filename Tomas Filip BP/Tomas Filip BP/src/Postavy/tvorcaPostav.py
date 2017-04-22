@@ -6,7 +6,7 @@ Created on 9. 3. 2017
 
 from Textury import textury
 import pygame
-import nastavenia as nastavenia
+from Nastavenia import nastavenia as nastavenia
 import random
 
 '''

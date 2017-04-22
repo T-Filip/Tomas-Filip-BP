@@ -6,7 +6,7 @@ Created on 6. 3. 2017
 import pygame
 from Textury import textury
 from enum import Enum
-import nastavenia
+from Nastavenia import nastavenia
 
 class LastUpdate(Enum):
     UPDATE = 1

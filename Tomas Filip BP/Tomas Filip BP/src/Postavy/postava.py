@@ -6,7 +6,7 @@ Created on 23. 3. 2017
 import pygame
 import ObjektyMapa.scale as scale
 from Postavy.smerPostavy import SmerPostavy
-import nastavenia as nastavenia
+from Nastavenia import nastavenia as nastavenia
 import Postavy.tvorcaPostav as tvorcaPostav
 from Postavy.enumTypPostavy import EnumTypPostavy
 import math

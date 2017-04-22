@@ -7,7 +7,7 @@ Created on 9. 3. 2017
 import Menu.menuOkno as menuOkno
 import pygame
 import Menu.objMenu as objMenu
-import nastavenia
+from Nastavenia import nastavenia
 from Textury import textury
 import Menu.oknoInventar as oknoInventar
 import Predmety.predmet as predmet
@@ -34,8 +34,6 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          krajnaMedzera = 30*scale
          self.receptyTlacidla = pygame.sprite.Group()
          
-
-         
          x = int(self.rect.x+krajnaMedzera + self.rect.width/2.5 -15)
          y = self.rect.y+self.rect.height/2
          width = int(self.rect.width - krajnaMedzera - krajnaMedzera - self.rect.width/2.5)
@@ -54,29 +52,17 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
          self.oknoMaterial = oknoInventar.OknoInventar(matRect)
          
          x = int(self.rect.x + 600*self.scaleRes)
-         
-         
+
          prodRect = pygame.Rect(x-10,y,130,95)
          self.oknoProdukt = oknoInventar.OknoInventar(prodRect)
-         
          
          x = int(self.topLeftXPredScale + 485)
          y = int(self.topLeftYPredScale + 85)
                   
          self.tlacidloCraft = objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene,textury.TUN2Oznacene2],"craft",29,x,y,metodaCraft,self.scaleRes,0.75)
          self.recept = None
-         
-         #init__(self,Menu,imgs,text,font,sirka,vyska,zmenRecept,scaler = 1,scale = 1,args):
-         #objMenu.Tlacidlo(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],)
-         #objMenu.TlacidloIncDecValLock(self,[textury.TPlus,textury.TPlusOznacene,textury.TPlusLock],"",16,x,y,True,False,self.hrac.dajVlastnosti()[3],self.hrac.dajVolneVlastnosti(),[0,10],self.scaleRes)
-
-                 
-             
+            
          self.craftCheck()
-
-         
-         
-
 
 
     def draw(self, screen):
@@ -87,6 +73,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         self.oknoMaterial.draw(screen)
         self.oknoProdukt.draw(screen)
          
+    
     def vykresliCraftingText(self,screen):
         y = int(self.rect.y + 90*self.scaleRes)
         x = int(self.rect.x + 350*self.scaleRes)
@@ -98,6 +85,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         textSurf = font.render("produkt",1, nastavenia.BLACK)
         screen.blit(textSurf,(x,y))
 
+    
     def updateClickLeft(self):
         menuOkno.MenuOknoHra.updateClickLeft(self)
         #kliknutie na predmety
@@ -109,6 +97,9 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         pracaSPredmetmi.PracaSPredmetmi.clickRight(self)
 
      
+    '''
+    pri kazdom otvarani okna je nutne iste veci obnovit a podobne 
+    '''
     def reinit(self, hrac):
         menuOkno.MenuOknoHra.reinit(self, hrac)
         self.oknoInventar.reinit(hrac.dajInventar())
@@ -138,7 +129,9 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         menuOkno.MenuOknoHra.update(self)
         #_(self,id,pocetKusov = 1):
 
-
+    '''
+    meni recept za recept v parametri
+    '''
     def zmenCraft(self,recept): 
         self.recept = recept
         material = recept.dajMaterial()
@@ -159,6 +152,10 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         self.oknoProdukt.reinit(inventarProdukt,64)
         self.craftCheck()
         
+        
+    '''
+    zisti ci prave vybraty recept je mozne vycraftit - ci ma hrac dostatocny pocet materialov
+    '''
     def craftCheck(self):
         okna = self.dajOknaInventare()
         daSaVykraftit = True # predpokladam ze sa da

@@ -27,7 +27,6 @@ class MenuOknoZakladMenu(menuOkno.MenuOkno):
             objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE],"Nova hra",16,460,120,novaHra,scale,2)
             self.tlacidloNavratDoHry = objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE,textury.MENU_TLACIDLO_LOCKNUTE],"Navrat do hry",16,460,210,navratDoHry,scale,2)
             objMenu.Tlacidlo(self,[textury.MENU_TLACIDLO,textury.MENU_TLACIDLO_OZNACENE],"Exit",16,460,300,ukonci,scale,2)
-            
             self.tlacidloNavratDoHry.setLock(True)
             
         def reinit(self):

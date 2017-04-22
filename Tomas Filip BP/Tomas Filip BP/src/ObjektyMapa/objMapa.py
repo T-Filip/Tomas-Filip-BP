@@ -7,9 +7,9 @@ import pygame
 import ObjektyMapa.scale as scale
 import ObjektyMapa.infObjekty as infObjekty
 import random
-import policko
-import nastavenia
-import mapa
+from ObjektyMapa import policko
+from Nastavenia import nastavenia
+from ObjektyMapa import mapa
 from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu 
 import logging
 #from ObjektyMapa.infObjekty import InfObj

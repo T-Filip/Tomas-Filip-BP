@@ -5,7 +5,7 @@ import pygame
 import sys
 import os
 from enum import Enum
-import nastavenia
+from Nastavenia import nastavenia
 from Textury import textury
 import Menu.objMenu as objMenu
 

@@ -10,7 +10,7 @@ from Predmety import invVyuzPredmetu
 import Predmety.predmet as predmet
 from Postavy.enumTypPostavy import EnumTypPostavy
 from Postavy.smerPostavy import SmerPostavy
-import nastavenia
+from Nastavenia import nastavenia
 from Postavy import postava
 from Textury import textury
 from Textury import enumTextura

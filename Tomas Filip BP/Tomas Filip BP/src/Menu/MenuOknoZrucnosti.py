@@ -6,7 +6,7 @@ Created on 1. 4. 2017
 from Menu.menuOkno import MenuOknoHra
 import Menu.objMenu as objMenu
 import Textury.textury as textury
-import nastavenia
+from Nastavenia import nastavenia
 
 
 class MenuOknoZrucnosti(MenuOknoHra):

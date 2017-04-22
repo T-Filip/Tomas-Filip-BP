@@ -13,3 +13,4 @@ class EnumOknaHra(IntEnum):
     INVENTAR = 0
     VLASTNOSTI = 1
     ZRUCNOSTI = 2
+    NAPOVEDA = 3

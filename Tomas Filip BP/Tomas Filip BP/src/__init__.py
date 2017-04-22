@@ -1,8 +1,8 @@
 
 import pygame
-import uvodneNastavenia
-import manazerOkien
-import generator as generator
+from Nastavenia import uvodneNastavenia
+from Menu import manazerOkien
+from ObjektyMapa import generator as generator
 import time 
 import itertools
 import logging

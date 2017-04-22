@@ -3,13 +3,13 @@ Created on 8. 2. 2017
 
 @author: T.Filip
 '''
-import nastavenia
-import policko
-import generator
+from Nastavenia import nastavenia
+from ObjektyMapa import policko
+from ObjektyMapa import generator
 import pygame
 import random
 import ObjektyMapa.infObjekty as infObjekty
-import mapa as mapa
+from ObjektyMapa import mapa
 import logging
 from threading import Thread
 import math

@@ -4,7 +4,7 @@ Created on 9. 2. 2017
 @author: T.Filip
 '''
 import pygame
-import nastavenia
+from Nastavenia import nastavenia
 from Textury import texturyPolicka
 import random
 import ObjektyMapa.objMapa as objMapa
