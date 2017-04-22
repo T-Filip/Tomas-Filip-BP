@@ -47,6 +47,8 @@ class Hra:
         
 
         
+
+        
         
         
         
@@ -108,6 +110,7 @@ class Hra:
             
         self.initTime = time.time()
         
+
         
     def dajMrtvePostavy(self):
         return self.mrtvePostavy
@@ -212,7 +215,6 @@ class Hra:
             print(self.hrac.suradnice)
         '''
 
-        
         self.fpsCount +=  1
         #print(len(self.polickaSprites))
         
@@ -410,6 +412,8 @@ class Hra:
         
         logging.info("hrac-eventy")
         self.hrac.eventy()
+        if self.manazerOkien.dajCasOdPoslednehoFramu() < 0.035:
+            self.mapa.nacitajPolicka(self.hrac)
         self.skontrolujAktualnostZdravia(scale)
         
         #iba raz za cas napr raz za 2 sec mozno viac

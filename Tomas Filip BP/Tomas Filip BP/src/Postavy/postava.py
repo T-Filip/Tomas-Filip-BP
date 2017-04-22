@@ -148,7 +148,7 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.smerPohybu=[0,0]
         self.jeSprintPovoleny = True
         self.jeKoliznyStav = False
-        self.obnovovanieVydrze = 1+self.vlastnosti[3][0]*0.1
+        self.obnovovanieVydrze = 1+self.vlastnosti[3][0]*0.05
         self.koliznySmerPohybu = [0,0]
         self.koeficienRychlosti = 1
         
@@ -464,13 +464,14 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
                 self.smerPohybu[1] = -capRychlosti[1]* self.koeficienRychlosti
                 #self.smerPohybu[1] += self.spomalovanie*3
                      
+        absX = math.fabs(self.smerPohybu[0])
+        absY = math.fabs(self.smerPohybu[1])
+        if absX > absY:
+            maxSmerPohybu = absX
+        else :
+            maxSmerPohybu = absY
             
-        if self.smerPohybu[0]>self.smerPohybu[1]:
-            maxSmerPohybu = self.smerPohybu[0]
-        else:
-            maxSmerPohybu = self.smerPohybu[1]
-            
-        self.vydrz += -maxSmerPohybu + (self.maxRychlost+ 0.1)*self.obnovovanieVydrze # ak sprintuje ubuda ak nie tak ak nebezi max rychlostou tak rastie
+        self.vydrz += -maxSmerPohybu + (self.maxRychlost)*self.obnovovanieVydrze # ak sprintuje ubuda ak nie tak ak nebezi max rychlostou tak rastie
         
         if not self.jeSprintPovoleny:
             if self.vydrz > self.capVydrz/8:

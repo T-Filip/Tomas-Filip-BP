@@ -171,7 +171,7 @@ class Hrac(postava.Postava):
         self.topLeftNoScaleMap[1] = self.rectTextOblastMapa.y
         
         logging.info("hrac->mapa-nacitajPolicka")
-        self.hra.mapa.nacitajPolicka(self)
+
         
         
 

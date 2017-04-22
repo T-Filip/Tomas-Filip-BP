@@ -200,6 +200,8 @@ class Mapa:
                 self.nacitajPolickaVlavoPostupne()
             elif self.smerNacitania == 1:
                 self.nacitajPolickaVpravoPostupne()
+            elif  self.smerNacitania == 0:
+                self.nacitajPolickaDolePostupne()
             
         else:
             #print("B")
@@ -242,7 +244,9 @@ class Mapa:
                     #if not self.thread.isAlive():
                     #    self.thread=Thread(target = self.nacitajPolickaDole)
                     #    self.thread.start()
-                    self.nacitajPolickaDole()
+                    #self.nacitajPolickaDole()
+                    self.nacitajPolickaDoleInit()
+                    self.nacitajPolickaDolePostupne()
         
         
                     
@@ -288,7 +292,88 @@ class Mapa:
                 return obj
         return None
             
+            
+    def nacitajPolickaDoleInit(self):
+        print("DOLE")
+        #self.yStage2 = self.topLeftMapa[1]
+        self.prebiehaNacitavanie = True
+        #self.topLeftMapa[1] += 1
+        #self.topLeftCoord[1] +=1
+        self.yCoord = self.topLeftCoord[1] +nastavenia.MAP_SIZE_Y
+        self.xCoord = self.topLeftCoord[0]
+        #if self.topLeftMapa[1] < 0:
+            #nastavenie na dol ak by bola mimo pole
+            #self.topLeftMapa[1] = nastavenia.MAP_SIZE_Y-1
+            
+        self.indexNacitania = self.topLeftMapa[0]
+        self.stavNacitania = 0
+        self.smerNacitania = 0
 
+    def nacitajPolickaDolePostupne(self):
+        print("DOLE POSTUPNE")
+        print(self.indexNacitania)
+        if self.stavNacitania == 0:
+            
+            
+            if self.indexNacitania >= nastavenia.MAP_SIZE_X:
+                self.indexNacitania = 0
+                self.stavNacitania = 1
+            else:
+                self.nacitajPolicko(self.indexNacitania,self.topLeftMapa[1])
+                self.indexNacitania += 1
+                self.xCoord += 1
+        elif self.stavNacitania == 1:
+            if self.indexNacitania >= self.topLeftMapa[0]:
+                self.topLeftMapa[1] += 1
+                self.topLeftCoord[1] += 1
+                
+                if self.topLeftMapa[1] >= nastavenia.MAP_SIZE_Y:
+                    #nastavenie na dol ak by bola mimo pole
+                    self.topLeftMapa[1] = 0
+                #self.nacitanaMapa = self.nacitanaMapa.move(0,64)
+        
+                self.yStage2 =self.topLeftMapa[1]-2
+                print("topleft Y = " + str(self.topLeftMapa[1]))
+                print("init yStage2 = " + str(self.yStage2))
+                
+                if self.yStage2<0:
+                    self.yStage2 += nastavenia.MAP_SIZE_Y
+                    
+                self.pomocnaHrana = nastavenia.MAP_SIZE_X
+                if self.topLeftMapa[0] <= 0:
+                    self.pomocnaHrana -=1
+                
+                
+                
+                
+                self.indexNacitania = self.topLeftMapa[0]+1
+                self.stavNacitania = 2
+
+            else:
+                self.nacitajPolicko(self.indexNacitania,self.topLeftMapa[1])
+                self.indexNacitania += 1
+                self.xCoord +=1
+        
+                    
+        elif self.stavNacitania == 2:
+            
+            if self.indexNacitania >= self.pomocnaHrana:
+                self.indexNacitania = 0
+                self.stavNacitania = 3
+            else:
+                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                self.mapa[self.indexNacitania][self.yStage2].initStage2() 
+                self.indexNacitania += 1
+
+        else:
+            
+            if self.indexNacitania >= self.topLeftMapa[0]-1:
+                self.nacitanaMapa = self.nacitanaMapa.move(0, 64)
+                self.prebiehaNacitavanie = False
+            else:
+                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                self.mapa[self.indexNacitania][self.yStage2].initStage2() 
+                self.indexNacitania += 1
          
     def nacitajPolickaDole(self):
 

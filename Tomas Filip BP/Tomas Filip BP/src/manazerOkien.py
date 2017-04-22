@@ -133,9 +133,10 @@ class ManazerOkien:
         nextTick = 1/nastavenia.RYCHLOST_HRY
         timeLastTick = time.time()
         timeNextTick =  timeLastTick + nextTick
+        self.casPoslednehoVykreslenia = time.time()+1
         
         while self.niejeUkoncena:
-            if time.time() > timeNextTick:
+            if self.mozeUpdatnut(timeNextTick):
                 timeNextTick += nextTick
                 timeLastTick = time.time()
                 #try:
@@ -154,6 +155,7 @@ class ManazerOkien:
 
             else:
             #if True: # docasne koli debugovaniu
+                self.casPoslednehoVykreslenia = time.time()
                 if self.oknoMenu != None:
                     logging.info("draw Menu okno")
                     self.oknoMenu.draw(self.screen)
@@ -166,6 +168,24 @@ class ManazerOkien:
                 if self.hra != None: 
                     self.hra.vykresliInfoRoh()
                 pygame.display.flip()
+                
+                
+    def mozeUpdatnut(self,timeNextTick):
+        if time.time() > timeNextTick:
+            vysledok = True
+        else: 
+            vysledok = False
+            
+        #ak dlho nebol frame tak ho vnuti za cenu spomalenia hry
+        if self.hra != None:
+            if (time.time()-self.casPoslednehoVykreslenia) > 0.15:
+                print("VYNUTENY FRAME")
+                vysledok = False
+        
+        return vysledok
+    
+    def dajCasOdPoslednehoFramu(self):
+        return time.time() - self.casPoslednehoVykreslenia
             
     def prepniMenu(self, enumLink):
         if enumLink == None:
