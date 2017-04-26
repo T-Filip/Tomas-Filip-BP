@@ -6,11 +6,11 @@ Created on 15. 2. 2017
 import pygame
 import ObjektyMapa.scale as scale
 import ObjektyMapa.infObjekty as infObjekty
-import random
+#import random
 from ObjektyMapa import policko
-from Nastavenia import nastavenia
+#from Nastavenia import nastavenia
 from ObjektyMapa import mapa
-from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu 
+#from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu 
 import logging
 #from ObjektyMapa.infObjekty import InfObj
 
@@ -20,7 +20,9 @@ import logging
 
 
 
-
+'''
+zakladna trieda objektov na mape nejde za nu jast vykresluje sa na policka
+'''
 class ObjMapa(pygame.sprite.Sprite):
     def __init__(self,policko,id,pixSurPolickoCenter,invVyuzitiePredmetov = None,suToSuradniceCenter = False):
         self.id = id
@@ -136,8 +138,10 @@ class ObjMapa(pygame.sprite.Sprite):
 
 
 
+'''
+tento objek si neberie rect objektu (nie textury) z informacii o id objektu pretoze kazdy potrebuje mat vlastny
 
-#tento objek si neberie rect objektu (nie textury) z informacii o id objektu pretoze kazdy potrebuje mat vlastny
+'''
 class ObjMapaVlastInf(ObjMapa):
     def __init__(self, policko, id, pixSurPolicko,inf,suToSurCent = False):
         self.inf = inf
@@ -146,7 +150,10 @@ class ObjMapaVlastInf(ObjMapa):
     def initInf(self):
         pass
         
-        
+   
+'''
+vlastne inf ale s pridanim pozadia
+'''    
 class ObjMapaVlastInfPozadie(ObjMapaVlastInf):
     def __init__(self, policko, id, pixSurPolicko,inf,pozadiePolicka,rectPoz=None,suToSurCent = False):
         if rectPoz == None:
@@ -169,12 +176,15 @@ class ObjMapaVlastInfPozadie(ObjMapaVlastInf):
             self.image.blit(self.pozadiePolicka,(self.rectPozadia[i].x,self.rectPozadia[i].y),(self.pixSurPolicko[0],self.pixSurPolicko[1],self.rectPozadia[i].width,self.rectPozadia[i].height))
        
 
+'''
+objekty za ktore sa moze zajst vykresluju sa pred policka s kazdym framom omnoho zlozitejsie vykreslovanie ako zakladne objekty na mape
+'''
 class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
     def __init__(self,policko,id,pixSurPolicko,invVyuzitiePredmetov, suToSurCent = False):
         super().__init__(policko,id,pixSurPolicko,invVyuzitiePredmetov,suToSurCent)
         #pygame.sprite.Sprite.add(self.inf.ulozSprite(self))
         #infObjekty.objMapaScalovanie.add(self)
-        self.scale(mapa.SINGLETON_MAPA.dajNas())
+        self.scale(mapa.MAPA.dajNas())
 
         
     def initSprite(self):
@@ -197,16 +207,19 @@ class ObjMapaAktivPrek(ObjMapa,scale.ObjScale):
         pygame.sprite.Sprite.kill(self)
         
         
-        '''
-        Objekt vyuziva zdielanu texturu. Pri zmene priblizenia je potrebne adresu novej textury.
-        '''
+    '''
+    Objekt vyuziva zdielanu texturu. Pri zmene priblizenia je potrebne adresu novej textury.
+    '''
     def newRefImg (self):
         self.image = self.inf.img#zaobalit lepsie ale pygame pracuje s self.image takze tazko
         
     def updateRectSize(self, nasobitel):
         pass
         
-    
+
+'''
+rozsirene od predka o moznost obsahovat viacero obrazkov 
+'''
 class ObjMapaAktivPrekViacImg (ObjMapaAktivPrek):
     def __init__(self,policko,id,pixSurPolicko,invVyuzitiePredmetov, suToSurCent = False):
         self.id = id
@@ -228,6 +241,9 @@ class ObjMapaAktivPrekViacImg (ObjMapaAktivPrek):
     def initImage(self):
         self.image = self.inf.img[self.smer]
 
+    '''
+    Objekt vyuziva zdielanu texturu. Pri zmene priblizenia je potrebne adresu novej textury.
+    '''
     def newRefImg (self):
         self.image = self.inf.img[self.smer]
         

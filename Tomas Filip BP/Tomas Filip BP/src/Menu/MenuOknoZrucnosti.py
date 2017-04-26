@@ -50,8 +50,8 @@ class MenuOknoZrucnosti(MenuOknoHra):
         zvKonst = (50*self.scaleRes)
 
         zrucnostiHraca = self.hrac.dajZrucnosti()
-        for i in range (len(zrucnostiHraca)):   
-            text = zrucnosti[i] + ": " + str(zrucnostiHraca[i])                                  
+        for i in range (len(zrucnostiHraca)):
+            text = zrucnosti[i] + ": " + str(zrucnostiHraca[i])                                 
             textSurf = font.render(text,1, nastavenia.BLACK)
             screen.blit(textSurf,(x,y))
             y += zvKonst

@@ -8,6 +8,10 @@ import pygame
 from Postavy.smerPostavy import SmerPostavy
 
 
+
+'''
+vykresluje animaciu nastrojov a zbrani
+'''
 class Animacia(pygame.sprite.Sprite):
     def __init__(self,hrac,mapa):
         self.hrac = hrac
@@ -115,6 +119,7 @@ class Animacia(pygame.sprite.Sprite):
 
 
 '''
+metody pre konkretne animacie - jadro triedy animacia
 parameter inf musi but instancia InfObjektNastroj alebo musi obsahovat img pre animaciu
 metoda vyuziva 1 img a vracia zrotovany img
 
@@ -198,14 +203,7 @@ def opacnaSkakavaRotacia(inf,tick,animacia,x,y,scale):
     animacia.setRect(rect)
     
     
-def rot_center(image, angle):
-    """rotate an image while keeping its center and size"""
-    orig_rect = image.get_rect()
-    rot_image = pygame.transform.rotate(image, angle)
-    rot_rect = orig_rect.copy()
-    rot_rect.center = rot_image.get_rect().center
-    rot_image = rot_image.subsurface(rot_rect).copy()
-    return rot_image
+
     
 
 

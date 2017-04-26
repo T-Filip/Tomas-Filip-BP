@@ -18,14 +18,6 @@ class Predmet (pygame.sprite.Sprite):
         self.inf = infObjekty.INF_OBJ_MAPA[id]
         self.id = id
         self.miestoPrePredmet = None
-        #self.miestoPrePredmet = miesto
-        #self.miestoPrePredmet.predmet = self
-
-        
-        
-
-        #self.rect = pygame.Rect((64,64))
-        #self.image = self.inf.dajImgPredm()
         self.pocetKusov = pocetKusov
         pygame.sprite.Sprite.__init__(self)
         
@@ -74,12 +66,18 @@ class Predmet (pygame.sprite.Sprite):
         
     def vlozDoMiesta(self,miesto):
         miesto.vlozPredmet(self)
-        
+    
+    
+    '''
+    jeden predmet sa zrusi a v jednom sa zmeni pocet
+    '''    
     def zlucPredmety (self,pred):
         kolkoZobralo = self.zmenPocetKusovO(pred.dajPocetKusov())
         pred.zmenPocetKusovO(-kolkoZobralo)
 
-        
+    '''
+    najma pri zmene poctu treba aktualizovat grafiku aby bolo viditelne realne cislo ktore vyznacuje pocet kusov
+    '''  
     def aktualizujGrafiku(self):
         self.aktualizujPoziciu()
         pom = self.inf.dajImgPredm().copy()
@@ -101,6 +99,9 @@ class Predmet (pygame.sprite.Sprite):
         
         
         
+'''
+Trieda ktora predstavuje miesto na ktore sa moze vlozit predmet
+'''        
 class MiestoPrePredmet:
     def __init__(self,groupa):
         self.grupaPrePredmety = groupa # predmety sa vykresluju aj ked toto miesto nie 
@@ -136,7 +137,10 @@ class MiestoPrePredmet:
         pass
     
     
-    
+'''
+
+miesto na ktorom sa vykresluje predmet ked ho hrac drzi v myske
+'''   
 class MiestoPrePredmetMyska(MiestoPrePredmet):
     def __init__(self):
         MiestoPrePredmet.__init__(self,None)
@@ -168,13 +172,10 @@ class MiestoPrePredmetMyska(MiestoPrePredmet):
     def initMousePosition(self,pos):
         self.mousePos = pos
         
-        '''
-    def reinit(self,x,y, velkostStrany):
-        self.posunX = x
-        self.posunY = y
-        self.velkostStrany = velkostStrany
-        '''
-        
+
+    '''
+    vrati miesto kde by sa predmet mal nachadzat - a teda miesto kde sa nachadza samotne miesto pre predmet
+    '''   
     def dajRectPrePredmet(self):
         pos = pygame.mouse.get_pos()
         return pygame.Rect(pos[0]-self.posunX,pos[1]-self.posunY,self.velkostStrany,self.velkostStrany)

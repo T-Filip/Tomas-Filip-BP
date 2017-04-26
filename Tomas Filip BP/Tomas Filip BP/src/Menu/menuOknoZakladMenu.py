@@ -9,6 +9,8 @@ from Textury import textury
 import pygame
 import sys
 import Menu.enumOknaMenu as enumOknaMenu
+import Nastavenia.nastavenia as nastavenia
+import random
 
 def ukonci(self):
         pygame.display.quit()
@@ -16,6 +18,7 @@ def ukonci(self):
         sys.exit()
         
 def novaHra(self):
+    nastavenia.SEED = random.random()
     self.menu.prepniMenu(enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY)
     
 def navratDoHry(self):

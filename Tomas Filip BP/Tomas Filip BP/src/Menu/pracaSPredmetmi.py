@@ -19,6 +19,10 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
         self.oknaInventareDraw = [] # kedze niektore okna inventarov sa vykresluju za inach okolnosti a za inych podmienok je obcas potrebne aby sa nevykreslovali vsetky preto specialny zoznam pre vykreslovanie
         self.posledneMiestoPredmetu = None # ak je v myske nejaky predmet je potrebne aby sme si pamatali odkial bol vzaty 
 
+
+    '''
+    akcia spojena s kliknutim mysky pravym tlacidlom. Tato metoda sa vykonava vzdy ked je aktivovane okno ktore dedi z tejto triedy
+    '''
     def clickRight(self):
         if self.predmet == None: # click ziaden predmet
             #ak nema predmet musime pozriet ci na nejaky klikol
@@ -57,7 +61,9 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
         if hasattr(self, "craftCheck"):
             self.craftCheck()
 
-                    
+    '''
+    podobne ako click right ale pre lave tlacidlo
+    '''               
     def clickLeft(self):
         if self.predmet == None: # nastal click a myska nedrzi ziaden predmet
             pos = pygame.mouse.get_pos()
@@ -105,7 +111,10 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
             
     def dajOknaInventare(self):
         return self.oknaInventare
-            
+  
+    '''
+    vrati slot na ktorom je myska
+    '''      
     def dajPrvySlotNa(self,pos):
         for inv in self.oknaInventare:
             for slot in inv.inventar.sloty:
@@ -114,7 +123,9 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
             
         return None
             
-            
+    '''
+    vrati predmet pod myskou
+    '''     
     def dajPrvyPredmetNa(self, pos):
         for inv in self.oknaInventare:
             for predmet in inv.inventar.predmety:
@@ -149,7 +160,6 @@ class PracaSPredmetmi (predmet.MiestoPrePredmetMyska):
             
     def reinit(self, hrac):
         pass
-        #for inv in self.oknaInventare:
-        #    inv.reinit(hrac.dajInventar())
+
         
     

@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 #from win32api import GetSystemMetrics
-import ctypes
-import pygame
+
 import math
-import random
-import time
+
 
 
 
@@ -16,13 +14,13 @@ windowIndex = 1 #nacitat
 
 DEBUG = False
 
-#VYPIS = True
-
-RYCHLOST_HRY = 80
 
 
-MAP_SIZE_X = 25
-MAP_SIZE_Y = 15
+RYCHLOST_HRY = 60
+
+
+MAP_SIZE_X = 23
+MAP_SIZE_Y = 13
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

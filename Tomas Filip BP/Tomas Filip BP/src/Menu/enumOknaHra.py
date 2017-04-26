@@ -9,6 +9,9 @@ Created on 9. 3. 2017
 from enum import IntEnum
 
 
+'''
+kazde okno ma svoj vlastny kluc do dictionary
+'''
 class EnumOknaHra(IntEnum):
     INVENTAR = 0
     VLASTNOSTI = 1

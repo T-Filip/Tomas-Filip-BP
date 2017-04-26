@@ -14,7 +14,4 @@ def zmenSmerDveri(self):
     self.initImage()
     self.initObjOblast()
     self.initTextOblast()
-    
-
-
     return True

@@ -21,7 +21,10 @@ TUN2Oznacene2 = 0
 TUN1right = 0
 TUN1rightOznacene = 0
 
-
+'''
+predvytvorene fonty aby sa za kazdym nemuseli vytvarat
+pristupuje sa k nim pomocou metody a ako parameter velkost fontu
+'''
 FONTY = [0 for i in range (100)]
 
 TEXTURY_SCALE = {}
@@ -109,6 +112,10 @@ def init():
 def dajFont(velkost):
     if velkost > 100:
         logging.warning("textury.dajFont -> taka velkost fontu nie je nacitana")
+        return textury.FONTY[99]
+    elif velkost < 2:
+        logging.warning("textury.dajFont -> prilis mala velkost fontu")
+        return textury.FONTY[2]
     else:
         return textury.FONTY[velkost]
 

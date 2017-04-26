@@ -12,7 +12,7 @@ import ObjektyMapa.scale as scale
 import ObjektyMapa.celoPolObj as celoPolObj
 import logging
 import ObjektyMapa.infObjekty as infObjekty
-from ObjektyMapa.infObjekty import InfObj
+#from ObjektyMapa.infObjekty import InfObj
 from Postavy.npc import Npc
 
 
@@ -65,42 +65,47 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
     
     def dajSuradnice(self):
         return self.suradnice
-        
+     
+    '''
+    vytvara objekty na mape 
+    predcasne vytvori vsetky objekty na mape - potom sa budu preriedovat ak sa budu prelinat
+    '''   
     def vytvorObjMapa(self):
-        #predcasne vytvori vsetky objekty na mape - potom sa budu preriedovat ak sa budu prelinat
+        
         #print("Policko vytvorObjMapa() - doimplementovat")
         rand = random.Random(self.noise[1])
         if self.noise[0] > 0.34 and self.noise[0] < 0.35:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
         elif self.noise[0] > 0.49 and self.noise[0] < 0.51:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200) 
-        elif self.noise[0] > 0.69 and self.noise[0] < 0.71:
+        elif self.noise[0] > 0.7 and self.noise[0] < 0.71:
             self.celPolObj = celoPolObj.CeloPolObjPoz(self,200)
         else:
             if self.biom == 0:
                 self.vytvorObjMapaBiom0(rand)
             elif self.biom == 1:
-                self.vytvorObjMapaBiom0(rand)
+                self.vytvorObjMapaBiom1(rand)
             elif self.biom == 2:
-                self.vytvorObjMapaBiom0(rand)
+                self.vytvorObjMapaBiom2(rand)
             elif self.biom == 3:
-                self.vytvorObjMapaBiom0(rand)
+                self.vytvorObjMapaBiom3(rand)
             elif self.biom == 4:
-                self.vytvorObjMapaBiom0(rand)
+                self.vytvorObjMapaBiom4(rand)
             elif self.biom == 5:
-                self.vytvorObjMapaBiom0(rand)
+                self.vytvorObjMapaBiom5(rand)
 
         if self.celPolObj != None:
-            self.celPolObj.kill()
+            self.celPolObj.kill()#zachovam len texturu - momentalne nie je interakcia s vodou
+            
             
     def vytvorObjMapaBiom0(self,rand):
         #vela zelene
         #menej kamena vela fillera
-        if self.noise[2] > 0.495 and self.noise[2] < 0.505:
+        if self.noise[2] > 0.495 and self.noise[2] < 0.4955:
             self.vytvorKamenolom (rand,0.495,0.505)
-        elif self.noise[2] > 0.39 and self.noise[2] < 0.393:
+        elif self.noise[2] > 0.39 and self.noise[2] < 0.3905:
             self.vytvorKamenolom (rand,0.39,0.393,1)
-        elif self.noise[2] > 0.62 and self.noise[2] < 0.625:
+        elif self.noise[2] > 0.62 and self.noise[2] < 0.621:
             self.vytvorKamenolom (rand,0.62,0.625,0)
         elif rand.random() < 0.005:
             self.vytvorKamenolom (rand,0,0,rand.randint(0,1),rand.triangular(30,70,50))
@@ -108,65 +113,72 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             if self.noise[1] > 0.47 and self.noise[1] < 0.53:
                 self.vytvorLes(rand, 0.47, 0.53)
             else:
-                self.vytvorFiller(rand)
+                self.vytvorFiller0(rand)
                     
     def vytvorObjMapaBiom1(self,rand):
         #plains 
         #podobne ako biom 0
         # skoro ziaden les
         
-        if self.noise[2] > 0.495 and self.noise[2] < 0.505:
-            self.vytvorKamenolom (rand,0.495,0.505)
-        elif self.noise[2] > 0.39 and self.noise[2] < 0.393:
-            self.vytvorKamenolom (rand,0.39,0.393,1)
-        elif self.noise[2] > 0.62 and self.noise[2] < 0.625:
-            self.vytvorKamenolom (rand,0.62,0.625,0)
+        #slobo zelena
+        if self.noise[2] > 0.5 and self.noise[2] < 0.50005:
+                self.vytvorKamenolom (rand,0.5,0.50005)
         else:
-            if self.noise[1] > 0.498 and self.noise[1] < 0.502:
-                self.vytvorLes(rand, 0.498, 0.502)
+            if self.noise[1] > 0.495 and self.noise[1] < 0.505:
+                self.vytvorLes(rand, 0.495, 0.505)
             else:
                 self.vytvorFiller(rand)
     def vytvorObjMapaBiom2(self,rand):
         #slobo zelena
-        if self.noise[2] > 0.495 and self.noise[2] < 0.505:
-                self.vytvorKamenolom (rand,0.495,0.505)
-        elif self.noise[2] > 0.39 and self.noise[2] < 0.393:
-            self.vytvorKamenolom (rand,0.39,0.393,1)
-        elif self.noise[2] > 0.62 and self.noise[2] < 0.625:
-            self.vytvorKamenolom (rand,0.62,0.625,0)
-        elif rand.random() < 0.01:
-            self.vytvorKamenolom (rand,0,0,rand.triangular(30,70,50))
+        if self.noise[2] > 0.495 and self.noise[2] < 0.4955:
+            self.vytvorKamenolom (rand,0.495,0.4955)
+        elif self.noise[2] > 0.39 and self.noise[2] < 0.3905:
+            self.vytvorKamenolom (rand,0.39,0.3905,1)
+        elif self.noise[2] > 0.62 and self.noise[2] < 0.621:
+            self.vytvorKamenolom (rand,0.62,0.621,0)
+        elif rand.random() < 0.005:
+            self.vytvorKamenolom (rand,0,0,rand.randint(0,1),rand.triangular(30,70,50))
         else:
             if self.noise[1] > 0.47 and self.noise[1] < 0.53:
                 self.vytvorLes(rand, 0.47, 0.53)
+            elif self.noise[1] > 0.35 and self.noise[1] < 0.375:
+                self.vytvorLes(rand, 0.35, 0.375)
+            elif self.noise[1] > 0.72 and self.noise[1] < 0.76:
+                self.vytvorLes(rand, 0.72, 0.76)
             else:
-                self.vytvorFiller(rand)
+                self.vytvorFiller0(rand)
                     
     def vytvorObjMapaBiom3(self,rand):
-        if self.noise[2] > 0.49 and self.noise[2] < 0.51:
-            self.vytvorKamenolom (rand,0.49,0.51)
-        elif self.noise[2] > 0.39 and self.noise[2] < 0.398:
-            self.vytvorKamenolom (rand,0.39,0.398,1)
-        elif self.noise[2] > 0.62 and self.noise[2] < 0.63:
-            self.vytvorKamenolom (rand,0.62,0.63,0)
-        elif rand.random() < 0.01:
-            self.vytvorKamenolom (rand,0,0,rand.triangular(30,70,50))
+        if self.noise[2] > 0.495 and self.noise[2] < 0.4955:
+            self.vytvorKamenolom (rand,0.495,0.4955)
+        elif self.noise[2] > 0.39 and self.noise[2] < 0.3905:
+            self.vytvorKamenolom (rand,0.39,0.3905,1)
+        elif self.noise[2] > 0.62 and self.noise[2] < 0.621:
+            self.vytvorKamenolom (rand,0.62,0.621,0)
+        elif rand.random() < 0.003:
+            self.vytvorKamenolom (rand,0,0,rand.randint(0,1),rand.triangular(30,70,50))
         else:
-            if self.noise[1] > 0.45 and self.noise[1] < 0.55:
-                self.vytvorLes(rand, 0.45, 0.55)
+            if self.noise[1] > 0.465 and self.noise[1] < 0.535:
+                self.vytvorLes(rand, 0.465, 0.535)
+            elif self.noise[1] > 0.353 and self.noise[1] < 0.37:
+                self.vytvorLes(rand, 0.353, 0.37)
+            elif self.noise[1] > 0.725 and self.noise[1] < 0.755:
+                self.vytvorLes(rand, 0.725, 0.755)
             else:
-                self.vytvorFiller(rand)
+                self.vytvorFiller0(rand)
     def vytvorObjMapaBiom4(self,rand):
-        if self.noise[1] > 0.41 and self.noise[1] < 0.47:
-            self.vytvorLes(rand, 0.41, 0.47)
-        elif self.noise[1] > 0.52 and self.noise[1] < 0.58:
-            self.vytvorLes(rand, 0.52, 0.58)
-        elif rand.random() < 0.035:
-            self.vytvorLes(rand, 0,0,rand.triangular(10,90,35))
-        elif rand.random() < 0.4:
-            pass
+        if self.noise[1] > 0.46 and self.noise[1] < 0.54:
+            self.vytvorLes(rand, 0.46, 0.54)
+        elif self.noise[1] > 0.345 and self.noise[1] < 0.372:
+            self.vytvorLes(rand, 0.345, 0.372)
+        elif self.noise[1] > 0.72 and self.noise[1] < 0.76:
+            self.vytvorLes(rand, 0.72, 0.76)
+        elif self.noise[1] > 0.4 and self.noise[1] < 0.415:
+            self.vytvorLes(rand, 0.4, 0.415)
+        elif self.noise[1] > 0.6 and self.noise[1] < 0.62:
+            self.vytvorLes(rand, 0.6, 0.62)
         else:
-            self.vytvorFiller(rand)
+            self.vytvorFiller0(rand)
                 
     def vytvorObjMapaBiom5(self,rand):
         if self.noise[2] > 0.49 and self.noise[2] < 0.51:
@@ -178,19 +190,123 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         elif rand.random() < 0.02:
             self.vytvorKamenolom (rand,0,0,rand.triangular(15,90,55))
         else:
-            if self.noise[1] > 0.46 and self.noise[1] < 0.47:
-                pass
-            elif self.noise[1] > 0.54 and self.noise[1] < 0.545:
-                pass
-            elif self.noise[1] > 0.38 and self.noise[1] < 0.62:
-                self.vytvorLes(rand, 0.38, 0.62)
+            if self.noise[1] > 0.47 and self.noise[1] < 0.53:
+                self.vytvorLes(rand, 0.47, 0.53)
+            elif self.noise[1] > 0.349 and self.noise[1] < 0.37:
+                self.vytvorLes(rand, 0.349, 0.37)
+            elif self.noise[1] > 0.725 and self.noise[1] < 0.75:
+                self.vytvorLes(rand, 0.725, 0.75)
+            elif self.noise[1] > 0.45 and self.noise[1] < 0.41:
+                self.vytvorLes(rand, 0.45, 0.41)
+            elif self.noise[1] > 0.65 and self.noise[1] < 0.615:
+                self.vytvorLes(rand, 0.65, 0.615)
             else:
                 self.vytvorFiller(rand)
-        
+    def vytvorFiller0(self,rand):
+        nah = rand.random()
+        if nah< 0.7:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.4:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah <0.15:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.01:
+            self.VytvorNahodnyStrom(rand)
+        nah = rand.random()
+        if nah < 0.01:
+            self.vytvorMaliKamen(rand)
+            
+            
+    def vytvorFiller1(self,rand):
+        nah = rand.random()
+        if nah< 0.85:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.45:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah <0.10:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.015:
+            self.VytvorNahodnyStrom(rand)
+        nah = rand.random()
+        if nah < 0.005:
+            self.vytvorMaliKamen(rand)
+    def vytvorFiller2(self,rand):
+        nah = rand.random()
+        if nah< 0.5:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.1:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.03:
+            self.VytvorNahodnyStrom(rand)
+        nah = rand.random()
+        if nah < 0.03:
+            self.vytvorMaliKamen(rand)
+        nah = rand.random()
+        if nah < 0.015:
+            self.vytvorStrednykamen(rand)
+        nah = rand.random()
+        if nah < 0.01:
+            self.vytvorVelkyKamen(rand)
+    def vytvorFiller3(self,rand):
+        nah = rand.random()
+        if nah< 0.4:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.1:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.04:
+            self.VytvorNahodnyStrom(rand)
+        nah = rand.random()
+        if nah < 0.04:
+            self.vytvorMaliKamen(rand)
+        nah = rand.random()
+        if nah < 0.015:
+            self.vytvorStrednykamen(rand)
+        nah = rand.random()
+        if nah < 0.02:
+            self.vytvorVelkyKamen(rand)
+    def vytvorFiller4(self,rand):
+        nah = rand.random()
+        if nah < 0.75:
+            return
+        nah = rand.random()
+        if nah< 0.6:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.15:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.1:
+            self.VytvorNahodnyStrom(rand)
+    def vytvorFiller5(self,rand):
+        nah = rand.random()
+        if nah< 0.6:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.25:
+            self.vytvorNahodnyKvietok(rand)
+        elif nah< 0.05:
+            self.vytvorNahodnyKvietok(rand)
+        nah = rand.random()
+        if nah < 0.075:
+            self.VytvorNahodnyStrom(rand)
+        nah = rand.random()
+        if nah < 0.05:
+            self.vytvorMaliKamen(rand)
+        nah = rand.random()
+        if nah < 0.015:
+            self.vytvorStrednykamen(rand)
+        nah = rand.random()
+        if nah < 0.01:
+            self.vytvorVelkyKamen(rand)
 
     def dajRect(self):
         return self.rect
-            
+    
+    '''
+    posatara sa ovlozenia objektu taktiez kontroluje ci dany objekt moze do tohto policka byt vlozeny
+    '''       
     def vlozObj(self,obj, maSaPrekreslit = False,kontrolaSOkolim = True):  
         if kontrolaSOkolim:
             #vhodne kontrolovat aj v inych polickach ale zatial nepouzivane
@@ -216,7 +332,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             typ = rand.randint(0,1)
             
         if nah == None:
-            bodNoise = self.noise[1] - lavaH
+            bodNoise = self.noise[2] - lavaH
             bodA = 0
             bodB = pravaH - lavaH
             stred = bodB/2
@@ -224,9 +340,15 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             if bodNoise> stred:
                 bodNoise -= stred
                 
-            bodNoise = int(bodNoise*(100/stred))
+            try:
+                bodNoise = int(bodNoise*(100/stred))
+            except:
+                return
+            
             if bodNoise < 1:
-                bodNoise = 2
+                #print("KONIEEEEC")
+                return
+            
             nah = rand.randint(1,bodNoise)
         else:
             nah = int(nah)
@@ -251,7 +373,8 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
     def vytvorLes(self,rand,lavaH,pravaH,nah = None):
         #Noise sa nachadza medzi hodnotami lavaH a pravaH
         if nah == None:
-            bodNoise = self.noise[2] - lavaH
+            #print(self.noise[1])
+            bodNoise = self.noise[1] - lavaH
             bodA = 0
             bodB = pravaH - lavaH
             stred = bodB/2
@@ -259,15 +382,25 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             if bodNoise> stred:
                 bodNoise -= stred
                 
-            bodNoise = int(bodNoise*(100/stred))
-            if bodNoise < 1:
-                bodNoise = 2 
+            #print("BOD NOISE")
+            #print (bodNoise)
+            #print("STRED")
+            #print  (stred)
+                
+            #bodNoise = int(bodNoise*(100/stred))
+            bodNoise = int(bodNoise/stred*100)
+            #print("NOVY BOD NOISE")
+            #print (bodNoise)
+            if bodNoise <= 1:
+                #print("KONIEEEEC")
+                return
             nah = rand.randint(1,bodNoise)
             
         else:
             nah = int(nah)
-        
-            
+        #print("StromyAAAAA")
+        #print(nah) 
+        #print()
         if nah > 10:
             id = rand.randint(self.biom*3,self.biom*3+2)
             self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
@@ -286,13 +419,23 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             id = rand.randint(self.biom*3,self.biom*3+2)
             self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
         
-            
+    def vytvorNahodnyKvietok(self,rand):
+        id = 50 + self.biom # toto zbytocne sa rata pri viacerych kvietkoch v policku
+        self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
         
+    def VytvorNahodnyStrom(self,rand):
+        id = rand.randint(self.biom*3,self.biom*3+2)
+        self.vlozObj(objMapa.ObjMapaAktivPrek(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
+     
+    '''
+    univerzalny filler - vytvori nieco na mape
+    vyuzivaju sa len specializovane - tento sa nevyuziva
+    '''   
     def vytvorFiller(self,rand):
         
         #-----------STROMY-------
         nah = rand.randint(0,99)
-        if nah<5:
+        if nah<1:
             nah = rand.triangular(0,100,70)
             if nah<35:
                 id = rand.randint(self.biom*3,self.biom*3+2)
@@ -358,9 +501,10 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             for i in range (nah):
                 self.vytvorMaliKamen(rand,typ)
                 
-                
+    '''            
     #alternativa pre vloz objekt akurat si ten objekt vytvori sam - vhodne ak pri vytvarani nie je jasne ake vykreslovanie vytvarany objekt potrebuje
     #vytvarany objekt sa hned hodi do stage 2
+    '''
     def vytvorObjekt(self,id,suradnice,invVyuzitiePredmetov,suToSuradniceStredu=False,inf = None,nastaneKontrolaSOkolim = True):
         if inf == None:
             inf = infObjekty.dajInf(id)
@@ -397,16 +541,12 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
         id += 105 + typ*13
         self.vlozObj(objMapa.ObjMapa(self,id,(rand.randint(4,60),rand.randint(4,60)),True))
         
-        
-        
-    '''  
-    def dajIdCeloPol(self):
-        if self.celPolObj != None:
-            return self.celPolObj.dajId()
-        else:
-            return -1
+    
+    
     '''
-        
+    objekty sa generuju nahodne a mnohe z nich sa mozu prekryvat tato metoda odstranuje niektore objekty tak aby sa ziaden z nich neprekrival s inym
+    
+    '''  
     def preriedObjMapa(self):
        
         for policko in self.okolie:
@@ -428,8 +568,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             for obj in p1:
                 obj.linkPolicko(self)
-            #for obj in p2:
-            #    obj.linkPolicko(self)
+
             
             
     '''
@@ -478,10 +617,7 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             pygame.sprite.Sprite.__init__(self,self.mapa.hra.polickaSprites,self.mapa.hra.allSprites)
             
             self.rect = self.image.get_rect()
-            #self.rectTextOblastMapa = self.image.get_rect()
-            
-            #self.rectTextOblastMapa.x = self.suradnice[0]*64
-            #self.rectTextOblastMapa.y = self.suradnice[1] * 64
+
             
             self.topLeftScaleMap = [self.rectTextOblastMapa.x,self.rectTextOblastMapa.y]
             self.jeStage2 = True
@@ -492,29 +628,14 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
                 try:
                     obj.initStage2()
                 except Exception as e:
-                    print("ObjMapa exception stage 2") 
+                    #print("ObjMapa exception stage 2") 
                     pass
             
             
             logging.info("Stage2policko- scale") 
             self.scale(self.mapa.dajScaleNas())
             
-            
-            
-            #if self.celPolObj != None:
-                #print(len(self.objMapaVlastne))
-                #self.celPolObj = None
-                #for obj in self.objMapaVlastne:
-                #    obj.kill()
-                #print(len(self.objMapaBlit))
-                #for obj in self.objMapaBlit:
-                #    obj.kill()
-                #print(len(self.objMapaBlit))
-                #print(len(self.objMapaVlastne))
-                    
-            
 
-            
             
     def dajIdCeloPol(self):
         if self.maCelopolObj:
@@ -543,7 +664,10 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
             
             
        
-
+    '''
+    
+    pridany update koli debugu - zastarale nescalovane
+    '''
     def addUpdate(self):
         if nastavenia.DEBUG:
             #aalines nechce krelit na kraje surface preto takto
@@ -562,11 +686,15 @@ class Policko(pygame.sprite.Sprite,scale.ObjScale):
 
 
     def update(self, *args):  
-        i=1
+        pass
         
     def updatePozicie(self,mapa):
         mapa.updatniPoziciu(self.topLeftScaleMap,self.rect)
-        
+    
+    
+    '''
+    vlastne neuklada len porusi linky na objekty tak aby ich garbage collector mohol destruktnut
+    '''    
     def uloz(self):
 
         #i = 0

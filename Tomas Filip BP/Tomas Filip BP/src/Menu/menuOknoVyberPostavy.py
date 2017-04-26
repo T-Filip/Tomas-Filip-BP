@@ -4,13 +4,13 @@ Created on 4. 3. 2017
 @author: T.Filip
 '''
 import Menu.menuOkno as menuOkno
-from Nastavenia import uvodneNastavenia 
+#from Nastavenia import uvodneNastavenia 
 from Textury import textury 
 from Nastavenia import nastavenia
-import pygame
+#import pygame
 import Menu.objMenu as objMenu
-from enum import IntEnum
-import sys
+#from enum import IntEnum
+#import sys
 import Postavy.smerPostavy as smerPostavy
 import Menu.enumOknaMenu as enumOknaMenu
 import Postavy.tvorcaPostav as tvorcaPostavy

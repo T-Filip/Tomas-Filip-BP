@@ -7,18 +7,20 @@ from Predmety import inventar
 from Predmety import predmet
 import pygame
 import math
-from ObjektyMapa import objMapa
 import logging
-from ObjektyMapa.infObjekty import InfObjScale, InfNaMape, InfNastroje,\
-    InfPozivatelne
 from Predmety.enumTypMaterialu import EnumTypMaterialu
 import random
-
 import Predmety.tazenie as tazenie
 from Predmety.animacia import Animacia
 from Postavy.enumZrucnosti import EnumZrucnosti
+from ObjektyMapa.infObjekty import InfNaMape
+from ObjektyMapa.infObjekty import InfNastroje
+from ObjektyMapa.infObjekty import InfPozivatelne
 
-
+'''
+predstavuje inventar hraca ku ktoremu ma rychli pristup
+obsahuje aj metody na pracu s tymito predmetmi
+'''
 class InvVyuzPredmetu(inventar.Inventar):
     def __init__(self,velkost,hrac):
         self.mapa = None
@@ -70,6 +72,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         if not self.beziAnimacia:
             self.animacia.ukonciAnimaciu()
             
+            
     def vykonajAnimaciu(self):
         pred = self.polePredmetov[self.oznacenyIndex].dajPredmet()
         if pred == None:
@@ -98,7 +101,10 @@ class InvVyuzPredmetu(inventar.Inventar):
         
         if k1 or k2:
             self.reinitImageOznPredmet()
-            
+     
+    '''
+    ak koliduje tak predmet ktory sa vykresluje ako mozne stavanie scervenie
+    '''       
     def kontrolaKolizieOznPredmetu(self):
         sur = self.mapa.dajPolickoveSurMysky()
         okolie = self.mapa.dajOkolieMysky()
@@ -162,7 +168,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         return False
 
     
-        
+       
     def reinitImageOznPredmet(self):
         self.oznPredmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
         if self.oznPredmet == None:
@@ -225,6 +231,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         
         screen.blit(self.imageOznPredmetu,self.topLeftObjMyska)
         
+    
         
     def rightClickNaObj(self):
         obj = self.mapa.dajObjektNaMyske()
@@ -252,8 +259,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         
     def vyuziPredmet(self):
         
-        if self.jeNacerveno:
-            return
+        
         predmet = self.polePredmetov[self.oznacenyIndex].dajPredmet()
         if predmet == None:
             return
@@ -261,6 +267,9 @@ class InvVyuzPredmetu(inventar.Inventar):
         if isinstance(infPredmetu, InfPozivatelne):
             infPredmetu.zjedzPredmet(self.hrac)
             predmet.zmenPocetKusovO(-1)
+            return
+        
+        if self.jeNacerveno:
             return
             
         if not isinstance(infPredmetu,InfNaMape):
@@ -363,7 +372,11 @@ class InvVyuzPredmetu(inventar.Inventar):
         return
         if self.hrac.dajHru().dajManazerOkien().jeVykresleneNejakeMenu():
             return
-        
+    
+    '''
+    rotacia predmetu
+    
+    '''    
     def stlaceneR(self):
         self.cisloTexturyOznPredm += 1
         self.reinitImageOznPredmet()
@@ -377,6 +390,7 @@ class InvVyuzPredmetu(inventar.Inventar):
         #kvazi utok ale na predmety funguje trosku inak a metody na vypocitanie tazenia predmetov su v module tazenie
     def zautocNaPostavu(self,postava):
         predmet = self.dajOznacenyPredmet().dajPredmet()
+        postava.nahanajPostavu(self.hrac)
         if predmet != None:
             infPred = predmet.dajInf()
             if isinstance(infPred, InfNastroje):

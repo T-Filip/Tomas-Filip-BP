@@ -12,8 +12,8 @@ import random
 
 
 
-# prints recursive count of lines of python source code from current directory
-# includes an ignore_list. also prints total sloc
+# #prints recursive count of lines of python source code from current directory
+# includes an ignore_list. also #prints total sloc
 '''
 import os
 cur_path = os.getcwd()
@@ -29,7 +29,7 @@ for pydir, _, pyfiles in os.walk(cur_path):
                                totalpath.split(cur_path)[1]) )
 
 for linenumbercount, filename in loclist: 
-    print ("%05d lines in %s" % (linenumbercount, filename))
+    #print ("%05d lines in %s" % (linenumbercount, filename))
 
 print ("\nTotal: %s lines (%s)" %(sum([x[0] for x in loclist]), cur_path))
 '''
@@ -64,8 +64,8 @@ gen = generator.SimplexNoise(300,0.4,123)
 print (gen.getNoise(1,1))
 for i in range (-300,300):
     for j in range (-300,300):
-        print (str(round(gen.getNoise(i,j),2)) + "  ",end='')
-    print()
+        #print (str(round(gen.getNoise(i,j),2)) + "  ",end='')
+    #print()
 
 '''  
 
@@ -80,9 +80,9 @@ funcdict[myvar](parameter1, parameter2)
 '''
 i = [1,2,3]
 try:
-    print(str(i[3]))
+    #print(str(i[3]))
 except IndexError:
-    print("indexErr")
+    #print("indexErr")
      
 ''' 
 
@@ -111,14 +111,14 @@ print("percenta: " + str(pocetTrafiliSa/1000000))
 generatorPreMobky = generator.Generator(14,150,0.95)
 pocet = 0
 for i in range (0,40):
-    print()
+    #print()
     for j in range (0,200):
         n = generatorPreMobky.noise(i,j)
         if n > 1 or n<0:
-            print("A",end='')
+            #print("A",end='')
             pocet += 1
         else:
-            print(" ",end='')
+            #print(" ",end='')
         #print("%.2f" % round(n,2),end='  ')
         
         

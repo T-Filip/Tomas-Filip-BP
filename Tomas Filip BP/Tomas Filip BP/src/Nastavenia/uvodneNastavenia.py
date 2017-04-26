@@ -4,12 +4,12 @@
 import pygame
 import sys
 import os
-from enum import Enum
+#from enum import Enum
 from Nastavenia import nastavenia
 from Textury import textury
 import Menu.objMenu as objMenu
 
-#os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
+
 
         
 
@@ -132,7 +132,9 @@ def znizRychlostHry(self):
     
         
 
-
+'''
+Specialna trieda pre uvodne nastavnenia - okno co sa zobrazi na zaciatku
+'''
 class UvodneNastavenia:
     
     
@@ -140,40 +142,23 @@ class UvodneNastavenia:
 
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
-        
-        #for mode in pygame.display.list_modes():
-        #    print(mode)
+
         
         
         self.screen = pygame.display.set_mode((nastavenia.UVODNE_NASTAVENIA_SIRKA,nastavenia.UVODNE_NASTAVENIA_VYSKA ),pygame.NOFRAME)
         textury.init()
         
-        nastavenia.FONT_1_16 = pygame.font.Font("font\\armalite.ttf",16)
-        nastavenia.FONT_1_13 = pygame.font.Font("font\\armalite.ttf",13)
+        nastavenia.FONT_1_16 = pygame.font.Font("font/armalite.ttf",16)
+        nastavenia.FONT_1_13 = pygame.font.Font("font/armalite.ttf",13)
        
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
         self.clock = pygame.time.Clock()
         self.tlacidla_sprites = pygame.sprite.LayeredUpdates()
 
-        self.uvodNastaveniaOkno = pygame.image.load('img\\uvodneNastavenia\\uvodNastaveniaOkno.png').convert_alpha()
-        '''
-        self.TUN1center = pygame.image.load('img\\uvodneNastavenia\\TUN1center.png').convert_alpha()
-        self.TUN1left = pygame.image.load('img\\uvodneNastavenia\\TUN1left.png').convert_alpha()
-        self.TUN1leftOznacene = pygame.image.load('img\\uvodneNastavenia\\TUN1leftOznacene.png').convert_alpha()
-        self.TUN2 = pygame.image.load('img\\uvodneNastavenia\\TUN2.png').convert_alpha()
-        self.TUN2Oznacene = pygame.image.load('img\\uvodneNastavenia\\TUN2Oznacene.png').convert_alpha()
-        self.TUN3 = pygame.image.load('img\\uvodneNastavenia\\TUN3.png').convert_alpha()
-        self.TUN3Krizik = pygame.image.load('img\\uvodneNastavenia\\TUN3Krizik.png').convert_alpha()
-        self.TUN2Oznacene2 = pygame.image.load('img\\uvodneNastavenia\\TUN2Oznacene2.png').convert_alpha()
-        #self.TUN1right = pygame.image.load('img\\uvodneNastavenia\\TUN1right.png').convert_alpha()
-        #self.TUN1rightOznacene = pygame.image.load('img\\uvodneNastavenia\\TUN1rightOznacene.png').convert_alpha()
-        self.TUN1right = pygame.transform.flip(self.TUN1left,True,False)
-        self.TUN1rightOznacene = pygame.transform.flip(self.TUN1leftOznacene,True,False)
-        '''
-
+        self.uvodNastaveniaOkno = pygame.image.load('img/uvodneNastavenia/uvodNastaveniaOkno.png').convert_alpha()
 
         #objMenu(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
-        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"CLOSE",16,215,320,ukonci)
+        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"KONIEC",16,215,320,ukonci)
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,85,320,tlacidloStart)
         self.tlacidloRozlisenie = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,270,zmenTextRozlisenia)
         self.tlacidloRozlisenie.click()

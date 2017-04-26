@@ -3,8 +3,12 @@ Created on 10. 3. 2017
 
 @author: T.Filip
 '''
-import logging
+#import logging
 
+
+'''
+neviditelny objekt v okne ktory predstavuje len ohranicenie miesta v okne kde sa budu miesta pre predmety a samotne predmety vykreslovat
+'''
 class OknoInventar():
     def __init__(self,rect,hranica = 256):
         self.hranica = hranica

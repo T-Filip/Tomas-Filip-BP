@@ -8,8 +8,6 @@ import pygame
 from Nastavenia import nastavenia
 import hra
 import time
-import os
-import math
 import logging
 import Menu.menuOknoVyberPostavy as menuOknoVyberPostavy
 import Menu.menuOknoZakladMenu as menuOknoZakladMenu
@@ -24,7 +22,9 @@ import Textury.textury as textury
 
 
 
-
+'''
+najhlavnejsie trieda ktora spravuje ostatne okna - hru okna v menu a okna v hre
+'''
 class ManazerOkien:
     def __init__(self):
         logging.info("initManazera")
@@ -35,8 +35,10 @@ class ManazerOkien:
         self.events()
         self.jePauza = True # na zaciatku hry pauza
         
-        self.kolkoByMaloBytFPS = 30 # iba pre spodne vyrovnavanie
+        self.posledaZmenaRychlosti=200
         
+        self.kolkoByMaloBytFPS = 30 # iba pre spodne vyrovnavanie
+
         
         mode = pygame.DOUBLEBUF
         if nastavenia.windowIndex == 0:
@@ -130,14 +132,14 @@ class ManazerOkien:
         self.nextTick = 1/nastavenia.RYCHLOST_HRY
         self.rychlostHry = nastavenia.RYCHLOST_HRY
         timeLastTick = time.time()
-        timeNextTick =  timeLastTick + self.nextTick
+        self.timeNextTick =  timeLastTick + self.nextTick
         self.casPoslednehoVykreslenia = time.time()+1
 
         
         while self.niejeUkoncena:
-            if self.mozeUpdatnut(timeNextTick):
+            if self.mozeUpdatnut():
                 self.vykreslilaSaAktualizacia = False
-                timeNextTick += self.nextTick
+                self.timeNextTick += self.nextTick
                 timeLastTick = time.time()
                 #try:
                 if self.oknoMenu != None:
@@ -174,68 +176,62 @@ class ManazerOkien:
     '''
     Kontrola ci moze prebehnut update. Aby nevznikaly prilis velke medzery medzi obrazkami
     '''     
-    def mozeUpdatnut(self,timeNextTick):
-        if time.time() > timeNextTick:
-            vysledok = True
-        else: 
-            vysledok = False
-            
-        #if self.hra != None:
-            
-            '''
-            fps = self.hra.dajFPS()
-            print("kolko by malo byt fps: " + str(self.kolkoByMaloBytFPS))
-            print(self.rychlostHry)
-            if fps < self.kolkoByMaloBytFPS:
-                self.rychlostHry -= 1
-                if self.rychlostHry < 10:
-                    self.rychlostHry = 10
-                scaleRychlost = self.rychlostHry/nastavenia.RYCHLOST_HRY*400#0-400
-                self.kolkoByMaloBytFPS = math.log(math.sqrt(scaleRychlost))*10
-                self.nextTick = 1/self.rychlostHry
-            else:
-                self.rychlostHry += 1
-                if self.rychlostHry > nastavenia.RYCHLOST_HRY:
-                    self.rychlostHry = nastavenia.RYCHLOST_HRY
-                scaleRychlost = self.rychlostHry/nastavenia.RYCHLOST_HRY*400#0-400
-                self.kolkoByMaloBytFPS = math.log(math.sqrt(scaleRychlost))*10
-                self.nextTick = 1/self.rychlostHry
-                '''
+    def mozeUpdatnut(self):
+        if time.time() > self.timeNextTick:
+            vysledok = True#cas na update
+            if self.hra != None:
+                fps = self.hra.dajFPS()
+                if fps < 25:#staci vykonavat raz za sekundu
+                    #print("FPS" + str(fps))
+                    self.znizRychlostHry()
                 
-        if (time.time()-self.casPoslednehoVykreslenia) > self.maximalnyCasDoDalsiehoFramu :
-                
-                if self.vykreslilaSaAktualizacia:
-                    #ak sa uz vykreslila naco znovu vykreslovat
-                    logging.info("vynuteny update")#iba v pripade kde ma hra malo fps
-                    return True # update
-                else:
-                    logging.info("vynuteny frame")#krizova situacia
-                    return False
-                
-                
-            
-            
-        '''
-        #ak dlho nebol frame tak ho vnuti za cenu spomalenia hry
-        if self.hra != None:
-            self.maximalnyCasDoDalsiehoFramu -= 0.001
-            if self.maximalnyCasDoDalsiehoFramu < 0.025:
-                self.maximalnyCasDoDalsiehoFramu = 0.025
-            if (time.time()-self.casPoslednehoVykreslenia) > self.maximalnyCasDoDalsiehoFramu :
-                logging.info("vynuteny frame")
+            if (time.time()-self.casPoslednehoVykreslenia) > self.maximalnyCasDoDalsiehoFramu: #KRIZOVE riesenie malohe fps iba ak klesne pod 20 fps
                 vysledok = False
-                print("VynutenyFrame")
-                koefUpdate = (time.time() -self.casPoslednehoUpdatu)*nastavenia.RYCHLOST_HRY
-                if koefUpdate > 1.2: #1 pri rychlosti akej by mal 
-                    #self.maximalnyCasDoDalsiehoFramu += 0.005
-                    self.maximalnyCasDoDalsiehoFramu = math.log(koefUpdate)/10+0.02  
-                    print(koefUpdate)
-                    print(self.maximalnyCasDoDalsiehoFramu)
-
-        '''
                 
-        
+                '''
+                if not self.vykreslilaSaAktualizacia:
+                    self.timeNextTick + self.nextTick/2 # skipne cast updatu-> spomali hru ale zvysi fps
+                    logging.info("vynuteny frame")
+                    #print("Vynuteny frame")
+                    vysledok = False
+                '''
+            
+        else: 
+            
+            if self.vykreslilaSaAktualizacia:
+                if self.hra != None and not self.zvysRychlostHry(): # iba ak sa mu nepodari zvysit rychlost hry
+                    cas = int(200/nastavenia.RYCHLOST_HRY)
+                    logging.info("Uvolnujem cpu v prospech ineho procesu na: " + str(cas))
+                    pygame.time.wait(cas)
+                    return self.mozeUpdatnut()#znova cekne co s tym
+                else:
+                    vysledok = False
+            else:
+                vysledok = False
+            
         return vysledok
+    
+    def znizRychlostHry(self):
+        tick = self.hra.dajPocetTickov()
+        if self.posledaZmenaRychlosti + self.rychlostHry*3 > tick:
+            return # nemoze sa tak casto menit rychlost hry
+        self.posledaZmenaRychlosti = tick
+        self.rychlostHry =- 5
+        if self.rychlostHry < 40:
+            self.rychlostHry = 40
+        self.nextTick = 1/self.rychlostHry
+    
+    def zvysRychlostHry(self):
+        tick = self.hra.dajPocetTickov()
+        if self.posledaZmenaRychlosti + self.rychlostHry*3 > tick:
+            return # nemoze sa tak casto menit rychlost hry
+        self.posledaZmenaRychlosti = tick
+        self.rychlostHry += 5
+        if self.rychlostHry > nastavenia.RYCHLOST_HRY:
+            self.rychlostHry = nastavenia.RYCHLOST_HRY
+            return False
+        self.nextTick = 1/ self.rychlostHry
+        return True
     
     def dajCasOdPoslednehoFramu(self):
         return time.time() - self.casPoslednehoVykreslenia
@@ -269,7 +265,7 @@ class ManazerOkien:
            
            
     '''
-    spracuje eventy
+    spracuje vstupy z klavesnice
     ''' 
     def events(self):
         self.eventy  = pygame.event.get()
@@ -386,9 +382,12 @@ class ManazerOkien:
             self.hra.update()
             self.hra.dajMapu().update()
         
-        
+    
+    '''
+    
+    stara sa o vykonanie vsetkoho ak je pauza tak to nakoniec dokresli resp zcasti prekresli 
+    ''' 
     def draw(self):
-        
         self.screen.fill((0,0,0))
         if self.hra!=None:
             self.hra.vykresliHru()

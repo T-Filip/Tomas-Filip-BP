@@ -4,9 +4,11 @@
 import math
 import random
 from Nastavenia import nastavenia
-from random import seed
+#from random import seed
 
-
+'''
+kenerator noise ktory scaluje vysledky do rozmedzia 0-1 .... pri nevhodnych vstupnych udajoch to vsak moze presvyhnut
+'''
 class Generator:
     def __init__(self, seed, a = 300, b = 0.4):
         self.simplexNoise = SimplexNoise(a,b,seed)
@@ -14,6 +16,10 @@ class Generator:
     def noise(self,x,y):
         return (self.simplexNoise.getNoise(x, y)/2)+0.5
     
+    
+'''
+generator noise pri vhodnych vstupnych parametroch generuje medzi -1 a 1
+'''
 class GeneratorNescalovany (Generator):
     def __init__(self, seed, a, b):
         super().__init__(seed, a, b)
@@ -22,7 +28,9 @@ class GeneratorNescalovany (Generator):
         return self.simplexNoise.getNoise(x, y)
         
 
-
+'''
+pomocou oktav vytvara noise
+'''
 class SimplexNoise:
     def __init__ (self, najHod, stal, seed):
         self.seed = seed

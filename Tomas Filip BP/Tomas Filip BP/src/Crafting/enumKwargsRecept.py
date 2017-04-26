@@ -8,7 +8,9 @@ from enum import IntEnum
 #int kluc > string kluc 
 
 
-
+'''
+kluce do dictionary ktory posielam ako parameter do receptu 
+'''
 class EnumKwargsRecept (IntEnum):
     SKUSENOST_NA_ZMENENIE = 0
     SANCA_NA_ZMENENIE = 1

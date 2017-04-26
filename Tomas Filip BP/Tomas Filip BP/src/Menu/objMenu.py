@@ -13,6 +13,10 @@ class LastUpdate(Enum):
     HOVER = 2
     CLICK = 3
 
+
+'''
+zakladna trieda pre objekt na menu ktora reprezentuje tlacidlo
+'''
 class objMenu(pygame.sprite.Sprite):
     def __init__(self,menu,imgs,text,fontVelkost,xPos,yPos,scaler=1,scale = 1):
         self.scaleRes = scaler
@@ -52,7 +56,7 @@ class objMenu(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(xPos * self.scaleRes,yPos * self.scaleRes )
 
-        
+    
     def mouseOnSprite(self):
         if self.jeLocknuty:
             return
@@ -154,10 +158,6 @@ class Tlacidlo (objMenu):
         
         '''
         tlacidlo zvysuje ale znizuje hodnotu ktoru dostalo v parametri
-        
-        #neplati
-        #Vzhladom na to ze tento potomok moze menit data na ktorych zaviasia ine prvky systemu je nutne pri zmene tychto hodnou okontrolovat aj prvky ktore na nich zavisia od toho tuje dalsi parameter kontrola.
-        #Obsahuje hodnoty a intervaly v ktorych sa maju pohybovat a to takto [[[hodnota],[interval,interval],[],[],[]]
                                                                              
         '''
 class TlacidloIncDecVal (Tlacidlo):
@@ -169,7 +169,7 @@ class TlacidloIncDecVal (Tlacidlo):
         self.kontrola = kontrola
         super().__init__(Menu, imgs, text, font, sirka, vyska, self.zmenHodnotu, scale)
         
-    def zmenHodnotu(self,self2):#zmenRecept definovana v nutri takze 2x self
+    def zmenHodnotu(self,self2):#zmenRecept definovana v nutri takze 2x self :D :D 
         if self.maSaZvysitHore:
             self.zvacsiHodnotu()
             if self.hodnota[0] > self.cap[1]:
@@ -215,7 +215,7 @@ class TlacidloIncDecVal (Tlacidlo):
             
             
             '''
-                pokial pridana hodnota je <= 0 tlacidlo sa lockne pokial je mimo capu tlacidlo sa lockne
+                pokial pridana hodnota je <= 0 tlacidlo sa lockne, pokial je mimo capu tlacidlo sa lockne
             '''
 class TlacidloIncDecValLock(TlacidloIncDecVal):
     def __init__(self,Menu,imgs,text,font,sirka,vyska,zvysovatHore,cykliSa,hodnota,hodnotaLock, cap, scale = 1,kontrola = None):
@@ -245,7 +245,6 @@ class TlacidloIncDecValLock(TlacidloIncDecVal):
     Pri zmene pohlavia sa interval vlasov a oci meni kedze pocet textur pre oci a vlasy moze byt rozny.
     Parameter cap teraz predstavuje 2 rozmerne pole 
     Novy parameter jednorozmerne pole s jednym prvkom ktory oznacuje ktore pole v cap predstavuje momentalny interval ktory ohranicuje menenie hodnotu
-    
     
 '''
 class TlacidloIncDecValByVal (TlacidloIncDecVal):
@@ -339,7 +338,9 @@ class objMenuRect(objMenu):
         pass
     
     
-    
+    '''
+    specialny objekt v menu ktory predstavuje inventar
+    '''
 class ObjMenuInventar(objMenuRect):
     def __init__(self,menu,imgs,text,fontVelkost,rect,scaler=1,scale = 1):
         super().__init__(menu, imgs, text, fontVelkost, rect, scaler, scale)

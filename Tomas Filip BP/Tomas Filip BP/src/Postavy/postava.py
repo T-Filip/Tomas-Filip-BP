@@ -6,7 +6,7 @@ Created on 23. 3. 2017
 import pygame
 import ObjektyMapa.scale as scale
 from Postavy.smerPostavy import SmerPostavy
-from Nastavenia import nastavenia as nastavenia
+#from Nastavenia import nastavenia as nastavenia
 import Postavy.tvorcaPostav as tvorcaPostav
 from Postavy.enumTypPostavy import EnumTypPostavy
 import math
@@ -86,7 +86,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     
     def dajMaxHp(self):
         return self.maxZdravie
-            
+    
+    '''
+    inicializuje objektovu oblast na nescalovanej mape tak ako by bola v reale 
+    '''       
     def initObjOblast(self,sirka,vyska):
 
         if self.typPostavy == EnumTypPostavy.UZKA:
@@ -114,13 +117,20 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     def dajHodnotuHluku(self):
         return self.vydavanyHluk    
     
+    
+    '''
+    aby hluk raz odoznel
+    '''
     def utlmenieHluku(self):
         self.vydavanyHluk -= 0.1
         if self.vydavanyHluk < 0:
             self.vydavanyHluk = 0 
             
             
-            
+    '''
+    
+    pri pohybe hraca sa vsetko meni preto je nutne pri kazdom frame updatnut tuto poziciu
+    '''        
     def updateScreenPosition(self, mapa):
         scale.ObjScaleViacTextur.updateScreenPosition(self, mapa)
         #naviac aj skontroluje ci je este stale na platne 
@@ -128,7 +138,7 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         if not self.mapa.dajNacitanuMapu().colliderect(self.rectTextOblastMapa):
             self.kill()
 
-            
+          
     def reinitVlastnosti(self):
         self.capVydrz = self.vlastnosti[3][0]*50+100
         
@@ -227,7 +237,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.utlmenieHluku()
 
     
-    
+    '''
+    pri pohybe sa meni objektova oblast na nescalovanej mape treba ju updatovat
+    '''
     def aktualizujObjOblast(self):
         #aktualizacia rect obj oblasti
         self.rectObjOblast = pygame.sprite.Rect(self.rectTextOblastMapa.x+self.rectObjOblastZaloha.x,
@@ -250,7 +262,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         self.dajNoveOkolie()
     def posunObjNaokoloDole(self):
         self.dajNoveOkolie()
-        
+    
+    '''
+    controla ci postava  nenarazila do prostredia
+    '''    
     def collideOkolie(self,sprite1,sprite2):
         koliz =  sprite1.dajObjOblastMapa().colliderect(sprite2.dajObjOblastMapa())
         if koliz:
@@ -263,6 +278,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
             else:
                 return False
             
+    '''
+    controla ci postava nenarazila do inej postavy
+    '''     
     def collidePostavy(self,sprite1,sprite2):
         return sprite1.dajObjOblastMapa().colliderect(sprite2.dajObjOblastMapa())
     
@@ -286,9 +304,12 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
     
     
     
+    '''
+    nepouzivane technika ktora by mala zabezpecit aby sa postavy neprekryvali tym ze v okamihu stretnutia ich pobucha do opacneho smeru
+    '''
     def pobuchajPostavy(self,zoznamPostav):
         #v zozname sa nachadza aj hrac
-        print("pobuchajPostavy-nefunguje spravne - nepouzivat")
+        #print("pobuchajPostavy-nefunguje spravne - nepouzivat")
         return
         for postava in zoznamPostav:
             if postava == self:
@@ -352,8 +373,10 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         elif self.typPostavy == EnumTypPostavy.SILNA:
             return [self.smerPohybu[0]*0.3,self.smerPohybu[1]*0.3]
         
-        
-        #usetri zlozitost budem iterovat cez zoznam iba raz inak by som musel raz a potom este jeden krat v podzozname
+    '''    
+    pokial je postava prilis blizko bude odpudzovana podla vzdialenosti - cim blizsie k inej postavy tym je odpudzovanie vacsie
+    usetri zlozitost budem iterovat cez zoznam iba raz inak by som musel raz a potom este jeden krat v podzozname
+    '''
     def odstrcBlizkePostavy(self):
         postavy = self.hra.dajPostavyGroup()
         #ret = False
@@ -386,6 +409,9 @@ class Postava(pygame.sprite.Sprite, scale.ObjScaleViacTextur):
         return self.rectObjOblast
         
 
+    '''
+    pohyb postavy
+    '''
     def posunPostavu(self,horizontal,vertical):
         zalohaSmer = self.smer
         self.aktualizujObjOblast()

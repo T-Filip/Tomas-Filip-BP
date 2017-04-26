@@ -12,7 +12,10 @@ import random
 
 
 
-
+'''
+podla istej nahody moze zvysit zrucnosti hraca
+tieto zrucnosti predstavuje zaobaleny int takze staci tuto hodnotu len zmenit
+'''
 def zvysenieSkusenostiStavanieObjektov(self,hrac):
     if random.random() < self.kwargs[EnumKwargsRecept.SANCA_NA_ZMENENIE]:
         self.kwargs[EnumKwargsRecept.SKUSENOST_NA_ZMENENIE][0] += 1

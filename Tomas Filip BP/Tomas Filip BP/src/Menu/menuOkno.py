@@ -4,20 +4,18 @@ Created on 4. 3. 2017
 @author: T.Filip
 '''
 import pygame
-import logging
 from Nastavenia import nastavenia
-#import manazerOkien
 from Textury import textury
 
-
+'''
+zakladna trieda pre okna ci uz v hre alebo v menu
+'''
 class MenuOkno():
     def __init__(self,manazerOkien,scale, rect = None):
         if rect == None:
             self.rect = pygame.Rect(0,0,nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie],nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie])
         else:
             self.rect = rect
-        #print ("menuOkno rect:")
-        #print (self.rect)
         self.initPozadie()
         self.nastalReinit = False
         self.manazerOkien = manazerOkien
@@ -36,7 +34,6 @@ class MenuOkno():
        
        
     def close(self):
-        #print("Close")
         pass
         
      

@@ -4,11 +4,11 @@ Created on 23. 3. 2017
 @author: T.Filip
 '''
 import Postavy.postava as postava
-import pygame
+#import pygame
 import random
 from Postavy.stavMobky import StavMobky
-from Postavy import stavMobky
-from Nastavenia import nastavenia
+#from Postavy import stavMobky
+#from Nastavenia import nastavenia
 from Postavy.smerPostavy import SmerPostavy
 import math
 import time
@@ -54,15 +54,21 @@ class Npc(postava.Postava):
                 self.stavMobky = StavMobky.STOJI
             else:
                 self.stavMobky = StavMobky.PRECHADZA_SA
-        
+    
+    '''
+    hrac vyuziva generator pre urcenie smeru pohybu tento smer sa vdaka generatoru jemne meni aby zmeny pohybu neboli prilis prudke
+    '''    
     def initGeneratoraPreChodenie(self):
         self.generatorPohybu = GeneratorNescalovany(random.random(),self.a,self.b)
 
+    def nahanajPostavu(self, hrac):
+        self.nahananaPostava = hrac
+        self.stavMobky = StavMobky.NAHANA_HRACA
+        self.cinnostNahanaHraca(None)
         
     def initStavMobky(self):
         ran = random.random()
         self.stavMobky = StavMobky.PRECHADZA_SA
-        return
         if ran<0.05:
             self.stavMobky = StavMobky.SPI
         elif ran < 0.4:
@@ -119,6 +125,10 @@ class Npc(postava.Postava):
             
         return capRychlosti
     
+    '''
+    raz za cas sa vykonava kontrola stavu
+    su tam podmienky pre mzenu a tak
+    '''
     def updateZmenStav(self):
         #update v ktorom moze menit stav
         #print("update stav")
@@ -154,10 +164,10 @@ class Npc(postava.Postava):
     
     def zmenStavStoji(self):
         ran = random.random()
-        if ran < 0.0:
+        if ran < 0.05:
             self.stavMobky = StavMobky.SPI
-            self.hlbaSpanku = random.randint(10,50)
-        elif ran< 0.10:
+            self.hlbaSpanku = random.randint(10,65)
+        elif ran< 0.1:
             self.stavMobky = StavMobky.PRECHADZA_SA
             
         self.cekniHluk()
@@ -192,7 +202,9 @@ class Npc(postava.Postava):
                 group.remove(self)
     
     
-    
+    '''
+    pokial je v blizkosit hluku je mozne ze ho zacne nasledovat
+    '''
     def cekniHluk(self):
         if random.random() < 0.4:
             return
@@ -231,8 +243,9 @@ class Npc(postava.Postava):
                 self.nasledovatel = nasledovatel
                 self.stavMobky = StavMobky.SLEDUJE_HLUK
             
-            
-            #ak ma na dohlad hraca prepne stav na nahananie
+    '''        
+    ak ma na dohlad hraca prepne stav na nahananie
+    '''
     def cekniHraca(self):
         hrac = self.hra.dajHraca()
         if hrac.jePostavaMrtva():
@@ -277,7 +290,9 @@ class Npc(postava.Postava):
         self.add(group)
         
                     
-                    
+    '''
+    pokial postava stoji vykonava sa tato metoda na urcenie textury postavy pri stati 
+    '''    
     def smerPostavyPriStati(self,horizontal,vertical):
         if (horizontal < 0.5 or horizontal > -0.5) or (vertical < 0.5 or vertical > -0.5):
             return
@@ -286,7 +301,9 @@ class Npc(postava.Postava):
             
         #inak ostava ako zostalo stat
         
-        
+    '''
+    pokial postava dlho sprintuje je nutne to zarazit v momente ked odjde vydrz - potom vsak chvilku nemoze sprintovat 
+    '''  
     def mozeSprintovat(self):
         #ak je aspon v 50 dohladu
         if self.stavMobky == StavMobky.NAHANA_HRACA:
@@ -296,7 +313,10 @@ class Npc(postava.Postava):
             
         return False
             
-
+    '''
+    
+    cinnost kazdeho stavu vykonava sa obcas
+    '''
     def updateCinnostStavu(self):
         if self.stavMobky == StavMobky.SLEDUJE_HLUK:
             self.cinnostSledujHluk()
@@ -353,7 +373,7 @@ class Npc(postava.Postava):
 
         
 
-    def cinnostNahanaHraca(self,modulo100):
+    def cinnostNahanaHraca(self,modulo100=0):
         if self.nahananaPostava == None:
             return
         ret = self.dajSmerNaPostavu(self.nahananaPostava)
@@ -371,7 +391,10 @@ class Npc(postava.Postava):
         
     def ublizNahananejPostave(self,postava):
         pass
-        
+     
+    '''
+    vrati vektor na danu postavu
+    '''   
     def dajSmerNaPostavu(self,postava):
         objNasl = postava.dajObjOblastMapa()
         xDir = objNasl.centerx - self.dajObjOblastMapa().centerx

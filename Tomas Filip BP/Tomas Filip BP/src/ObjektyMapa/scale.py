@@ -6,11 +6,15 @@ Created on 19. 2. 2017
 
 import pygame
 
-#abstraktna trieda ktorej ulohou je zabezpecit objektu moznost scalovania pri zmene zoomu v hre
+'''
+abstraktna trieda ktorej ulohou je zabezpecit objektu moznost scalovania pri zmene zoomu v hre
+'''
 class ObjScale:
     
+    '''
     #metoda prisposobi texturu scalovaniu
     #je nutne aby trieda obsahovala zalohu textury
+    '''
     def scale(self,nasobitel):
         #nasobitel je vzdy od zakladu 64x64 ????
         self.updateTopLeft(nasobitel)
@@ -26,6 +30,7 @@ class ObjScale:
     def addUpdate(self):
         raise NotImplemented
     
+
     def updateImage(self):
         self.image = pygame.transform.scale(self.imageZaloha,(self.rect.width, self.rect.height))
      
@@ -43,7 +48,7 @@ class ObjScale:
     def updateLayer(self):
         self.hra.dajAktivBlitGroup().change_layer(self,self.rectTextOblastMapa.y+30)
         
-        
+       
 class ObjScaleViacTextur (ObjScale):
     
     def updateImage(self):

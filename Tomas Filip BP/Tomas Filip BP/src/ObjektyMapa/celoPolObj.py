@@ -13,7 +13,10 @@ import Predmety.tazenie as tazenie
         
         
 
-
+'''
+specialny objekt na mape. Moze existovat len jeden ma jednom policku
+momentalne sa vyuziva len na vodu - treba ho optimalizovat dost spomaluje nacitavanie
+'''
 class CeloPolObj():
     def __init__(self,policko,id):
         self.random = random.Random(policko.noise[1])
@@ -54,9 +57,9 @@ class CeloPolObj():
             
         if indexyTvaru != None:
             #for x in range (4):
-             #   print()
+             #   #print()
               #  for y in range (4):
-               #     print(" " + str(indexyTvaru[y][x]),end='')
+               #    #print(" " + str(indexyTvaru[y][x]),end='')
                self.vytvorObjekty(indexyTvaru)
         #else:
          #  self.zmenStavPolicka()#policko je obklopene rovnakym typom celopol obj
@@ -120,7 +123,7 @@ class CeloPolObj():
                 if self.zoznamPolicok[7].dajIdCeloPol() == self.id:
                     indexyTvaru[3][0]=-1
                 else:
-                    indexyTvaru[3][0]=10#2
+                    indexyTvaru[3][0]=9
             elif self.zoznamPolicok[2].dajIdCeloPol() == self.id:
                 if self.zoznamPolicok[1].dajIdCeloPol() == self.id:
                     indexyTvaru[3][3]=-1
@@ -136,7 +139,7 @@ class CeloPolObj():
                 if self.zoznamPolicok[3].dajIdCeloPol() == self.id:
                     indexyTvaru[0][3]=-1
                 else:
-                    indexyTvaru[0][3]=9
+                    indexyTvaru[0][3]=10#9
         return indexyTvaru
       
     def h3(self):
@@ -184,7 +187,7 @@ class CeloPolObj():
             if self.zoznamPolicok[3].dajIdCeloPol() == self.id:
                 indexyTvaru[0][3]=-1
             else:
-                indexyTvaru[0][3]=9
+                indexyTvaru[0][3]=10
         return indexyTvaru
     def h4(self):
         indexyTvaru = self.h1()

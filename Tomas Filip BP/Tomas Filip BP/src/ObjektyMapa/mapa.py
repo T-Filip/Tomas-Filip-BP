@@ -8,40 +8,20 @@ from ObjektyMapa import policko
 from ObjektyMapa import generator
 import pygame
 import random
-import ObjektyMapa.infObjekty as infObjekty
+#import ObjektyMapa.infObjekty as infObjekty
 from ObjektyMapa import mapa
 import logging
 from threading import Thread
 import math
+import time
 
-SINGLETON_MAPA = None #prva mapa .... 
-
-class vytvoreniePolicka:
-    def __init__(self,x,y,xCoord,yCoord):
-        self.x=x
-        self.y=y
-        self.xCoord = xCoord
-        self.yCoord = yCoord
-        
-    
-    def vytvorPolicko(self,mapa):
-        mapa.mapa[self.x][self.y] = mapa.vytvorPolickoNa(self.xCoord,self.yCoord)
-        
-class initStage2Task:
-    def __init__(self,policko):
-        self.policko = policko
-        
-    def initStage2(self):
-        self.policko.initStage2()
-            
-
+MAPA = None 
 
 class Mapa:
     def __init__(self,hra):
-        if mapa.SINGLETON_MAPA == None:
-            mapa.SINGLETON_MAPA = self
+        mapa.MAPA = self
         
-
+        self.pauzaNaTickov = 0
         self.hra=hra
         self.hrac = hra.hrac
         self.thread = Thread()
@@ -71,7 +51,7 @@ class Mapa:
         #self.minulaPoziciaHraca = [0,0]
         logging.info("initKamera")
         self.initKamera()
-        self.Test = pygame.image.load('img/Test32.png').convert()
+        #self.Test = pygame.image.load('img/Test32.png').convert()
         self.polickoveSurMysky = [0,0]
         
         #self.generator = generator.Generator(1234)
@@ -85,6 +65,9 @@ class Mapa:
         logging.info("vytvorenie mapy hotovo")
         
         self.zoomZotrvacnost = 0
+
+    def zmenilSaZoom(self):
+        self.menilSaZoom = True
 
 
     def dajMyskuNaMape(self):
@@ -135,6 +118,10 @@ class Mapa:
             self.zoomZotrvacnost = 0
             
 
+    '''
+    vracia takmer rohove policko ako keby na indexe [2][2]
+    namlo by sa uz pouzivat
+    '''
     def dajTopLeftMin2Policko(self):
         sur = self.mapa[self.topLeftMapa[0]][self.topLeftMapa[1]].dajSuradnice()
         #print("suradnice top left mapa :" + str(self.topLeftMapa))
@@ -159,7 +146,10 @@ class Mapa:
         self.noiseGen = [generator.Generator(self.random.random(),500,0.3),generator.Generator(self.random.random(),800,0.4),generator.Generator(self.random.random(),800,0.4)]
         
         self.generatorPreMobky = generator.Generator(self.random.random(),150,0.95)
-        
+     
+    '''
+    noise pre generovanie nepriatelov
+    '''   
     def dajNoiseMobkaNa(self,x,y):
         return self.generatorPreMobky.noise(x, y)
         
@@ -168,6 +158,11 @@ class Mapa:
     def dajScaleNas (self):
         return self.scaleNasobitel
     
+    
+    '''
+    polickove suradnice znamenaju suradnice policka na ktore myska ukazuje
+    vyuziva sa pre vytvranie skupyny objektov vylucne pre mysku - aby sa nemuseli prechadzat vsetky objekty ale len cast
+    '''
     def updatePolickoveSuradniceMysky(self):
         #ulozi suradnice policka na ktore ukazuje myska
         pos = pygame.mouse.get_pos()
@@ -190,6 +185,14 @@ class Mapa:
         #ak sa hrac pohol prilis istym smerom je potrebne nacitat nove policka 
         #hracy =hrac.rectTextOblastMapa.centery
         #mapay = self.nacitanaMapa.centery 
+        pom = time.time()
+        if self.pauzaNaTickov > 0:
+            self.pauzaNaTickov -= 1
+            return # su mensie fps spomalime nacitanie
+        
+        fps = self.hra.dajFPS()
+        if fps<60:
+            self.pauzaNaTickov = int((60-fps)/10)
         
         
         if self.prebiehaNacitavanie:
@@ -265,7 +268,13 @@ class Mapa:
                 if absRozdiel2 > 128:
                     self.nacitajPolicka(hrac)
                 
+        casNacitavania = time.time()-pom
 
+        if casNacitavania >= 0.00175:
+            self.pauzaNaTickov += 2
+        elif casNacitavania >=0.00135:
+            self.pauzaNaTickov += 1
+        
 
 
 
@@ -282,6 +291,9 @@ class Mapa:
     def dajOkolieMysky(self):
         return self.okolieMysky
     
+    '''
+    vrati vsetky objekty na ktore myska ukazuje
+    '''
     def dajObjektNaMyske(self):
         okolieMysky = self.dajOkolieMysky()
         if okolieMysky == None:
@@ -294,7 +306,7 @@ class Mapa:
             
             
     def nacitajPolickaDoleInit(self):
-        print("DOLE")
+        #print("DOLE")
         #self.yStage2 = self.topLeftMapa[1]
         self.prebiehaNacitavanie = True
         #self.topLeftMapa[1] += 1
@@ -310,8 +322,8 @@ class Mapa:
         self.smerNacitania = 0
 
     def nacitajPolickaDolePostupne(self):
-        print("DOLE POSTUPNE")
-        print(self.indexNacitania)
+        #print("DOLE POSTUPNE")
+        #print(self.indexNacitania)
         if self.stavNacitania == 0:
             
             
@@ -333,8 +345,8 @@ class Mapa:
                 #self.nacitanaMapa = self.nacitanaMapa.move(0,64)
         
                 self.yStage2 =self.topLeftMapa[1]-2
-                print("topleft Y = " + str(self.topLeftMapa[1]))
-                print("init yStage2 = " + str(self.yStage2))
+                #print("topleft Y = " + str(self.topLeftMapa[1]))
+                #print("init yStage2 = " + str(self.yStage2))
                 
                 if self.yStage2<0:
                     self.yStage2 += nastavenia.MAP_SIZE_Y
@@ -361,7 +373,7 @@ class Mapa:
                 self.indexNacitania = 0
                 self.stavNacitania = 3
             else:
-                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                #print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
                 self.mapa[self.indexNacitania][self.yStage2].initStage2() 
                 self.indexNacitania += 1
 
@@ -371,7 +383,7 @@ class Mapa:
                 self.nacitanaMapa = self.nacitanaMapa.move(0, 64)
                 self.prebiehaNacitavanie = False
             else:
-                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                #print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
                 self.mapa[self.indexNacitania][self.yStage2].initStage2() 
                 self.indexNacitania += 1
          
@@ -421,7 +433,7 @@ class Mapa:
         self.nacitanaMapa = self.nacitanaMapa.move(0,64)
  
     def nacitajPolickaHoreInit(self):
-        print("HORE")
+        #print("HORE")
         self.yStage2 = self.topLeftMapa[1]
         self.prebiehaNacitavanie = True
         self.topLeftMapa[1] -= 1
@@ -437,7 +449,7 @@ class Mapa:
         self.smerNacitania = 3
 
     def nacitajPolickaHorePostupne(self):
-        print(self.indexNacitania)
+        #print(self.indexNacitania)
         if self.stavNacitania == 0:
             
             
@@ -455,9 +467,9 @@ class Mapa:
                 self.pomocnaHrana = nastavenia.MAP_SIZE_X
                 if self.topLeftMapa[0] == 0:
                     self.pomocnaHrana -= 1
-                    print("AAAA")
-                    print(self.indexNacitania)
-                    print(self.pomocnaHrana)
+                    #print("AAAA")
+                    #print(self.indexNacitania)
+                    #print(self.pomocnaHrana)
             else:
                 self.nacitajPolicko(self.indexNacitania,self.topLeftMapa[1])
                 self.indexNacitania += 1
@@ -470,7 +482,7 @@ class Mapa:
                 self.indexNacitania = 0
                 self.stavNacitania = 3
             else:
-                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                #print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
                 self.mapa[self.indexNacitania][self.yStage2].initStage2() 
                 self.indexNacitania += 1
 
@@ -480,7 +492,7 @@ class Mapa:
                 self.nacitanaMapa = self.nacitanaMapa.move(0,-64)
                 self.prebiehaNacitavanie = False
             else:
-                print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
+                #print("stg2 - " + str(self.indexNacitania) + "  " + str(self.yStage2))
                 self.mapa[self.indexNacitania][self.yStage2].initStage2() 
                 self.indexNacitania += 1
                 
@@ -491,7 +503,7 @@ class Mapa:
     #koli tomu ze to prebieha postupne mnozstvo udajov sa uklada do pamate triedy preto netreba parametre
     def nacitajPolicko(self,xPole,yPole):
         self.mapa[xPole][yPole].uloz()
-        print("nacitavam policko:" + str(xPole) + "  " + str(yPole))
+        #print("nacitavam policko:" + str(xPole) + "  " + str(yPole))
         self.mapa[xPole][yPole] = self.vytvorPolickoNa(self.xCoord ,self.yCoord)
 
                 
@@ -552,7 +564,7 @@ class Mapa:
         self.indexNacitania = self.topLeftMapa[1]
 
     def nacitajPolickaVlavoPostupne(self):
-        print(self.indexNacitania)
+        #print(self.indexNacitania)
         if self.stavNacitania == 0:
             
             if self.indexNacitania >= nastavenia.MAP_SIZE_Y:
@@ -571,9 +583,9 @@ class Mapa:
                 #print("pomocna hrana " + str(self.pomocnaHrana))
                 if self.topLeftMapa[1] <= 0:
                     self.pomocnaHrana -= 1
-                    print("AAAA")
-                    print(self.indexNacitania)
-                    print(self.pomocnaHrana)
+                    #print("AAAA")
+                    #print(self.indexNacitania)
+                    #print(self.pomocnaHrana)
             else:
                 self.nacitajPolicko(self.topLeftMapa[0], self.indexNacitania)
                 self.indexNacitania += 1
@@ -639,7 +651,7 @@ class Mapa:
 
 
     def nacitajPolickaVpravoInit(self):
-        print("VPRAVO")
+        #print("VPRAVO")
         self.prebiehaNacitavanie = True
         self.yCoord = self.topLeftCoord[1]
         self.xCoord = self.topLeftCoord[0] + nastavenia.MAP_SIZE_X
@@ -653,7 +665,7 @@ class Mapa:
             self.topLeftMapa[0] = 0
 
     def nacitajPolickaVpravoPostupne(self):
-        print(self.indexNacitania)
+        #print(self.indexNacitania)
         if self.stavNacitania == 0:
             
             if self.indexNacitania >= nastavenia.MAP_SIZE_Y:
@@ -670,7 +682,7 @@ class Mapa:
         elif self.stavNacitania == 1:
             if self.indexNacitania >= self.topLeftMapa[1]:
                 self.indexNacitania = self.topLeftMapa[1]+1
-                print("index nacitania do A: " + str(self.indexNacitania))
+                #print("index nacitania do A: " + str(self.indexNacitania))
                 self.stavNacitania = 2
                 self.pomocnaHrana = nastavenia.MAP_SIZE_Y
                 #self.topLeftMapa[0] +=1
@@ -681,9 +693,9 @@ class Mapa:
 
                 if self.topLeftMapa[1] <= 0:
                     self.pomocnaHrana -= 1
-                    print("AAAA")
-                    print(self.indexNacitania)
-                    print(self.pomocnaHrana)
+                    #print("AAAA")
+                    #print(self.indexNacitania)
+                    #print(self.pomocnaHrana)
             else:
                 xVPoli = self.topLeftMapa[0]-1
                 if xVPoli < 0:
@@ -698,9 +710,9 @@ class Mapa:
             if self.indexNacitania >= self.pomocnaHrana:
                 self.indexNacitania = 0
                 self.stavNacitania = 3
-                print("Konci A")
+                #print("Konci A")
             else:
-                print("stg2A - " + str(self.xStage2) + "  " + str(self.indexNacitania))
+                #print("stg2A - " + str(self.xStage2) + "  " + str(self.indexNacitania))
                 self.mapa[self.xStage2][self.indexNacitania].initStage2() 
                 self.indexNacitania += 1
     
@@ -709,16 +721,14 @@ class Mapa:
             if self.indexNacitania >= self.topLeftMapa[1]-1:
                 self.nacitanaMapa = self.nacitanaMapa.move(64,0)
                 self.prebiehaNacitavanie = False
-                print("konciB")
+                #print("konciB")
             else:
-                print("stg2B - " + str(self.xStage2) + "  " + str(self.indexNacitania))
+                #print("stg2B - " + str(self.xStage2) + "  " + str(self.indexNacitania))
                 self.mapa[self.xStage2][self.indexNacitania].initStage2() 
                 self.indexNacitania += 1
 
+
     def nacitajPolickaVpravo(self):
-        
-        
-        
         yCoord = self.topLeftCoord[1]
         xCoord = self.topLeftCoord[0] + nastavenia.MAP_SIZE_X
         
@@ -780,13 +790,14 @@ class Mapa:
 
 
     def scale(self):
-        i =5 # to ani netreba ci? 
+        pass# to ani netreba ci? 
         
         
     
         
         '''
         Prvotne nacitanie.
+        Cela mapa sa nacita naraz
         '''
     def nacitajMapu(self):
         #rohX = int(self.hra.hrac.pixeloveUmiestnenieNaMape[0]/64-nastavenia.MAP_SIZE_X/2)
@@ -804,7 +815,7 @@ class Mapa:
         for x in range (0,len(self.mapa)):
             for y in range (0, len(self.mapa[x])):
                 self.mapa[x][y] = self.vytvorPolickoNa(self.topLeftCoord[0]+x,self.topLeftCoord[1]+y)
-                print("nacitane: " + str(x) + " " + str(y))
+                #print("nacitane: " + str(x) + " " + str(y))
 
 
 
@@ -832,6 +843,9 @@ class Mapa:
         noise = [self.noiseGen[0].noise(x, y),self.noiseGen[1].noise(x, y),self.noiseGen[2].noise(x, y)]
         return policko.Policko(self,(x,y),noise,index)
     
+    '''
+    vrati index najvacsieho prvku pola vyuzivane pre urcovanie biomov
+    '''
     def najdiIndexNajvacsieho(self, list):
         index = 0
         hodnotaMax=list[0]
@@ -842,16 +856,9 @@ class Mapa:
                 index = i
         return index
     
-    
-      
-        
-        '''
-        self.lavoHorePixelKamera[0] = hrac.pixeloveUmiestnenieNaMape[0] - self.minulaPoziciaHraca[0]
-        self.lavoHorePixelKamera[1] = hrac.pixeloveUmiestnenieNaMape[1] - self.minulaPoziciaHraca[1]
-        self.minulaPoziciaHraca = hrac.pixeloveUmiestnenieNaMape
-        
-        '''
-        
+    '''
+    aby sa mapa centrovala na hraca tak sa kvazi kamera centruje pri pohybe hraca a od tejto kamery sa nasledne odvija pozicia objektov na obrazovke
+    '''    
     def updateKamera(self,hrac):
         topLeftScaleMap = hrac.dajTopLeftScaleMap()
         topLeftNoScaleMap = hrac.dajTopLeftNoScaleMap()
@@ -877,12 +884,18 @@ class Mapa:
                                   nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie],
                                   nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie])
         
-        
+    '''
+    ked sa meni pozicia kamery je nutne updatnut poziciu prvkov na obrazovke 
+    oblast postu v parametri sa umiestni na spravne misto
+    '''   
     def updatniPoziciu(self,topLeftScaleMap,rect):
         rect.x = topLeftScaleMap[0] - self.kamera.x
         #rect.y = self.kamera.y - topLeftScaleMap[1] # menim smer y suradnice hore sa znizuje
         rect.y = topLeftScaleMap[1] -self.kamera.y
-                
+     
+    '''
+    vrati zoznam okolitych prvkov podla danej suradnice
+    '''           
     def dajOkolie (self, surNaMape):
         #vrati 8 policok naokolo policka v parametri
         #nekontroluje fazu policka
@@ -898,6 +911,10 @@ class Mapa:
             ]
         return zoznam
     
+    '''
+    vrati vsetky objekty v danom rozmedzi
+    
+    '''
     def dajObjektyVOblasti(self,radius,stredX,stredY):
         #vrati vsetky policka v danom radiuse
         #radius = 1 vrati 1 policko

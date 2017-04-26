@@ -13,8 +13,8 @@ import Menu.oknoInventar as oknoInventar
 import Predmety.predmet as predmet
 import Predmety.inventar as inventar
 import Menu.pracaSPredmetmi as pracaSPredmetmi
-from Menu.pracaSPredmetmi import PracaSPredmetmi
 import Crafting.recepty as recepty
+
 
 def zmenRecept(tlacidlo):
     tlacidlo.menu.zmenCraft(tlacidlo.args[0])
@@ -24,6 +24,10 @@ def metodaCraft(tlacidlo):
     if not tlacidlo.jeLocknuty:
         tlacidlo.menu.craft()
 
+
+'''
+Okno inventara v hre
+'''
 class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
     def __init__(self,manazerOkien,scale):
          self.predmetVMyskePosunX = 0

@@ -20,7 +20,9 @@ from Menu.enumOknaHra import EnumOknaHra
 
 
 
-
+'''
+zakladna trieda pre okno hry
+'''
 class Hra:
     def __init__(self,manazerOkien, screen, textury,vlastnosti,typP):
         self.manazerOkien = manazerOkien
@@ -45,13 +47,6 @@ class Hra:
         self.polickaSprites = pygame.sprite.Group()
         self.mrtvePostavy = pygame.sprite.Group()
         
-
-        
-
-        
-        
-        
-        
         self.hrac = hrac.Hrac(self,[0,0],typP,textury,vlastnosti,48,48)
         
         logging.info("Vytvorenie mapy")
@@ -61,47 +56,16 @@ class Hra:
         
         recepty.initRecepty(self.hrac)
         
-        
-        
         logging.info("inicializacia mapy")
         self.hrac.update()
-        
-
         
         self.initInformacieOHracovi(scale)
         self.invOknoRychlyPristup.reinit(self.hrac.dajInventarRychlyPristup())
         self.manazerOkien.dajOknoHra(enumOknaHra.EnumOknaHra.INVENTAR).vlozOkno(self.invOknoRychlyPristup)
         
-        '''
-        self.polickaSpritesTEST = pygame.sprite.RenderPlain()
-        for i in range (0,10000):
-            test(self,50,50)
-        '''
 
         self.casovanieModulo = 0
         
-        self.imagee = pygame.Surface((64,64))
-        #self.imagee.fill((100,200,120))
-
-        self.Test = pygame.image.load('img\\Test32.png')
-        self.img = pygame.Surface((64,64))
-        self.img.blit(self.Test,(0,0))
-        self.img.convert()
-        self.img2 = pygame.Surface((64,64), pygame.SRCALPHA)
-        self.img2.blit(self.Test,(0,0))
-        self.img.convert_alpha()
-
-        
-        '''
-        for i in range (1,1000):
-            col = (randint(0,255),randint(0,255),randint(0,255))
-            test(self,randint(0,1000),randint(0,1000),self.img,col)
-            
-            
-        for i in range (1,30):
-            col = (randint(0,255),randint(0,255),randint(0,255))
-            test2(self,randint(0,1000),randint(0,1000),self.img2,col)
-            '''
             
         self.aktivBlitObjMapa.draw(self.screen)
         self.updateHluku()
@@ -162,7 +126,12 @@ class Hra:
         posX = int(390*scale)
         posY = int(610*scale)
         self.poziciaTextHpBar = [posX+sirka/2 -22*scale,posY+2*scale]
-        
+     
+     
+    '''
+    
+    pravidelne kontroluje zmenu zdravia aby mohlo dojst k aktualizacii - nie prilis vhodne riesenie 
+    '''   
     def skontrolujAktualnostZdravia(self,scale):
         #koli efektu - taktiez uz nebude nutne updatovat zdravie hracovi toto to skontroluje
         #vzhladom na to ze ide o destinne cila tak porovnavam vzdialenosti 2 bodov od realneho a ktory je na tom lepsie ten sa stane novym
@@ -205,22 +174,12 @@ class Hra:
 
 
     
-    
+    '''
+    vykresluje okno hry
+    '''
     def vykresliHru(self):
-        #self.screen.fill(nastavenia.BLACK)
-        
-        #gc.collect()
-        '''
-        if self.fpsCount == 1:
-            print("-------")
-            print("all sprites: " + str(len(self.allSprites)))
-            print(self.hrac.suradnice)
-        '''
 
         self.fpsCount +=  1
-        #print(len(self.polickaSprites))
-        
-        
         
         self.postavyGroup.draw(self.screen)
         
@@ -306,9 +265,9 @@ class Hra:
         #self.polickaSpritesTEST.draw(self.screen)
         '''
         if self.fpsCount == 20:
-            print("---------------")
-            print (len(self.polickaSprites))
-            print (len(self.aktivBlitObjMapa))
+            #print("---------------")
+            #print (len(self.polickaSprites))
+            #print (len(self.aktivBlitObjMapa))
         '''
         if not self.manazerOkien.jeVykresleneNejakeMenu():
                 self.hrac.vykresliOznacenyPredmet(self.screen)
@@ -352,7 +311,11 @@ class Hra:
         self.hrac.klikButton4()
     def klikButton5(self):
         self.hrac.klikButton5()
-        
+     
+     
+    '''
+    vykresluje informacie v rohu okna ako je fps tps poziciu hraca 
+    '''   
     def vykresliInfoRoh(self):
         font = textury.dajFont(16)
         
@@ -377,7 +340,11 @@ class Hra:
         #self.screen.blit(self.hracKocka,(self.hrac.rect.topleft))
         pygame.display.flip()  
         
-        
+      
+    '''
+    update hry kto sa pohol AI a pod
+    
+    '''  
     def update(self):
         self.casovanieModulo +=1
         self.pocetTickov += 1
@@ -388,7 +355,8 @@ class Hra:
         modulo10 = self.casovanieModulo % 10
         modulo100 = self.casovanieModulo % 100
         
-        
+        if modulo100 == 72:
+            self.mapa.zmenilSaZoom()#len docasne
         
         self.tpsCount += 1
         if time.time() > self.timeUP:
@@ -474,7 +442,8 @@ class Hra:
             samp = random.sample(list(self.mobky),poc)
             for mob in samp:
                 mob.updateCinnostStavu()
-        
+     
+       
     def stlacena0(self):
         self.hrac.stlacena0()
         

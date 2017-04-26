@@ -12,7 +12,7 @@ from Textury import textury
 import logging
 from Predmety.enumTypMaterialu import EnumTypMaterialu
 import Predmety.tazenie as tazenie
-from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu
+#from ObjektyMapa.enumSmerObjektu import EnumSmerObjektu
 import Predmety.animacia as animacia
 import ObjektyMapa.metodyPredmety as metodyPredmety
 
@@ -26,7 +26,9 @@ nextID = 0
 
 
 
-
+'''
+Identifikacny system - zakladna  trieda 
+'''
 class Inf():
     def __init__(self,imgPredmet = None, stackKapacita = 64):
         self.stackKapacita = stackKapacita
@@ -58,6 +60,9 @@ class Inf():
         return self.stackKapacita
     
 
+'''
+dodatocne informacie ku predmtom ktore hrac moze pozivat zatial len health potion
+'''
 class InfPozivatelne(Inf):
     def __init__(self,metoda, imgPredmet = None, stackKapacita = 64):
         self.zjedzPredmetMetoda = metoda
@@ -73,9 +78,11 @@ def zvysHpHracovi(hrac):
     
     
     
-    
-    #vhodneNaMaterial je dic ktory obsahuje ako kluc typ materialu a ako hodnotu cislo medzi 0-1 ktore indikuje ako velmi vie pomoct pri tazeni daneho materialu
-    #ak sa typ materialu v tomto zozname nenachadza tak je to 0
+'''
+informacie o nastrojoch mec sekera krumpac a ich rozne typy
+vhodneNaMaterial je dic ktory obsahuje ako kluc typ materialu a ako hodnotu cislo medzi 0-1 ktore indikuje ako velmi vie pomoct pri tazeni daneho materialu
+ak sa typ materialu v tomto zozname nenachadza tak je to 0
+'''
 class InfNastroje(Inf):
     def __init__(self,animacia,vhodneNa,imgAnimacia = None,imgPredmet = None, stackKapacita = 1):
         self.animacia = animacia
@@ -99,7 +106,10 @@ class InfNastroje(Inf):
 
     
     
-    
+'''
+abstraktna trieda obsahuje spolocne vlastnosti preo bjekty na mape aj pre celopolickove aj pre bezne
+'''
+   
 class InfNaMape(Inf):
     def __init__(self,material,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.material = material
@@ -120,7 +130,10 @@ class InfNaMape(Inf):
     
 
 
+'''
+necelopolickove objekty na mape este nescalovane vyuzivane na kvietky niektore kamene a tak
 
+'''
 #InfObj = namTupDef("InfObj", "img rectObjOblastMapa rychlostPrechodu pocPouzivajucich", {'pocPouzivajucich':0})
 class InfObj(InfNaMape):
     def __init__(self,img,material,casTazenia,drop, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
@@ -166,9 +179,10 @@ class InfObj(InfNaMape):
         return self.drop
 
         #_(self,img,material,casTazenia,drop, rectObjOblastMapa = None, rychlostPrechodu = 1,imgPredmet = None, stackKapacita = 64,trieda = None,metodaRightClick = None):
-        
-        #abstraktna trieda ktora nededi ziaden scale ale mai mplementovane metody zavisle na tomto dedeni
-        #potomci tejto triedy dedia rozny scale
+        '''
+        abstraktna trieda ktora nededi ziaden scale ale mai mplementovane metody zavisle na tomto dedeni
+        potomci tejto triedy dedia rozny scale
+        '''
 class InfObjBezScale(InfObj):
     def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.imgZaloha = img.copy()
@@ -196,26 +210,33 @@ class InfObjBezScale(InfObj):
     #metoda sa vola pri vytvarani noveho objektu v mape s aktivnym prekreslovanim, kedze data objektov ktore nie su pouzivane sa nescaluju je potrebne tak urobit na zaciatku ich pouzivania
     def aktualizujData(self): 
         if len(self.sprites) <= 1:#kedze sa data aktualizuju pri vstupe do stage 2 a vzhladom na to ze aktualizacia prebieha pre vsetky objekty tak to staci volat iba ak je pocet pouzivajucich prave 1
-            self.scale(mapa.SINGLETON_MAPA.dajNas())
+            self.scale(mapa.MAPA.dajNas())
 
-    #def vymazSprite(self,sprite):
-    #   self.sprites.remove(sprite) 
+
     
     
-   #self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+'''
+
+Uz scalovany objekt na prostredi vyuzivane na stromy niektore kamene a pod
+'''
 class InfObjScale(InfObjBezScale,scale.ObjScale):
     def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
         
         super().__init__(img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet,stackKapacita,trieda,metodaRightClick)
-        
+     
+    '''
+    inicializacia triedy ktora ja s touto triedou plne kompatibilna
+    import koli cyklu
+    '''   
     def objNaMape(self,trieda = None):
         import ObjektyMapa.objMapa as objMapa
         self.objMapa = objMapa.ObjMapaAktivPrek
         
     
-        
-  #vlozInf(InfObjScaleViacImg([vpravo,vlavo,hore,dole],rect,0,EnumTypMaterialu.DREVO,250,[tazenie.dropVelkyKamen,[10,4,1]],zmenSmerDvere))  
-  #__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
+'''
+rovnako ako infobjscale ale jedna sa o viac textur ktore treba scalovat resp netreba niektore .... asi mohlo byt pod jednym
+vyuziva sa na dvere barikady mury postavy
+'''
 class InfObjScaleViacImg(InfObjBezScale,scale.ObjScaleViacTextur):
     def __init__(self,img, rectObjOblastMapa, rychlostPrechodu,material,casTazenia,drop,imgPredmet = None,stackKapacita = 64,trieda = None,metodaRightClick = None):
         self.imgZaloha = img # pole obrazkov .. pre kazdy smer jeden
@@ -264,7 +285,9 @@ class InfObjScaleViacImg(InfObjBezScale,scale.ObjScaleViacTextur):
 
 
 
-        
+'''
+spolocne informacie pre celopolickove objekty - momentalne vyuzivany len potomok
+'''  
 #informacie o celopolickovych objektoch - obsahuju niekolko InfObj a to o kazdom jeho kusku
 class InfObjCelPol(InfNaMape):
     def __init__(self,material,casTazenia,drop,zoznam,texturaPolicka):
@@ -277,6 +300,10 @@ class InfObjCelPol(InfNaMape):
     def dajDrop(self):
         return self.drop
         
+    '''
+    
+    Celopolickove objekty ktore maju aj pozadie aby splyvali - vyuzivane na vodu jej plaz je ciastocne transparentna aby to viac splyvalo - spomaluje hru dost
+    '''
 class InfObjCelPolPozadie(InfObjCelPol):
     def __init__(self,material,casTazenia,drop,zoznam,texturaPolicka,pozadie,zozRectPoz = None):
         self.pozadie = pozadie
@@ -306,9 +333,10 @@ def dajInf(id):
   
 
 
-            
-
-#v metode pretoze sa to nemoze vykonat pri importe kedze este v tom case este nie je inicializovany pygame
+'''        
+inicializacia vsetkych spolocnych informacii
+v metode pretoze sa to nemoze vykonat pri importe kedze este v tom case este nie je inicializovany pygame
+'''
 def nacitajTexturyObjMapa():
 
 
@@ -326,7 +354,7 @@ def nacitajTexturyObjMapa():
     for x in range (0,6):
         for y in range (0,3):
             texturaStromov[id].blit(stromy,(0,0),(48*x,64*y,48,64))
-            vlozInf(InfObjScale(texturaStromov[id],rectStromov,0.5,EnumTypMaterialu.DREVO,250,[tazenie.dropStrom,[10,4,1]]))
+            vlozInf(InfObjScale(texturaStromov[id],rectStromov,0.5,EnumTypMaterialu.DREVO,150,[tazenie.dropStrom,[10,4,1]]))
             id+=1
 
 
@@ -536,16 +564,15 @@ def nacitajTexturyObjMapa():
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],90)
         zoznamInf[9][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
-        zozRect[9][i] = [pygame.Rect(0,10,16,6),pygame.Rect(10,0,6,10),pygame.Rect(5,6,5,5) ]
-        #zozRect[9][i] = [pygame.Rect(0,0,16,6),pygame.Rect(10,6,6,10),pygame.Rect(5,6,5,5) ]
+        #zozRect[9][i] = [ ]
+        zozRect[9][i] = [pygame.Rect(0,10,16,6),pygame.Rect(0,0,6,10),pygame.Rect(5,6,5,5) ]
     
 
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],270)
         zoznamInf[10][i] = InfObj(text,EnumTypMaterialu.VODA,500,[tazenie.passMet,[10,4,1]],None,0.6)
-        #zozRect[10][i] = [pygame.Rect(0,10,16,6),pygame.Rect(10,0,6,10),pygame.Rect(5,6,5,5) ]
+        #zozRect[10][i] = [ ]
         zozRect[10][i] = [pygame.Rect(0,0,16,6),pygame.Rect(10,6,6,10),pygame.Rect(5,6,5,5) ]
-    
 
     for i in range (0,pocetTexturVType[2]):
         text = pygame.transform.rotate(texturyCasti[2][i],180)

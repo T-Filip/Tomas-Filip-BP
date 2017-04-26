@@ -25,6 +25,7 @@ class MenuOknoNapoveda(menuOkno.MenuOknoHra):
             self.vykresliRiadok("I - Inventar",screen,font) 
             self.vykresliRiadok("V - Vlastnosti",screen,font)
             self.vykresliRiadok("B - Zrucnosti",screen,font)
+            self.vykresliRiadok("R - Rotacia predmetu",screen,font)
             self.vykresliRiadok("W, A, S, D, sipky - Pohyb",screen,font)
             self.vykresliRiadok("ESC - Menu",screen,font) 
             self.vykresliRiadok("kolecko mysi - Zoom",screen,font) 

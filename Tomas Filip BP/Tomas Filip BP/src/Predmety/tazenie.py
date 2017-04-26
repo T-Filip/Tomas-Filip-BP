@@ -18,13 +18,19 @@ Metody drop sa vyuzivaju ako parametri pri vytvarani roznych objektov - je vala 
 def vypocitajDlzkuTazenia(tazenyObjekt,nastroj,hrac):
     from ObjektyMapa.infObjekty import InfNastroje
     #NASTROJ
-    if isinstance(nastroj, InfNastroje):
-        materialObj = nastroj.dajInf().dajMaterial()
-        vhodneNaMat = nastroj.dajInf().dajVhodneNaMaterial()
-        try:
-            koeficientNastroja = vhodneNaMat[materialObj]
-        except: # neni o tom zaznam znamena ze 0
+    if nastroj != None:
+        infNastroja = nastroj.dajInf()
+        if isinstance(infNastroja, InfNastroje):
+            materialObj = tazenyObjekt.dajInf().dajMaterial()
+            vhodneNaMat = infNastroja.dajVhodneNaMaterial()
+            try:
+                koeficientNastroja = vhodneNaMat[materialObj]
+                #print(koeficientNastroja)
+            except: # neni o tom zaznam znamena ze 0
+                koeficientNastroja = 0
+        else:
             koeficientNastroja = 0
+            
     else:
         koeficientNastroja = 0
         
@@ -42,19 +48,20 @@ def vypocitajDlzkuTazenia(tazenyObjekt,nastroj,hrac):
             indexZrucnosti = EnumZrucnosti.VYUZITIE_KRUMPAC
             zrucnosti = vlastnosti[indexZrucnosti][0]
         elif idNastroja <= 3011:
-            print("MEC")
+            #print("MEC")
             indexZrucnosti = EnumZrucnosti.VYUZITIE_MEC
             zrucnosti = vlastnosti[indexZrucnosti][0]
         else:
             zrucnosti = 0  
             
         if indexZrucnosti >= 0 and random.random() < 0.01:
-            print("ZVYSUJEM")
+            #print("ZVYSUJEM")
             hrac.zvysZrucnosti(indexZrucnosti,1)
             
         if koeficientNastroja == 0:
-            zrucnost = zrucnosti/2 
-        nasobokZrucnosti = (100 - zrucnost) / 100
+            zrucnosti = zrucnosti/2 
+
+        nasobokZrucnosti = (100 - zrucnosti) / 100
             
             
     else:
@@ -62,6 +69,7 @@ def vypocitajDlzkuTazenia(tazenyObjekt,nastroj,hrac):
             
     casTazeniaObjektu = tazenyObjekt.dajInf().dajCasTazenia()
     vyslednyCas = casTazeniaObjektu + casTazeniaObjektu * nasobokZrucnosti  + (1 - koeficientNastroja) * casTazeniaObjektu
+    #print (vyslednyCas)
     return vyslednyCas
           
 

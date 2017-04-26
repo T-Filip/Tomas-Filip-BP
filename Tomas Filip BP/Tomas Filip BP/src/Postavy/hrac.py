@@ -1,19 +1,19 @@
 import pygame
-import ObjektyMapa.objMapa as objMapa
-import ObjektyMapa.scale as scale
-import random
-from tkinter.constants import HORIZONTAL
+#import ObjektyMapa.objMapa as objMapa
+#import ObjektyMapa.scale as scale
+#import random
+#from tkinter.constants import HORIZONTAL
 import logging
 import Postavy.smerPostavy as smerPostavy
 import Predmety.inventar as inventar
 from Predmety import invVyuzPredmetu
 import Predmety.predmet as predmet
-from Postavy.enumTypPostavy import EnumTypPostavy
-from Postavy.smerPostavy import SmerPostavy
+#from Postavy.enumTypPostavy import EnumTypPostavy
+#from Postavy.smerPostavy import SmerPostavy
 from Nastavenia import nastavenia
 from Postavy import postava
-from Textury import textury
-from Textury import enumTextura
+#from Textury import textury
+#from Textury import enumTextura
 
 
 
@@ -81,6 +81,10 @@ class Hrac(postava.Postava):
     def dajDalsiLevelNaSkusenostiach(self):
         return self.dalsiLevelNaSkusenostiach
     
+    
+    '''
+    hrac a mapa sa linkuju po vytvoreni
+    '''
     def linkMapa(self,mapa):
         self.mapa = mapa
         self.inventarRychlyPristup.linkMapa(self.mapa)
@@ -91,7 +95,12 @@ class Hrac(postava.Postava):
     def vlozPredmet(self,predmet):
         self.inventar.vlozPredmet(predmet)
 
+    '''
+    zaciatocne predmety
+    '''
     def vlozPredmety(self):
+        
+        
         self.inventar.vlozPredmet(predmet.Predmet(10,12))
         self.inventar.vlozPredmet(predmet.Predmet(13,15))
         self.inventar.vlozPredmet(predmet.Predmet(12,50))
@@ -106,6 +115,8 @@ class Hrac(postava.Postava):
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(4000,20))
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(3000,1))
         self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(3011,1))
+        
+        self.inventarRychlyPristup.vlozPredmet(predmet.Predmet(2300,10))
         
     def dajInventarRychlyPristup(self):
         return self.inventarRychlyPristup

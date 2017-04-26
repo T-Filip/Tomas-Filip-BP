@@ -10,7 +10,7 @@ from Nastavenia import nastavenia as nastavenia
 import random
 
 '''
-    //Abstraktna trieda// ktorej ulohou je vytvaranie textur pre vsetky postavy v hre na zaklade parametrov.
+    modul ktoreho ulohou je vytvaranie textur pre vsetky postavy v hre na zaklade parametrov.
 
 '''
 def vytvorPostavu(jeToHrac, paSmerPostavy,farbaTela,typPostavy,cisloTvare,cisloVlasov,cisloOci,cisloPohlavia):
@@ -81,7 +81,7 @@ def vytvorPostavuRandom(jeToHrac,postava):
         farbaTela = nastavenia.FARBA_TELA[cap]
     else:
         cap = random.randint(0,len(nastavenia.FARBA_TELA_NPC)-1)
-        print(cap)
+        #print(cap)
         farbaTela = nastavenia.FARBA_TELA_NPC[cap]
         
     cap = nastavenia.CAP_TYP_POSTAVY
