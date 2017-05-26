@@ -107,7 +107,9 @@ def init():
 
     fon = textury.FONTY
     for i in range(100):
-        fon[i] = pygame.font.Font("font/armalite.ttf",i)
+        #fon[i] = pygame.font.Font("font/armalite.ttf",i)
+        fon[i] = pygame.font.Font("font/HIVNotRetro-Regular.otf",i)
+        
     
 def dajFont(velkost):
     if velkost > 100:

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 '''
 Created on 11. 3. 2017
 
@@ -53,7 +56,7 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
 
     def vykresliVolneVlastnosti(self,screen):
         font = textury.dajFont(int(25*self.scaleRes))
-        text = "Volne vlastnosti: " + str(self.hrac.dajVolneVlastnosti()[0])                                 
+        text = "Voľné vlastnosti: " + str(self.hrac.dajVolneVlastnosti()[0])                                 
         textSurf = font.render(text,1, nastavenia.BLACK)
         x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
         y= self.rect.y + self.rect.height - int(45*self.scaleRes)
@@ -61,7 +64,7 @@ class MenuOknoVlastnosti(menuOkno.MenuOknoHra):
         
     def vykresliLevel(self,screen):
         font = textury.dajFont(int(20*self.scaleRes))
-        text = "Level: " + str(self.hrac.dajLevel()) + "    Skusenosti: " + str(self.hrac.dajSkusenosti()) + "/" + str(self.hrac.dajDalsiLevelNaSkusenostiach())                                  
+        text = "Level: " + str(self.hrac.dajLevel()) + "    Sksenosti: " + str(self.hrac.dajSkusenosti()) + "/" + str(self.hrac.dajDalsiLevelNaSkusenostiach())                                  
         textSurf = font.render(text,1, nastavenia.BLACK)
         x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
         y= self.rect.y + self.rect.height - int(70*self.scaleRes)

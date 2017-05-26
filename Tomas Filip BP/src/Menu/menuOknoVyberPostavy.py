@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 '''
 Created on 4. 3. 2017
 
@@ -46,7 +49,7 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         super().__init__(manazerOkien,scale)
         
         
-        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,525,600,startHry,scale)
+        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"ŠTART",16,525,600,startHry,scale)
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"BACK",16,655,600,back,scale)
         self.vlastnosti = [0,0,0,0]
         
@@ -100,19 +103,19 @@ class MenuOknoVyberPostavy(menuOkno.MenuOkno):
         objMenu.TlacidloIncDecVal(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275+kraj+tlacidla+medzera,yPixTlacidla,True,True,self.indexFarbyTela,capArr,scale)
         
         #Cislo Oci
-        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"typ oci",16,140+kraj+tlacidla*2+medzera*2,yPixTlacidla,scale)
+        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"typ očí",16,140+kraj+tlacidla*2+medzera*2,yPixTlacidla,scale)
         self.tlacidloSirkaMapy.click()
         decCisloOci = objMenu.TlacidloIncDecValByVal(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85+kraj+tlacidla*2+medzera*2,yPixTlacidla,False,True,self.cisloOci,capCisloOci,self.cisloPohlavia,scale)
         objMenu.TlacidloIncDecValByVal(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275+kraj+tlacidla*2+medzera*2,yPixTlacidla,True,True,self.cisloOci,capCisloOci,self.cisloPohlavia,scale)
         
         #Cislo Vlasov
-        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"uces",16,140+kraj,yPixTlacidla+55,scale)
+        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"účes",16,140+kraj,yPixTlacidla+55,scale)
         self.tlacidloSirkaMapy.click()
         decCisloVlasov = objMenu.TlacidloIncDecValByVal(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85+kraj,yPixTlacidla+55,False,True,self.cisloVlasov,capCisloVlasov,self.cisloPohlavia,scale)
         objMenu.TlacidloIncDecValByVal(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275+kraj,yPixTlacidla+55,True,True,self.cisloVlasov,capCisloVlasov,self.cisloPohlavia,scale)
         
         #Typ tvare
-        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"Typ tvare",16,140+kraj+tlacidla+medzera,yPixTlacidla+55,scale)
+        self.tlacidloSirkaMapy = objMenu.objMenu(self,[textury.TUN1center],"Typ tváre",16,140+kraj+tlacidla+medzera,yPixTlacidla+55,scale)
         self.tlacidloSirkaMapy.click()
         objMenu.TlacidloIncDecVal(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85+kraj+tlacidla+medzera,yPixTlacidla+55,False,True,self.cisloTvare,capTypTvare,scale)
         objMenu.TlacidloIncDecVal(self,[textury.TUN1right,textury.TUN1rightOznacene],"",16,275+kraj+tlacidla+medzera,yPixTlacidla+55,True,True,self.cisloTvare,capTypTvare,scale)

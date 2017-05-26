@@ -1,6 +1,7 @@
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 import pygame
 import sys
 import os
@@ -80,12 +81,12 @@ def tlacidloStart(self):
     self.menu.jeNeukonceny = False;
     
 def zmenTextSirkyMapy(self):
-    self.text = "Sirka " + str(nastavenia.MAP_SIZE_X)
+    self.text = "Šírka " + str(nastavenia.MAP_SIZE_X)
     self.updateText()
     self.prekresli()
     
 def zmenTextVyskyMapy(self):
-    self.text = "Vyska " + str(nastavenia.MAP_SIZE_Y)
+    self.text = "Výška " + str(nastavenia.MAP_SIZE_Y)
     self.updateText()
     self.prekresli()
 
@@ -114,7 +115,7 @@ def znizVyskuMapy(self):
     zmenTextVyskyMapy(self.menu.tlacidloVyskaMapy)
     
 def zmenTextRychlostHry(self):
-    self.text = "Rychlost " + str(nastavenia.RYCHLOST_HRY)
+    self.text = "Rýchlosť " + str(nastavenia.RYCHLOST_HRY)
     self.updateText()
     self.prekresli()
     
@@ -148,8 +149,8 @@ class UvodneNastavenia:
         self.screen = pygame.display.set_mode((nastavenia.UVODNE_NASTAVENIA_SIRKA,nastavenia.UVODNE_NASTAVENIA_VYSKA ),pygame.NOFRAME)
         textury.init()
         
-        nastavenia.FONT_1_16 = pygame.font.Font("font/armalite.ttf",16)
-        nastavenia.FONT_1_13 = pygame.font.Font("font/armalite.ttf",13)
+        #nastavenia.FONT_1_16 = pygame.font.Font("font/armalite.ttf",16)
+        #nastavenia.FONT_1_13 = pygame.font.Font("font/armalite.ttf",13)
        
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
         self.clock = pygame.time.Clock()
@@ -159,7 +160,7 @@ class UvodneNastavenia:
 
         #objMenu(self,[self.TUN2,self.TUN2Oznacene],"Testujeme",nastavenia.FONT_1_16,50,50)
         objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"KONIEC",16,215,320,ukonci)
-        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"START",16,85,320,tlacidloStart)
+        objMenu.Tlacidlo(self,[textury.TUN2,textury.TUN2Oznacene],"ŠTART",16,85,320,tlacidloStart)
         self.tlacidloRozlisenie = objMenu.Tlacidlo(self,[textury.TUN1center],"",16,140,270,zmenTextRozlisenia)
         self.tlacidloRozlisenie.click()
         objMenu.Tlacidlo(self,[textury.TUN1left,textury.TUN1leftOznacene],"",16,85,270,znizRozlisenie)

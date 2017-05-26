@@ -19,6 +19,7 @@ from Menu.MenuOknoZrucnosti import MenuOknoZrucnosti
 from Menu import menuOknoVlastnosti
 from Menu.MenuOknoNapoveda import MenuOknoNapoveda
 import Textury.textury as textury
+from pygame.time import Clock
 
 
 
@@ -134,9 +135,12 @@ class ManazerOkien:
         timeLastTick = time.time()
         self.timeNextTick =  timeLastTick + self.nextTick
         self.casPoslednehoVykreslenia = time.time()+1
+        clock = Clock()
 
         
         while self.niejeUkoncena:
+            
+                
             if self.mozeUpdatnut():
                 self.vykreslilaSaAktualizacia = False
                 self.timeNextTick += self.nextTick
@@ -157,6 +161,8 @@ class ManazerOkien:
 
             else:
             #if True: # docasne koli debugovaniu
+                if self.jePauza:
+                    clock.tick(30)
                 self.vykreslilaSaAktualizacia = True
                 self.casPoslednehoVykreslenia = time.time()
                 if self.oknoMenu != None:
@@ -200,7 +206,9 @@ class ManazerOkien:
             
             if self.vykreslilaSaAktualizacia:
                 if self.hra != None and not self.zvysRychlostHry(): # iba ak sa mu nepodari zvysit rychlost hry
-                    cas = int(200/nastavenia.RYCHLOST_HRY)
+                    #cas = int(200/nastavenia.RYCHLOST_HRY)
+                    cas = int((self.timeNextTick - time.time())*1000)
+                    #print(cas)
                     logging.info("Uvolnujem cpu v prospech ineho procesu na: " + str(cas))
                     pygame.time.wait(cas)
                     return self.mozeUpdatnut()#znova cekne co s tym

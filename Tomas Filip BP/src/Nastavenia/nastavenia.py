@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#from win32api import GetSystemMetrics
 
 import math
 
@@ -39,11 +39,11 @@ CYAN = (0, 255, 255)
 #3 typy pre kazdy postavu ine vlastnosti
 #Zdravie Sila Rychlost vytrvalost
 #mala postava fit a silna
-VLASTNOSTI_POSTAVY = ["Zdravie", "Sila", "Rychlost", "Vytrvalost"]
+VLASTNOSTI_POSTAVY = ["Zdravie", "Sila", "Rýchlosť", "Vytrvalosť"]
 VLASTNOSTI_POSTAVY_TYP_POSTAVY = [[3,3,5,5,],[4,4,4,4],[6,5,3,2]]
 VLASTNOSTI_POSTAVY_POHLAVIE = [[0,1,0,0],[0,0,0,1]]
 
-ZRUCNOSTI = ["Vyroba objektov","vyroba sekier","vyrova krumpacov","vyroba mecov","pouzivanie sekery","pouzivanie krumpaca","pouzivanie meca"]
+ZRUCNOSTI = ["Výroba objektov","Výroba sekier","Výroba krumpáčov","Výroba mečov","Používanie sekery","Používanie krumpáča","Používanie meča"]
 
 FARBA_TELA = [(255,220,100),(255,220,140),(253,210,130),(216,170,130),(200,140,100),(180,110,60),(140,90,50)]
 FARBA_TELA_NPC = [(120,120,120),(100,100,100),(150,150,150),(140,100,100),(125,125,100),(125,125,90)]

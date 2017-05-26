@@ -8,8 +8,8 @@ Created on 20. 4. 2017
 import sys
 from cx_Freeze import setup, Executable
 import os 
-#os.environ['TCL_LIBRARY'] = r'C:\Program Files\Python35-32\tcl\tcl8.6'
-#os.environ['TK_LIBRARY'] = r'C:\Program Files\Python35-32\tcl\tk8.6'
+os.environ['TCL_LIBRARY'] = r'C:\Program Files\Python35-32\tcl\tcl8.6'
+os.environ['TK_LIBRARY'] = r'C:\Program Files\Python35-32\tcl\tk8.6'
 
 build_exe_options = {
         #"optimize": 2,
@@ -35,4 +35,4 @@ setup(
     version = "3.6",
     description = "rpg",
     options = {"build_exe":{"packages": ["pygame"]}},
-    executables = [Executable("__init__.py", base = "Win32GUI")])
+    executables = [Executable("BP.py", base = "Win32GUI")])

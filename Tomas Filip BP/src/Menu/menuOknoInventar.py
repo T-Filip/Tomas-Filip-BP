@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 '''
 Created on 9. 3. 2017
 
@@ -72,7 +75,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
     def draw(self, screen):
         menuOkno.MenuOknoHra.draw(self, screen)
         pracaSPredmetmi.PracaSPredmetmi.draw(self,screen)
-        self.vykresliNadpis(screen, "INVENTAR")
+        self.vykresliNadpis(screen, "INVENTÁR")
         self.vykresliCraftingText(screen)
         self.oknoMaterial.draw(screen)
         self.oknoProdukt.draw(screen)
@@ -82,7 +85,7 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
         y = int(self.rect.y + 90*self.scaleRes)
         x = int(self.rect.x + 350*self.scaleRes)
         font = textury.dajFont(int(20*self.scaleRes))                                 
-        textSurf = font.render("material",1, nastavenia.BLACK)
+        textSurf = font.render("materiál",1, nastavenia.BLACK)
         screen.blit(textSurf,(x,y))
         
         x = int(self.rect.x + 600*self.scaleRes)

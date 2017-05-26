@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 '''
 Created on 1. 4. 2017
 
@@ -58,7 +61,7 @@ class MenuOknoZrucnosti(MenuOknoHra):
             
     def vykresliVolneZrucnosti(self,screen):
         font = textury.dajFont(int(25*self.scaleRes))
-        text = "Volne zrucnosti: " + str(self.hrac.dajVolneZrucnosti()[0])                                 
+        text = "Voľné zručnosti: " + str(self.hrac.dajVolneZrucnosti()[0])                                 
         textSurf = font.render(text,1, nastavenia.BLACK)
         x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
         y= self.rect.y + self.rect.height - int(45*self.scaleRes)
@@ -66,7 +69,7 @@ class MenuOknoZrucnosti(MenuOknoHra):
         
     def vykresliLevel(self,screen):
         font = textury.dajFont(int(20*self.scaleRes))
-        text = "Level: " + str(self.hrac.dajLevel()) + "    Skusenosti: " + str(self.hrac.dajSkusenosti()) + "/" + str(self.hrac.dajDalsiLevelNaSkusenostiach())                                  
+        text = "Level: " + str(self.hrac.dajLevel()) + "    Skúsenosti: " + str(self.hrac.dajSkusenosti()) + "/" + str(self.hrac.dajDalsiLevelNaSkusenostiach())                                  
         textSurf = font.render(text,1, nastavenia.BLACK)
         x= int(self.rect.x + (self.rect.width - textSurf.get_width())/2)
         y= self.rect.y + self.rect.height - int(70*self.scaleRes)
@@ -75,7 +78,7 @@ class MenuOknoZrucnosti(MenuOknoHra):
             
     def draw(self, screen):
         MenuOknoHra.draw(self, screen)
-        self.vykresliNadpis(screen, "Zrucnosti")
+        self.vykresliNadpis(screen, "Zručnosti")
         self.vykresliZrucnosti(screen)
         self.vykresliVolneZrucnosti(screen)
         self.vykresliLevel(screen)

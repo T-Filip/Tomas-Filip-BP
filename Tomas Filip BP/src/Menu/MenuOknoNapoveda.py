@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 '''
 Created on 22. 4. 2017
 
@@ -21,15 +25,15 @@ class MenuOknoNapoveda(menuOkno.MenuOknoHra):
             self.y = [self.rect.y+80]
             self.x = [self.rect.x + 40]
             self.vykresliRiadok("P - Pauza",screen,font) 
-            self.vykresliRiadok("N - Napoveda",screen,font) 
-            self.vykresliRiadok("I - Inventar",screen,font) 
+            self.vykresliRiadok("N - Nápoveda",screen,font) 
+            self.vykresliRiadok("I - Inventár",screen,font) 
             self.vykresliRiadok("V - Vlastnosti",screen,font)
-            self.vykresliRiadok("B - Zrucnosti",screen,font)
-            self.vykresliRiadok("R - Rotacia predmetu",screen,font)
-            self.vykresliRiadok("W, A, S, D, sipky - Pohyb",screen,font)
-            self.vykresliRiadok("Shift - Sprint",screen,font)
+            self.vykresliRiadok("B - Zručnosti",screen,font)
+            self.vykresliRiadok("R - Rotácia predmetu",screen,font)
+            self.vykresliRiadok("W, A, S, D, šipky - Pohyb",screen,font)
+            self.vykresliRiadok("Shift - Šprint",screen,font)
             self.vykresliRiadok("ESC - Menu",screen,font) 
-            self.vykresliRiadok("kolecko mysi - Zoom",screen,font) 
+            self.vykresliRiadok("kolečko myši - Zoom",screen,font) 
             
         def reinit(self,hrac):
             super().reinit(hrac)
@@ -45,5 +49,5 @@ class MenuOknoNapoveda(menuOkno.MenuOknoHra):
                 
         def draw(self, screen):
             menuOkno.MenuOknoHra.draw(self, screen)
-            self.vykresliNadpis(screen,"Napoveda")
+            self.vykresliNadpis(screen,"Nápoveda")
             self.vykresliNapovedu(screen)
