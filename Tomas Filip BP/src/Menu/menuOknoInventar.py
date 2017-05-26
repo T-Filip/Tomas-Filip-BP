@@ -84,7 +84,8 @@ class MenuOknoInventar(menuOkno.MenuOknoHra,pracaSPredmetmi.PracaSPredmetmi):
     def vykresliCraftingText(self,screen):
         y = int(self.rect.y + 90*self.scaleRes)
         x = int(self.rect.x + 350*self.scaleRes)
-        font = textury.dajFont(int(20*self.scaleRes))                                 
+        font = textury.dajFont(int(20*self.scaleRes))  
+        #s                               
         textSurf = font.render("materiál",1, nastavenia.BLACK)
         screen.blit(textSurf,(x,y))
         
