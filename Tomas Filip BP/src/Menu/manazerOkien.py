@@ -19,7 +19,7 @@ from Menu.MenuOknoZrucnosti import MenuOknoZrucnosti
 from Menu import menuOknoVlastnosti
 from Menu.MenuOknoNapoveda import MenuOknoNapoveda
 import Textury.textury as textury
-from pygame.time import Clock
+import math
 
 
 
@@ -32,13 +32,19 @@ class ManazerOkien:
         pygame.event.get()
         self.klavesy = pygame.key.get_pressed()
         self.pressedMouse = pygame.mouse.get_pressed()
-        self.predKlavesy  = pygame.key.get_pressed()
+        self.predKlavesy = pygame.key.get_pressed()
         self.events()
-        self.jePauza = True # na zaciatku hry pauza
+        self.jePauza = True  # na zaciatku hry pauza
         
-        self.posledaZmenaRychlosti=200
+        self.casProcPer = 100  # v percentach
+        self.casProcMilSum = 1000  # v milisekundach
+        self.casUpdatuProcCasProcMil = time.time()
         
-        self.kolkoByMaloBytFPS = 30 # iba pre spodne vyrovnavanie
+        self.posledaZmenaRychlosti = 200
+        
+        self.zakazBloknutiaFramuNa = 500  # zo zaciatku viac necham
+        
+        self.kolkoByMaloBytFPS = 30  # iba pre spodne vyrovnavanie
 
         
         mode = pygame.DOUBLEBUF
@@ -49,19 +55,19 @@ class ManazerOkien:
 
         logging.info("init screen")
         self.screen = pygame.display.set_mode((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]),
-                                              mode )
+                                              mode)
 
-        self.clona = pygame.Surface((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]),pygame.SRCALPHA)
-        self.clona.fill((100,100,100,150))
+        self.clona = pygame.Surface((nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie], nastavenia.ROZLISENIA_Y[nastavenia.vybrateRozlisenie]), pygame.SRCALPHA)
+        self.clona.fill((100, 100, 100, 150))
         logging.info("init textury policiek")
         texturyPolicka.initTextury()
         self.hra = None
         self.casPoslednehoUpdatu = 0
 
         
-        self.maximalnyCasDoDalsiehoFramu = 1/30
+        self.maximalnyCasDoDalsiehoFramu = 1 / 30
         pygame.display.set_caption(nastavenia.UVODNE_NASTAVENIA_TITLE)
-        #self.clock = pygame.time.Clock()
+        # self.clock = pygame.time.Clock()
 
         self.vykreslilaSaAktualizacia = False
         
@@ -86,42 +92,64 @@ class ManazerOkien:
     inicializuje okna v hre 
     '''
     def initMenuOkna(self):
-        sc =nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie]/1280
+        sc = nastavenia.ROZLISENIA_X[nastavenia.vybrateRozlisenie] / 1280
 
-        self.zakladneMenu = menuOknoZakladMenu.MenuOknoZakladMenu(self,sc)
+        self.zakladneMenu = menuOknoZakladMenu.MenuOknoZakladMenu(self, sc)
         self.oknoMenu = self.zakladneMenu
         self.oknoVHre = None
 
         self.zoznamOkienMenu = {}
-        self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY] = menuOknoVyberPostavy.MenuOknoVyberPostavy(self,sc)
+        self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.VYBER_POSTAVY] = menuOknoVyberPostavy.MenuOknoVyberPostavy(self, sc)
         self.zoznamOkienMenu[enumOknaMenu.EnumOknaMenu.ZAKLADNE_MENU] = self.zakladneMenu
         
         self.zoznamOkienHra = {}
-        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.INVENTAR] = menuOknoInventar.MenuOknoInventar(self,sc)
-        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.VLASTNOSTI] = menuOknoVlastnosti.MenuOknoVlastnosti(self,sc,0.4,0.5)
-        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.ZRUCNOSTI] = MenuOknoZrucnosti(self,sc,0.4,0.7)
-        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.NAPOVEDA] = MenuOknoNapoveda(self,sc)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.INVENTAR] = menuOknoInventar.MenuOknoInventar(self, sc)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.VLASTNOSTI] = menuOknoVlastnosti.MenuOknoVlastnosti(self, sc, 0.4, 0.5)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.ZRUCNOSTI] = MenuOknoZrucnosti(self, sc, 0.4, 0.7)
+        self.zoznamOkienHra[enumOknaHra.EnumOknaHra.NAPOVEDA] = MenuOknoNapoveda(self, sc)
        
         
         
         
-    def vytvorHru(self,texturyHraca,vlastnosti,typP):
+    def vytvorHru(self, texturyHraca, vlastnosti, typP):
         logging.info("vytvorenie instancie hry")
-        self.hra = hra.Hra(self, self.screen, texturyHraca,vlastnosti,typP)
+        self.hra = hra.Hra(self, self.screen, texturyHraca, vlastnosti, typP)
         self.prepniMenuVHre(enumOknaHra.EnumOknaHra.NAPOVEDA)
         
-    def dajOknoHra(self,kluc):
+    def dajOknoHra(self, kluc):
         return self.zoznamOkienHra[kluc]
     
-    def dajOknoMenu(self,kluc):
+    def dajOknoMenu(self, kluc):
         return self.zoznamOkienMenu[kluc]
     
     def dajPressedMouse(self):
         return self.pressedMouse
     
+    def uvolnujemCPUNa(self, cas):  # alebo po uvolneni
+        self.casProcMilSum += cas
+    
+    def uvolniCPUNa (self, casMil):
+        logging.info("Uvolnujem cpu v prospech ineho procesu na: " + str(casMil) + " sec")
+        cas = time.time()
+        pygame.time.wait(casMil)
+        dlzkaSkutocnehoUvolnenia = (time.time() - cas) * 1000
+        self.uvolnujemCPUNa(dlzkaSkutocnehoUvolnenia)
+        logging.info("CPU bolo uvolnene na: " + str(dlzkaSkutocnehoUvolnenia) + " sec")
         
+    def updateCasVykonavania(self):
+        cas = time.time()
+        # print("--------")
+        # print(cas)
+        if self.casUpdatuProcCasProcMil <= cas:
+            rozdielCasov = cas - self.casUpdatuProcCasProcMil + 1
+            self.casUpdatuProcCasProcMil = cas + 1
+            # print(rozdielCasov)
+            # print(self.casProcMilSum)
+            self.casProcPer = round(100 - (self.casProcMilSum / (rozdielCasov * 10)), 1)
+            self.casProcMilSum = 0
 
-
+    def dajPercentoVyuzivaniaCPU (self):
+        return self.casProcPer
 
     '''
     Zakladny herny cyklus toci sa kolko pc vladze.
@@ -130,22 +158,23 @@ class ManazerOkien:
     def run(self):
         self.niejeUkoncena = True
         pocDrawPoUpdate = 0
-        self.nextTick = 1/nastavenia.RYCHLOST_HRY
+        self.nextTick = 1 / nastavenia.RYCHLOST_HRY
         self.rychlostHry = nastavenia.RYCHLOST_HRY
         timeLastTick = time.time()
-        self.timeNextTick =  timeLastTick + self.nextTick
-        self.casPoslednehoVykreslenia = time.time()+1
-        clock = Clock()
+        self.timeNextTick = timeLastTick + self.nextTick
+        self.casPoslednehoVykreslenia = time.time() + 1
+        clock = pygame.time.Clock()
 
         
         while self.niejeUkoncena:
             
+            self.updateCasVykonavania()
                 
             if self.mozeUpdatnut():
                 self.vykreslilaSaAktualizacia = False
                 self.timeNextTick += self.nextTick
                 timeLastTick = time.time()
-                #try:
+                # try:
                 if self.oknoMenu != None:
                     logging.info("Menu-update")
                     self.oknoMenu.update()
@@ -160,9 +189,12 @@ class ManazerOkien:
                 self.events()
 
             else:
-            #if True: # docasne koli debugovaniu
+            # if True: # docasne koli debugovaniu
+                self.zakazBloknutiaFramuNa -= 1
                 if self.jePauza:
+                    cas = time.time()
                     clock.tick(30)
+                    self.uvolnujemCPUNa((time.time() - cas) * 1000)
                 self.vykreslilaSaAktualizacia = True
                 self.casPoslednehoVykreslenia = time.time()
                 if self.oknoMenu != None:
@@ -184,15 +216,18 @@ class ManazerOkien:
     '''     
     def mozeUpdatnut(self):
         if time.time() > self.timeNextTick:
-            vysledok = True#cas na update
+            vysledok = True  # cas na update
             if self.hra != None:
                 fps = self.hra.dajFPS()
-                if fps < 25:#staci vykonavat raz za sekundu
-                    #print("FPS" + str(fps))
+                if fps < 25:  # staci vykonavat raz za sekundu
+                    # print("FPS" + str(fps))
                     self.znizRychlostHry()
                 
-            if (time.time()-self.casPoslednehoVykreslenia) > self.maximalnyCasDoDalsiehoFramu: #KRIZOVE riesenie malohe fps iba ak klesne pod 20 fps
-                vysledok = False
+            if (time.time() - self.casPoslednehoVykreslenia) > self.maximalnyCasDoDalsiehoFramu:  # KRIZOVE riesenie malohe fps iba ak klesne pod 20 fps
+                if self.vykreslilaSaAktualizacia:
+                    vysledok = True
+                else:
+                    vysledok = False
                 
                 '''
                 if not self.vykreslilaSaAktualizacia:
@@ -204,14 +239,34 @@ class ManazerOkien:
             
         else: 
             
+            # kontrola vytazenia pc 
+            # ak je programom spotrebuvane viac ako 60% casu spu redukuju sa framy
+            if self.casProcPer > 60:
+                if self.zakazBloknutiaFramuNa <= 0:
+                    print("BLOCKNUTY FRAME")
+                    zatazenieNaviac = self.casProcPer - 49
+                    zatazenieNaviac = math.pow(zatazenieNaviac, 2.4)
+                    if zatazenieNaviac > 11000:
+                        self.zakazBloknutiaFramuNa = 1
+                    else:
+                        self.zakazBloknutiaFramuNa = round(zatazenieNaviac / 11000 * nastavenia.RYCHLOST_HRY, 0)
+                        if self.zakazBloknutiaFramuNa < 1:
+                            self.zakazBloknutiaFramuNa = 1  # kazdy druhy frame sa vykresli ak to ine priority nezmenia
+                    
+                    
+                    dlzkaUvolnenia = int((self.timeNextTick - time.time()) * 1000)
+                    self.uvolniCPUNa(dlzkaUvolnenia)
+                    return True  # updatne sa hra - frame bol bloknuty je cas na update
+                    
+                
+            
+            
             if self.vykreslilaSaAktualizacia:
-                if self.hra != None and not self.zvysRychlostHry(): # iba ak sa mu nepodari zvysit rychlost hry
-                    #cas = int(200/nastavenia.RYCHLOST_HRY)
-                    cas = int((self.timeNextTick - time.time())*1000)
-                    #print(cas)
-                    logging.info("Uvolnujem cpu v prospech ineho procesu na: " + str(cas))
-                    pygame.time.wait(cas)
-                    return self.mozeUpdatnut()#znova cekne co s tym
+                if self.hra != None and not self.zvysRychlostHry():  # iba ak sa mu nepodari zvysit rychlost hry
+                    # cas = int(200/nastavenia.RYCHLOST_HRY)
+                    dlzkaUvolnenia = int((self.timeNextTick - time.time()) * 1000) 
+                    self.uvolniCPUNa(dlzkaUvolnenia)
+                    return self.mozeUpdatnut()  # znova cekne co s tym
                 else:
                     vysledok = False
             else:
@@ -221,24 +276,24 @@ class ManazerOkien:
     
     def znizRychlostHry(self):
         tick = self.hra.dajPocetTickov()
-        if self.posledaZmenaRychlosti + self.rychlostHry*5 > tick:
-            return # nemoze sa tak casto menit rychlost hry
+        if self.posledaZmenaRychlosti + self.rychlostHry * 6 > tick:
+            return  # nemoze sa tak casto menit rychlost hry
         self.posledaZmenaRychlosti = tick
-        self.rychlostHry =- 5
+        self.rychlostHry = -6
         if self.rychlostHry < 40:
             self.rychlostHry = 40
-        self.nextTick = 1/self.rychlostHry
+        self.nextTick = 1 / self.rychlostHry
     
     def zvysRychlostHry(self):
         tick = self.hra.dajPocetTickov()
-        if self.posledaZmenaRychlosti + self.rychlostHry*3 > tick:
-            return # nemoze sa tak casto menit rychlost hry
+        if self.posledaZmenaRychlosti + self.rychlostHry * 2 > tick:
+            return  # nemoze sa tak casto menit rychlost hry
         self.posledaZmenaRychlosti = tick
-        self.rychlostHry += 5
+        self.rychlostHry += 2
         if self.rychlostHry > nastavenia.RYCHLOST_HRY:
             self.rychlostHry = nastavenia.RYCHLOST_HRY
             return False
-        self.nextTick = 1/ self.rychlostHry
+        self.nextTick = 1 / self.rychlostHry
         return True
     
     def dajCasOdPoslednehoFramu(self):
@@ -258,7 +313,7 @@ class ManazerOkien:
             self.oknoVHre = None
         else:
             okno = self.zoznamOkienHra[enum]
-            if okno == self.oknoVHre: #aby sa tym istym tlacidlo mohlo aj vypnut
+            if okno == self.oknoVHre:  # aby sa tym istym tlacidlo mohlo aj vypnut
                 self.oknoVHre.close()
                 self.oknoVHre = None
             else:
@@ -276,7 +331,7 @@ class ManazerOkien:
     spracuje vstupy z klavesnice
     ''' 
     def events(self):
-        self.eventy  = pygame.event.get()
+        self.eventy = pygame.event.get()
         for event in self.eventy:
             if event.type == pygame.QUIT:
                 if self.niejeUkoncena:
@@ -340,7 +395,7 @@ class ManazerOkien:
         self.pressedMouse = pygame.mouse.get_pressed()
         pygame.event.pump()
         
-    def setJePauza (self,bool):
+    def setJePauza (self, bool):
         self.jePauza = bool
         
     def klikButton1(self):
@@ -376,17 +431,17 @@ class ManazerOkien:
     '''
     v otvorenych oknach vola metodu ktoru dostal ako parameter
     '''
-    def volajMetoduVOknach(self,key):
+    def volajMetoduVOknach(self, key):
         if self.oknoMenu != None:
-            getattr(self.oknoMenu,key)()
+            getattr(self.oknoMenu, key)()
         if self.oknoVHre != None:
-            getattr(self.oknoVHre,key)()
+            getattr(self.oknoVHre, key)()
         
     def update(self):
         
         self.casPoslednehoUpdatu = time.time()
         logging.info("Hra-update")
-        if self.hra!=None:
+        if self.hra != None:
             self.hra.update(self.jePauza)
             if not self.jePauza:
                 self.hra.dajMapu().update()
@@ -397,16 +452,16 @@ class ManazerOkien:
     stara sa o vykonanie vsetkoho ak je pauza tak to nakoniec dokresli resp zcasti prekresli 
     ''' 
     def draw(self):
-        self.screen.fill((0,0,0))
-        if self.hra!=None:
+        self.screen.fill((0, 0, 0))
+        if self.hra != None:
             self.hra.vykresliHru()
         if self.jePauza:
-            #self.screen.fill((100,100,100,150))
-            self.screen.blit(self.clona,(0,0))
+            # self.screen.fill((100,100,100,150))
+            self.screen.blit(self.clona, (0, 0))
             font = textury.dajFont(40)
-            textSurf = font.render("Pauza",1, nastavenia.BLACK)
+            textSurf = font.render("Pauza", 1, nastavenia.BLACK)
             x = self.screen.get_width() - textSurf.get_width() - 15
-            self.screen.blit(textSurf,(x,15))
+            self.screen.blit(textSurf, (x, 15))
             
  
 

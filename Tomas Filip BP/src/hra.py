@@ -14,7 +14,6 @@ import math
 from Textury import enumTextura
 import Crafting.recepty as recepty
 from Menu.enumOknaHra import EnumOknaHra
-import psutil
 
 
 
@@ -179,7 +178,6 @@ class Hra:
     vykresluje okno hry
     '''
     def vykresliHru(self):
-        #print(psutil.)
         self.fpsCount +=  1
         
         self.postavyGroup.draw(self.screen)
@@ -331,6 +329,10 @@ class Hra:
         text = "TPS: " + str(self.pocetTPS)
         textSurf = font.render(text, 10, (255,255,0))
         self.screen.blit(textSurf, (10, 50))
+        
+        text = "CP: " + str(self.manazerOkien.dajPercentoVyuzivaniaCPU()) 
+        textSurf = font.render(text, 10, (255,255,0))
+        self.screen.blit(textSurf, (10, 70))
         
 
 
