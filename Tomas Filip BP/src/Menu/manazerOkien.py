@@ -243,7 +243,7 @@ class ManazerOkien:
             # ak je programom spotrebuvane viac ako 60% casu spu redukuju sa framy
             if self.casProcPer > 60:
                 if self.zakazBloknutiaFramuNa <= 0:
-                    print("BLOCKNUTY FRAME")
+                    #print("BLOCKNUTY FRAME")
                     zatazenieNaviac = self.casProcPer - 49
                     zatazenieNaviac = math.pow(zatazenieNaviac, 2.4)
                     if zatazenieNaviac > 11000:
